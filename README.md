@@ -1,2 +1,2 @@
-# Graduate-thesis
-Graduate thesis at Hust
+# thesis
+Thesis at Hust
