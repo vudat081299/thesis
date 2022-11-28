@@ -35,8 +35,20 @@ struct CreateUser: Migration {
       .field("name", .string, .required)
       .field("username", .string, .required)
       .field("password", .string, .required)
+      
+      .field("email", .string, .required)
+      .field("phone", .string, .required)
+      .field("avatar", .string, .required)
+      .field("gender", .int, .required)
+      .field("birth", .date, .required)
+      .field("country", .string, .required)
+      .field("join", .date, .required)
+      
       .field("siwaIdentifier", .string)
+      
       .unique(on: "username")
+      .unique(on: "email")
+      .unique(on: "phone")
       .create()
   }
   

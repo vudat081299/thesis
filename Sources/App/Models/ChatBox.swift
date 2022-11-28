@@ -17,6 +17,9 @@ final class ChatBox: Model, Content {
     @Field(key: "name")
     var name: String
     
+    @OptionalField(key: "avatar")
+    var avatar: String?
+    
     @Children(for: \.$chatBox)
     var messages: [Message]
     
@@ -25,9 +28,12 @@ final class ChatBox: Model, Content {
     
     init() {}
     
-    init(id: UUID? = nil, name: String) {
+    init(id: UUID? = nil,
+         name: String,
+         avatar: String? = nil) {
         self.id = id
         self.name = name
+        self.avatar = avatar
     }
 }
 

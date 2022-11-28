@@ -17,6 +17,9 @@ final class Message: Model {
     @Field(key: "message")
     var message: String
     
+    @Timestamp(key: "createAt", on: .create)
+    var createAt: Date?
+    
     @Parent(key: "chatBoxID")
     var chatBox: ChatBox
     
