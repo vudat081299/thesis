@@ -14,6 +14,12 @@ final class Mapping: Model {
     @ID
     var id: UUID?
     
+//    @Field(key: "short")
+//    var short: String
+//
+//    @Field(key: "long")
+//    var long: String
+    
     @Parent(key: "userID")
     var user: User
     

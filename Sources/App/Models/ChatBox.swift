@@ -38,7 +38,7 @@ final class ChatBox: Model, Content {
 }
 
 extension ChatBox {
-    static func addCategory(_ name: String, to mapping: Mapping, on req: Request) -> EventLoopFuture<Void> {
+    static func addChatBox(_ name: String, to mapping: Mapping, on req: Request) -> EventLoopFuture<Void> {
         ChatBox.query(on: req.db)
             .filter(\.$name == name)
             .first()

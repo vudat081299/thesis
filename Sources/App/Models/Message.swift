@@ -34,3 +34,19 @@ final class Message: Model {
 }
 
 extension Message: Content {}
+
+
+
+// MARK: - WebSocket model
+struct WSResolvedData: Decodable {
+    let type: WSResolvedMajorDataType
+}
+
+enum WSResolvedMajorDataType: Int, Codable {
+    case notify, newMess, newBox, userTyping
+}
+
+struct WSEncodeMessage: Encodable {
+    let type: WSResolvedMajorDataType
+    let majorData: Message
+}
