@@ -29,7 +29,7 @@ final class ChatBox: Model, Content {
     init() {}
     
     init(id: UUID? = nil,
-         name: String,
+         name: String = "",
          avatar: String? = nil) {
         self.id = id
         self.name = name

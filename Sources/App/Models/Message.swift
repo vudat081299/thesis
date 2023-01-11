@@ -14,11 +14,14 @@ final class Message: Model {
     @ID
     var id: UUID?
     
+    @Field(key: "sender")
+    var sender: UUID
+    
     @Field(key: "message")
     var message: String
     
-    @Timestamp(key: "createAt", on: .create)
-    var createAt: Date?
+    @Field(key: "createdAt")
+    var createdAt: String?
     
     @Parent(key: "chatBoxID")
     var chatBox: ChatBox
@@ -27,9 +30,21 @@ final class Message: Model {
     
     init() {}
     
-    init(id: UUID? = nil, chatBoxID: ChatBox.IDValue) {
+    init(id: UUID? = nil, sender: UUID, message: String, chatBoxID: ChatBox.IDValue) {
         self.id = id
+        self.sender = sender
+        self.message = message
+        
         self.$chatBox.id = chatBoxID
+    }
+    
+    init(id: UUID? = nil, _ resolvedMessage: ResolveMessage) {
+        self.id = id
+        self.sender = resolvedMessage.sender
+        self.message = resolvedMessage.message
+        self.createdAt = resolvedMessage.createdAt
+        
+        self.$chatBox.id = resolvedMessage.chatBoxID
     }
 }
 

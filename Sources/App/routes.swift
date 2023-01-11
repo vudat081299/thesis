@@ -11,4 +11,10 @@ func routes(_ app: Application) throws {
     }
     
     try app.register(collection: TodoController())
+    try app.register(collection: UsersController())
+    try app.register(collection: MappingsController())
+    try app.register(collection: ChatBoxesController())
+    try app.register(collection: MessagesController())
+    try app.register(collection: PivotsController())
+    
 }

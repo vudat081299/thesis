@@ -6,9 +6,9 @@
 //
 
 import Fluent
-import Foundation
+import Vapor
 
-final class MappingChatBoxPivot: Model {
+final class MappingChatBoxPivot: Model, Content {
     static let schema = "mapping-chatbox-pivot"
     
     @ID

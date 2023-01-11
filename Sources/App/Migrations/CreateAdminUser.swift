@@ -29,19 +29,14 @@
 import Fluent
 import Vapor
 
-struct CreateAdminUser: Migration {
-  func prepare(on database: Database) -> EventLoopFuture<Void> {
-    let passwordHash: String
-    do {
-      passwordHash = try Bcrypt.hash("password")
-    } catch {
-      return database.eventLoop.future(error: error)
+struct CreateAdminUser: AsyncMigration {
+    func prepare(on database: Database) async throws {
+        let passwordHash = try Bcrypt.hash("password")
+        let user = User(name: "Admin", username: "admin", password: passwordHash)
+        return try await user.save(on: database)
     }
-    let user = User(name: "Admin", username: "admin", password: passwordHash)
-    return user.save(on: database)
-  }
-
-  func revert(on database: Database) -> EventLoopFuture<Void> {
-    User.query(on: database).filter(\.$username == "admin").delete()
-  }
+    
+    func revert(on database: Database) async throws {
+        try await User.query(on: database).filter(\.$username == "admin").delete()
+    }
 }

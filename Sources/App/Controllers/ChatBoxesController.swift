@@ -13,37 +13,53 @@ struct ChatBoxesController: RouteCollection {
         chatBoxesRoute.get(use: getAllHandler)
         chatBoxesRoute.get(":chatBoxID", use: getHandler)
         chatBoxesRoute.get(":chatBoxID", "mappings", use: getMappingsHandler)
+        chatBoxesRoute.get(":chatBoxID", "messages", use: getMessagesHandler)
         
         let tokenAuthMiddleware = Token.authenticator()
         let guardAuthMiddleware = User.guardMiddleware()
         let tokenAuthGroup = chatBoxesRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         tokenAuthGroup.post(use: createHandler)
+        tokenAuthGroup.delete(":chatBoxID", use: deleteChatBoxHandler)
+        
+        
     }
     
-    func createHandler(_ req: Request) throws -> EventLoopFuture<ChatBox> {
+    func createHandler(_ req: Request) async throws -> ChatBox {
         let chatBox = try req.content.decode(ChatBox.self)
-        return chatBox.save(on: req.db).map { chatBox }
+        try await chatBox.save(on: req.db)
+        return chatBox
     }
     
-    func getAllHandler(_ req: Request) -> EventLoopFuture<[ChatBox]> {
-        ChatBox.query(on: req.db).all()
+    func getAllHandler(_ req: Request) async throws -> [ChatBox] {
+        try await ChatBox.query(on: req.db).all()
     }
     
-    func getHandler(_ req: Request) -> EventLoopFuture<ChatBox> {
-        ChatBox.find(req.parameters.get("chatBoxID"), on: req.db).unwrap(or: Abort(.notFound))
-    }
-    
-    func getMappingsHandler(_ req: Request) -> EventLoopFuture<[Mapping]> {
-        ChatBox.find(req.parameters.get("chatBoxID"), on: req.db)
-            .unwrap(or: Abort(.notFound))
-            .flatMap { chatBox in
-                chatBox.$mappings.get(on: req.db)
-            }
-    }
-    
-    func getMessagesHandler(_ req: Request) -> EventLoopFuture<[Message]> {
-        ChatBox.find(req.parameters.get("chatBoxID"), on: req.db).unwrap(or: Abort(.notFound)).flatMap { chatBox in
-            chatBox.$messages.get(on: req.db)
+    func getHandler(_ req: Request) async throws -> ChatBox {
+        guard let chatBox = try await ChatBox.find(req.parameters.get("chatBoxID"), on: req.db) else {
+            throw Abort(.notFound)
         }
+        return chatBox
+    }
+    
+    func getMappingsHandler(_ req: Request) async throws -> [Mapping] {
+        guard let chatBox = try await ChatBox.find(req.parameters.get("chatBoxID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        return try await chatBox.$mappings.get(on: req.db)
+    }
+    
+    func getMessagesHandler(_ req: Request) async throws -> [Message] {
+        guard let chatBox = try await ChatBox.find(req.parameters.get("chatBoxID"), on: req.db) else {
+            return []
+        }
+        return try await chatBox.$messages.get(on: req.db)
+    }
+    
+    func deleteChatBoxHandler(_ req: Request) async throws -> HTTPStatus {
+        guard let chatBox = try await ChatBox.find(req.parameters.get("chatBoxID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        try await chatBox.delete(on: req.db)
+        return .noContent
     }
 }

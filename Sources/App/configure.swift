@@ -13,6 +13,13 @@ public func configure(_ app: Application) throws {
     
     
     
+    // MARK: - Config http server.
+    app.http.server.configuration.hostname = "192.168.1.24"
+    app.http.server.configuration.port = 8080
+    app.routes.defaultMaxBodySize = "50mb"
+    
+    
+    
     // MARK: - Database configuration
     let databaseName: String
     let databasePort: Int

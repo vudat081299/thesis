@@ -28,31 +28,32 @@
 
 import Fluent
 
-struct CreateUser: Migration {
-  func prepare(on database: Database) -> EventLoopFuture<Void> {
-    database.schema("users")
-      .id()
-      .field("name", .string, .required)
-      .field("username", .string, .required)
-      .field("password", .string, .required)
-      
-      .field("email", .string, .required)
-      .field("phone", .string, .required)
-      .field("avatar", .string, .required)
-      .field("gender", .int, .required)
-      .field("birth", .date, .required)
-      .field("country", .string, .required)
-      .field("join", .date, .required)
-      
-      .field("siwaIdentifier", .string)
-      
-      .unique(on: "username")
-      .unique(on: "email")
-      .unique(on: "phone")
-      .create()
-  }
-  
-  func revert(on database: Database) -> EventLoopFuture<Void> {
-    database.schema("users").delete()
-  }
+struct CreateUser: AsyncMigration {
+    func prepare(on database: Database) async throws {
+        try await database.schema("users")
+            .id()
+            .field("name", .string)
+            .field("username", .string)
+            .field("password", .string, .required)
+        
+            .field("email", .string)
+            .field("phone", .string)
+            .field("avatar", .string)
+            .field("gender", .int)
+            .field("birth", .string)
+            .field("country", .string)
+            .field("join", .string)
+            .field("bio", .string)
+        
+            .field("siwaIdentifier", .string)
+        
+            .unique(on: "username")
+            .unique(on: "email")
+            .unique(on: "phone")
+            .create()
+    }
+    
+    func revert(on database: Database) async throws {
+        try await database.schema("users").delete()
+    }
 }

@@ -25,49 +25,47 @@ struct MappingsController: RouteCollection {
         tokenAuthGroup.post(use: createHandler)
         tokenAuthGroup.delete(":mappingID", use: deleteHandler)
         tokenAuthGroup.put(":mappingID", use: updateHandler)
-        tokenAuthGroup.post(":mappingID", "chatBoxes", ":chatBoxID", use: addchatBoxesHandler)
+        tokenAuthGroup.post("chatBox", "create", use: addchatBoxesHandler)
+        tokenAuthGroup.post("add", "members", "chatBox", use: addMembersIntoChatBoxesHandler)
+        
         tokenAuthGroup.delete(":mappingID", "chatBoxes", ":chatBoxID", use: removechatBoxesHandler)
     }
     
-    func getAllHandler(_ req: Request) -> EventLoopFuture<[Mapping]> {
-        Mapping.query(on: req.db).all()
+    func getAllHandler(_ req: Request) async throws -> [Mapping] {
+        try await Mapping.query(on: req.db).all()
     }
     
-    func createHandler(_ req: Request) throws -> EventLoopFuture<Mapping> {
-//        let data = try req.content.decode(CreateMappingData.self)
+    func createHandler(_ req: Request) async throws -> Mapping {
         let user = try req.auth.require(User.self)
         let mapping = try Mapping(userID: user.requireID())
-        return mapping.save(on: req.db).map { mapping }
+        try await mapping.save(on: req.db)
+        return mapping
     }
     
-    func getHandler(_ req: Request) -> EventLoopFuture<Mapping> {
-        Mapping.find(req.parameters.get("mappingID"), on: req.db)
-            .unwrap(or: Abort(.notFound))
+    func getHandler(_ req: Request) async throws -> Mapping {
+        guard let mapping = try await Mapping.find(req.parameters.get("mappingID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        return mapping
     }
     
-    func updateHandler(_ req: Request) throws -> EventLoopFuture<Mapping> {
-        let updateData = try req.content.decode(CreateMappingData.self)
+    func updateHandler(_ req: Request) async throws -> Mapping {
         let user = try req.auth.require(User.self)
         let userID = try user.requireID()
-        return Mapping.find(req.parameters.get("mappingID"), on: req.db)
-            .unwrap(or: Abort(.notFound)).flatMap { mapping in
-//        acronym.short = updateData.short
-//        acronym.long = updateData.long
-                mapping.$user.id = userID
-                return mapping.save(on: req.db).map {
-                    mapping
-                }
-            }
+        guard let mapping = try await Mapping.find(req.parameters.get("mappingID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        mapping.$user.id = userID
+        try await mapping.save(on: req.db)
+        return mapping
     }
     
-    func deleteHandler(_ req: Request)
-    -> EventLoopFuture<HTTPStatus> {
-        Mapping.find(req.parameters.get("mappingID"), on: req.db)
-            .unwrap(or: Abort(.notFound))
-            .flatMap { mapping in
-                mapping.delete(on: req.db)
-                    .transform(to: .noContent)
-            }
+    func deleteHandler(_ req: Request) async throws -> HTTPStatus {
+        guard let mapping = try await Mapping.find(req.parameters.get("mappingID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        try await mapping.delete(on: req.db)
+        return .noContent
     }
     
     //  func searchHandler(_ req: Request) throws -> EventLoopFuture<[Mapping]> {
@@ -81,50 +79,124 @@ struct MappingsController: RouteCollection {
     //    }.all()
     //  }
     
-    func getFirstHandler(_ req: Request) -> EventLoopFuture<Mapping> {
-        return Mapping.query(on: req.db)
-            .first()
-            .unwrap(or: Abort(.notFound))
+    func getFirstHandler(_ req: Request) async throws -> Mapping {
+        guard let mapping = try await Mapping.query(on: req.db).first() else {
+            throw Abort(.notFound)
+        }
+        return mapping
     }
     
     //  func sortedHandler(_ req: Request) -> EventLoopFuture<[Mapping]> {
     //    return Mapping.query(on: req.db).sort(\.$short, .ascending).all()
     //  }
     
-    func getUserHandler(_ req: Request) -> EventLoopFuture<User.Public> {
-        Mapping.find(req.parameters.get("mappingID"), on: req.db)
-            .unwrap(or: Abort(.notFound))
-            .flatMap { mapping in
-                mapping.$user.get(on: req.db).convertToPublic()
-            }
+    func getUserHandler(_ req: Request) async throws -> User.Public {
+        guard let mapping = try await Mapping.find(req.parameters.get("mappingID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        let publicUsers = try await mapping.$user.get(on: req.db).convertToPublic()
+        return publicUsers
     }
     
-    func addchatBoxesHandler(_ req: Request) -> EventLoopFuture<HTTPStatus> {
-        let mappingQuery = Mapping.find(req.parameters.get("mappingID"), on: req.db).unwrap(or: Abort(.notFound))
-        let chatBoxQuery = ChatBox.find(req.parameters.get("chatBoxID"), on: req.db).unwrap(or: Abort(.notFound))
-        return mappingQuery.and(chatBoxQuery).flatMap { mapping, chatBox in
-            mapping.$chatBoxes.attach(chatBox, on: req.db).transform(to: .created)
+    func addMembersIntoChatBoxesHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        struct ResolveAddingMembersIntoChatBox: Codable {
+            let chatBoxID: UUID
+            let mappingIDs: [UUID]
+        }
+        let resolvedModel = try req.content.decode(ResolveAddingMembersIntoChatBox.self)
+        return ChatBox.find(resolvedModel.chatBoxID, on: req.db).unwrap(or: Abort(.notFound)).flatMap { chatBox in
+            resolvedModel.mappingIDs.map { mappingID in
+                Mapping.find(mappingID, on: req.db)
+                    .unwrap(or: Abort(.notFound))
+                    .flatMap { $0.$chatBoxes.attach(chatBox, on: req.db) }
+            }.flatten(on: req.eventLoop).transform(to: .created)
         }
     }
     
-    func getchatBoxesHandler(_ req: Request) -> EventLoopFuture<[ChatBox]> {
-        Mapping.find(req.parameters.get("mappingID"), on: req.db)
-            .unwrap(or: Abort(.notFound))
-            .flatMap { mapping in
-                mapping.$chatBoxes.query(on: req.db).all()
-            }
-    }
-    
-    func removechatBoxesHandler(_ req: Request) -> EventLoopFuture<HTTPStatus> {
-        let mappingQuery = Mapping.find(req.parameters.get("mappingID"), on: req.db).unwrap(or: Abort(.notFound))
-        let chatBoxQuery = ChatBox.find(req.parameters.get("chatBoxID"), on: req.db).unwrap(or: Abort(.notFound))
-        return mappingQuery.and(chatBoxQuery).flatMap { mapping, chatBox in
-            mapping.$chatBoxes.detach(chatBox, on: req.db).transform(to: .noContent)
+    /// Bad code
+//    func addchatBoxesHandlerOld(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+//        struct ResolveCreateMappingChatBox: Codable {
+//            let mappingIDs: [UUID]
+//        }
+//        let updateUserData = try req.content.decode(ResolveCreateMappingChatBox.self)
+//        let chatBox = ChatBox(name: "Friend")
+//        let _ = chatBox.create(on: req.db)
+//        return updateUserData.mappingIDs.map { mappingID in
+//            print("handler 😀😀😀: \(#function), line: \(#line), \(mappingID)")
+//            let mappingQuery = Mapping.find(mappingID, on: req.db).unwrap(or: Abort(.notFound))
+//            let chatBoxQuery = ChatBox.find(chatBox.id, on: req.db).unwrap(or: Abort(.notFound))
+//            return mappingQuery.and(chatBoxQuery).flatMap { mapping, chatBox in
+//                mapping.$chatBoxes.attach(chatBox, on: req.db)
+//            }
+//        }.flatten(on: req.eventLoop).transform(to: .created)
+//    }
+    /// Optimal code syntax write by vzsg convert to async version
+//        func addchatBoxesHandler(_ req: Request) async throws -> HTTPStatus {
+//            struct ResolveCreateMappingChatBox: Codable {
+//                let mappingIDs: [UUID]
+//            }
+//
+//            let updateUserData = try req.content.decode(ResolveCreateMappingChatBox.self)
+//            let chatBox = ChatBox(name: "Friend")
+//            try await chatBox.save(on: req.db)
+//
+//                updateUserData.mappingIDs.map { mappingID in
+//                    guard let mapping = try Mapping.find(mappingID, on: req.db) else {
+//                        throw Abort(.notFound)
+//                    }
+//                    mapping.$chatBoxes.attach(chatBox, on: req.db)
+//                }
+//            return .created
+//        }
+    /// Optimal code syntax write by vzsg
+    func addchatBoxesHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        struct ResolveCreateMappingChatBox: Codable {
+            let mappingIDs: [UUID]
         }
-    }
-}
 
-struct CreateMappingData: Content {
-    let short: String
-    let long: String
+        let resolvedModel = try req.content.decode(ResolveCreateMappingChatBox.self)
+        let chatBox = ChatBox(name: "Friend")
+
+        return chatBox.save(on: req.db).flatMap {
+            resolvedModel.mappingIDs.map { mappingID in
+                Mapping.find(mappingID, on: req.db)
+                    .unwrap(or: Abort(.notFound))
+                    .flatMap { $0.$chatBoxes.attach(chatBox, on: req.db) }
+            }.flatten(on: req.eventLoop).transform(to: .created)
+        }
+    }
+    
+    func getchatBoxesHandler(_ req: Request) async throws -> [ChatBox] {
+        print("handler 😀😀😀: \(#function), line: \(#line)")
+        guard let mapping = try await Mapping.find(req.parameters.get("mappingID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        return try await mapping.$chatBoxes.query(on: req.db).all()
+    }
+    
+    /// Converting to async
+//    func removechatBoxesHandler(_ req: Request) async throws -> HTTPStatus {
+//        let mappingQuery = Mapping.find(req.parameters.get("mappingID"), on: req.db).unwrap(or: Abort(.notFound))
+//        let chatBoxQuery = ChatBox.find(req.parameters.get("chatBoxID"), on: req.db).unwrap(or: Abort(.notFound))
+//        let a = mappingQuery.and(chatBoxQuery)
+//        a[0].$chatBoxes.detach(a[1], on: req.db)
+//        return .noContent
+//    }
+//    func removechatBoxesHandler(_ req: Request) -> EventLoopFuture<HTTPStatus> {
+//        let mappingQuery = Mapping.find(req.parameters.get("mappingID"), on: req.db).unwrap(or: Abort(.notFound))
+//        let chatBoxQuery = ChatBox.find(req.parameters.get("chatBoxID"), on: req.db).unwrap(or: Abort(.notFound))
+//        return mappingQuery.and(chatBoxQuery).flatMap { mapping, chatBox in
+//            mapping.$chatBoxes.detach(chatBox, on: req.db).transform(to: .noContent)
+//        }
+//    }
+    func removechatBoxesHandler(_ req: Request) async throws -> HTTPStatus {
+        guard let mappingQuery = try await Mapping.find(req.parameters.get("mappingID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        guard let chatBoxQuery = try await ChatBox.find(req.parameters.get("chatBoxID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        try await mappingQuery.$chatBoxes.detach(chatBoxQuery, on: req.db)
+        return .noContent
+    }
 }

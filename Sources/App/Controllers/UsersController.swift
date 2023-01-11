@@ -35,8 +35,9 @@ struct UsersController: RouteCollection {
         let usersRoute = routes.grouped("api", "users")
         usersRoute.get(use: getAllHandler)
         usersRoute.get(":userID", use: getHandler)
-        usersRoute.get(":userID", "mappings", use: getMappingsHandler)
+        usersRoute.get(":userID", "mapping", use: getMappingsHandler)
         usersRoute.post("siwa", use: signInWithApple)
+        usersRoute.post(use: createHandler)
         let basicAuthMiddleware = User.authenticator()
         let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware)
         basicAuthGroup.post("login", use: loginHandler)
@@ -44,58 +45,61 @@ struct UsersController: RouteCollection {
         let tokenAuthMiddleware = Token.authenticator()
         let guardAuthMiddleware = User.guardMiddleware()
         let tokenAuthGroup = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
-        tokenAuthGroup.post(use: createHandler)
-        tokenAuthGroup.put(":userID", use: updateHandler)
+        tokenAuthGroup.put(use: updateHandler)
     }
     
-    func createHandler(_ req: Request) throws -> EventLoopFuture<User.Public> {
-        let user = try req.content.decode(User.self)
-        user.password = try Bcrypt.hash(user.password)
-        let mapping = try Mapping(userID: user.requireID())
-        return mapping.save(on: req.db).flatMap {
-            user.save(on: req.db).map { user.convertToPublic() }
+    func createHandler(_ req: Request) async throws -> User {
+        let newUser = try req.content.decode(User.self)
+        newUser.password = try Bcrypt.hash(newUser.password)
+        try await newUser.save(on: req.db)
+        try await Mapping(userID: newUser.requireID()).save(on: req.db)
+        return newUser
+    }
+    
+    func getAllHandler(_ req: Request) async throws -> [User] {
+        try await User.query(on: req.db).all()
+    }
+    
+    func getHandler(_ req: Request) async throws -> User {
+        guard let user = try await User.find(req.parameters.get("userID"), on: req.db) else {
+           throw Abort(.notFound)
         }
+        return user
     }
     
-    func getAllHandler(_ req: Request) -> EventLoopFuture<[User.Public]> {
-        User.query(on: req.db).all().convertToPublic()
-    }
-    
-    func getHandler(_ req: Request) -> EventLoopFuture<User.Public> {
-        User.find(req.parameters.get("userID"), on: req.db).unwrap(or: Abort(.notFound)).convertToPublic()
-    }
-    
-    func getMappingsHandler(_ req: Request) -> EventLoopFuture<[Mapping]> {
-        User.find(req.parameters.get("userID"), on: req.db).unwrap(or: Abort(.notFound)).flatMap { user in
-            user.$mappings.get(on: req.db)
+    func getMappingsHandler(_ req: Request) async throws -> [Mapping] {
+        guard let user = try await User.find(req.parameters.get("userID"), on: req.db) else {
+            return []
         }
+        return try await user.$mappings.get(on: req.db)
     }
     
-    func loginHandler(_ req: Request) throws -> EventLoopFuture<Token> {
+    func loginHandler(_ req: Request) async throws -> Token {
         let user = try req.auth.require(User.self)
         let token = try Token.generate(for: user)
-        return token.save(on: req.db).map { token }
+        try await token.save(on: req.db)
+        return token
     }
     
-    func updateHandler(_ req: Request) throws -> EventLoopFuture<User.Public> {
-        let updateUserData = try req.content.decode(User.self)
-        return User.find(updateUserData.id, on: req.db)
-            .unwrap(or: Abort(.notFound)).flatMap { user in
-                user.name = updateUserData.name
-                user.username = updateUserData.username
-                user.password = updateUserData.password
-                user.email = updateUserData.email
-                user.phone = updateUserData.phone
-                user.avatar = updateUserData.avatar
-                user.gender = updateUserData.gender
-                user.birth = updateUserData.birth
-                user.country = updateUserData.country
-                user.join = updateUserData.join
-                user.siwaIdentifier = updateUserData.siwaIdentifier
-                return user.save(on: req.db).map {
-                    user.convertToPublic()
-                }
-            }
+    func updateHandler(_ req: Request) async throws -> User {
+        print("handler 😀😀😀: \(#function), line: \(#line)")
+        let user = try req.auth.require(User.self)
+        let updateUserData = try req.content.decode(User.ResolveUpdateModel.self)
+        guard let user = try await User.find(user.id, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        user.name = updateUserData.name
+        user.username = updateUserData.username
+        if let email = updateUserData.email { user.email = email }
+        if let phone = updateUserData.phone { user.phone = phone }
+        if let avatar = updateUserData.avatar { user.avatar = avatar }
+        if let gender = updateUserData.gender { user.gender = gender }
+        if let birth = updateUserData.birth { user.birth = birth }
+        if let country = updateUserData.country { user.country = country }
+        if let join = updateUserData.join { user.join = join }
+        print("handler 😀😀😀: \(#function), line: \(#line), \(String(describing: user.country))")
+        try await user.save(on: req.db)
+        return user
     }
     
     func signInWithApple(_ req: Request) throws -> EventLoopFuture<Token> {

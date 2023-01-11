@@ -28,16 +28,16 @@
 
 import Fluent
 
-struct CreateMapppingChatBoxPivot: Migration {
-  func prepare(on database: Database) -> EventLoopFuture<Void> {
-    database.schema("mapping-chatbox-pivot")
-      .id()
-      .field("mappingID", .uuid, .required, .references("mappings", "id", onDelete: .cascade))
-      .field("chatBoxID", .uuid, .required, .references("chatBoxes", "id", onDelete: .cascade))
-      .create()
-  }
-  
-  func revert(on database: Database) -> EventLoopFuture<Void> {
-    database.schema("mapping-chatbox-pivot").delete()
-  }
+struct CreateMapppingChatBoxPivot: AsyncMigration {
+    func prepare(on database: Database) async throws {
+        try await database.schema("mapping-chatbox-pivot")
+            .id()
+            .field("mappingID", .uuid, .required, .references("mappings", "id", onDelete: .cascade))
+            .field("chatBoxID", .uuid, .required, .references("chatBoxes", "id", onDelete: .cascade))
+            .create()
+    }
+    
+    func revert(on database: Database) async throws {
+        try await database.schema("mapping-chatbox-pivot").delete()
+    }
 }

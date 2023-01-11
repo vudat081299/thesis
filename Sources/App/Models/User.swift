@@ -44,26 +44,29 @@ final class User: Model, Content {
     @Field(key: "password")
     var password: String
     
-    @OptionalField(key: "email")
+    @Field(key: "email")
     var email: String?
     
-    @OptionalField(key: "phone")
+    @Field(key: "phone")
     var phone: String?
     
-    @OptionalField(key: "avatar")
+    @Field(key: "avatar")
     var avatar: String?
     
-    @OptionalField(key: "gender")
+    @Field(key: "gender")
     var gender: Gender?
     
-    @OptionalField(key: "birth")
-    var birth: Date?
+    @Field(key: "birth")
+    var birth: String?
     
-    @OptionalField(key: "country")
+    @Field(key: "country")
     var country: String?
     
-    @Timestamp(key: "join", on: .create)
-    var join: Date?
+    @Field(key: "join")
+    var join: String?
+    
+    @Field(key: "bio")
+    var bio: String?
     
     @Children(for: \.$user)
     var mappings: [Mapping]
@@ -81,9 +84,10 @@ final class User: Model, Content {
          phone: String? = nil,
          avatar: String? = nil,
          gender: Gender? = nil,
-         birth: Date? = nil,
+         birth: String? = nil,
          country: String? = nil,
-         join: Date? = nil,
+         join: String? = nil,
+         bio: String? = nil,
          siwaIdentifier: String? = nil) {
         self.name = name
         self.username = username
@@ -95,7 +99,47 @@ final class User: Model, Content {
         self.birth = birth
         self.country = country
         self.join = join
+        self.bio = bio
         self.siwaIdentifier = siwaIdentifier
+    }
+    
+    final class ResolveUpdateModel: Content {
+        var id: UUID?
+        var name: String
+        var username: String
+        
+        var email: String?
+        var phone: String?
+        var avatar: String?
+        var gender: Gender?
+        var birth: String?
+        var country: String?
+        var join: String?
+        var bio: String?
+        
+        init(id: UUID? = nil,
+             name: String,
+             username: String,
+             email: String? = nil,
+             phone: String? = nil,
+             avatar: String? = nil,
+             gender: Gender? = nil,
+             birth: String? = nil,
+             country: String? = nil,
+             join: String? = nil,
+             bio: String? = nil) {
+            self.id = id
+            self.name = name
+            self.username = username
+            self.email = email
+            self.phone = phone
+            self.avatar = avatar
+            self.gender = gender
+            self.birth = birth
+            self.country = country
+            self.join = join
+            self.bio = bio
+        }
     }
     
     final class Public: Content {
@@ -105,9 +149,10 @@ final class User: Model, Content {
         
         var avatar: String?
         var gender: Gender?
-        var birth: Date?
+        var birth: String?
         var country: String?
-        var join: Date?
+        var join: String?
+        var bio: String?
         
         init(id: UUID?,
              name: String,
@@ -115,9 +160,10 @@ final class User: Model, Content {
              
              avatar: String? = nil,
              gender: Gender? = nil,
-             birth: Date? = nil,
+             birth: String? = nil,
              country: String? = nil,
-             join: Date? = nil) {
+             join: String? = nil,
+             bio: String? = nil) {
             self.id = id
             self.name = name
             self.username = username
@@ -127,6 +173,7 @@ final class User: Model, Content {
             self.birth = birth
             self.country = country
             self.join = join
+            self.bio = bio
         }
     }
 }

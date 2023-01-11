@@ -30,6 +30,7 @@ final class Mapping: Model {
     
     init(id: UUID? = nil, userID: User.IDValue) {
         self.id = id
+        
         self.$user.id = userID
     }
 }

@@ -7,15 +7,16 @@
 
 import Fluent
 
-struct CreateChatBox: Migration {
-  func prepare(on database: Database) -> EventLoopFuture<Void> {
-    database.schema("chatBoxes")
+struct CreateChatBox: AsyncMigration {
+  func prepare(on database: Database) async throws {
+      try await database.schema("chatBoxes")
       .id()
       .field("name", .string, .required)
+      .field("avatar", .string)
       .create()
   }
   
-  func revert(on database: Database) -> EventLoopFuture<Void> {
-    database.schema("chatBoxes").delete()
+  func revert(on database: Database) async throws {
+      try await database.schema("chatBoxes").delete()
   }
 }
