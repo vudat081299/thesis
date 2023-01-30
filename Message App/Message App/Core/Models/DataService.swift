@@ -47,7 +47,7 @@ final class DataService {
         }
     }
     
-    static var userIDMappingIDMap: [UUID: UUID] {
+    static var userIDMappingIdMap: [UUID: UUID] {
         get {
             if let savedMap = UserDefaults.standard.object(forKey: USER_ID_MAPPING_ID_KEY) as? Data {
                 if let map = try? JSONDecoder().decode([UUID: UUID].self, from: savedMap) {

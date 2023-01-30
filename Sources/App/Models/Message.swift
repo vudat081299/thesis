@@ -23,7 +23,7 @@ final class Message: Model {
     @Field(key: "createdAt")
     var createdAt: String?
     
-    @Parent(key: "chatBoxID")
+    @Parent(key: "chatBoxId")
     var chatBox: ChatBox
     
     //

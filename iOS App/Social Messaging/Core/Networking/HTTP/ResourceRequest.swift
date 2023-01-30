@@ -172,7 +172,7 @@ class RequestService {
     
     // MARK: - Mapping
     static func getMyChatBoxes() {
-        AF.request("\(requestProtocol)://\(ip):\(port)/\(mappingGroupRoute)/\(AuthenticationService.mappingID!)/chatBoxes")
+        AF.request("\(requestProtocol)://\(ip):\(port)/\(mappingGroupRoute)/\(AuthenticationService.mappingId!)/chatBoxes")
             .responseDecodable(of: [ChatBox].self) { response in
                 switch response.result {
                 case .success(let chatBoxes):
@@ -204,11 +204,11 @@ class RequestService {
     }
     static func createChatBoxes(with friendID: UUID) {
         var params: Parameters = [:]
-        guard let friendMappingID = self.userMappingMap[friendID] else { return }
-        params["mappingIDs"] = [AuthenticationService.mappingID!, friendMappingID]
+        guard let friendMappingId = self.userMappingMap[friendID] else { return }
+        params["mappingIds"] = [AuthenticationService.mappingId!, friendMappingId]
         
         let headers: HTTPHeaders = [.authorization(bearerToken: AuthenticationService.token!)]
-        AF.request("\(requestProtocol)://\(ip):\(port)/\(mappingGroupRoute)/\(AuthenticationService.mappingID!)/chatBoxes",
+        AF.request("\(requestProtocol)://\(ip):\(port)/\(mappingGroupRoute)/\(AuthenticationService.mappingId!)/chatBoxes",
                    method: .post,
                    parameters: params,
                    headers: headers)

@@ -32,8 +32,8 @@ struct CreateMapppingChatBoxPivot: AsyncMigration {
     func prepare(on database: Database) async throws {
         try await database.schema("mapping-chatbox-pivot")
             .id()
-            .field("mappingID", .uuid, .required, .references("mappings", "id", onDelete: .cascade))
-            .field("chatBoxID", .uuid, .required, .references("chatBoxes", "id", onDelete: .cascade))
+            .field("mappingId", .uuid, .required, .references("mappings", "id", onDelete: .cascade))
+            .field("chatBoxId", .uuid, .required, .references("chatBoxes", "id", onDelete: .cascade))
             .create()
     }
     

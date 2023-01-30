@@ -35,7 +35,7 @@ class AuthenticationService {
         }
     }
     
-    static var mappingID: String? {
+    static var mappingId: String? {
         get {
             return UserDefaults.standard.string(forKey: MAPPING_KEY)
         }
@@ -87,7 +87,7 @@ class AuthenticationService {
             .responseDecodable(of: ResolveMapping.self) { response in
                 switch response.result {
                 case .success(let resolvedMapping):
-                    self.mappingID = resolvedMapping.id.uuidString
+                    self.mappingId = resolvedMapping.id.uuidString
                     break
                 case .failure:
                     break

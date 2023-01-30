@@ -14,10 +14,10 @@ final class MappingChatBoxPivot: Model, Content {
     @ID
     var id: UUID?
     
-    @Parent(key: "mappingID")
+    @Parent(key: "mappingId")
     var mapping: Mapping
     
-    @Parent(key: "chatBoxID")
+    @Parent(key: "chatBoxId")
     var chatBox: ChatBox
     
     init() {}

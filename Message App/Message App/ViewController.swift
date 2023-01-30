@@ -151,9 +151,10 @@ extension ViewController {
         collectionView.register(UINib(nibName: CustomSupplementaryView.reuseIdentifier, bundle: nil), forSupplementaryViewOfKind: ViewController.headerElementKind, withReuseIdentifier: CustomSupplementaryView.reuseIdentifier)
         collectionView.register(UINib(nibName: UserCollectionViewCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: UserCollectionViewCell.reuseIdentifier)
     }
+    
     func prepareDataSource() {
         // UICollectionViewDiffableDataSource work similar like [cellForItem]
-        var dataSource = UICollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { (collectionView: UICollectionView, indexPath: IndexPath, identifier: Int) -> UICollectionViewCell? in
+        let dataSource = UICollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { (collectionView: UICollectionView, indexPath: IndexPath, identifier: Int) -> UICollectionViewCell? in
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UserCollectionViewCell.reuseIdentifier, for: indexPath) as? UserCollectionViewCell else { fatalError("Cannot create new cell") }
             let user = self.friends[indexPath.row]
             cell.userProfileData = user

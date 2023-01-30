@@ -2,6 +2,7 @@ import Fluent
 import FluentPostgresDriver
 import Leaf
 import Vapor
+import MongoDBVapor
 
 // configures your application
 public func configure(_ app: Application) throws {
@@ -12,12 +13,11 @@ public func configure(_ app: Application) throws {
     app.middleware.use(app.sessions.middleware)
     
     
-    
     // MARK: - Config http server.
-    app.http.server.configuration.hostname = "192.168.1.24"
+    let host = "localhost"
+    app.http.server.configuration.hostname = host
     app.http.server.configuration.port = 8080
-    app.routes.defaultMaxBodySize = "50mb"
-    
+    app.routes.defaultMaxBodySize = "5mb"
     
     
     // MARK: - Database configuration
@@ -45,6 +45,28 @@ public func configure(_ app: Application) throws {
         database: Environment.get("DATABASE_NAME") ?? databaseName
     ), as: .psql)
     
+    
+    // MARK: - Connect MongoDB.
+    /// Run MongoDB on Docker
+//    docker run --name mongodb -d -p 27017:27017 mongo
+
+////     let connectionString = Environment.get("MONGODB") ?? "MONGODB=mongodb://\(host):27017,\(host):27018,\(host):27019/thesis"
+//   guard let connectionString = Environment.get("MONGODB") else {
+//        fatalError("No MongoDB connection string is available in .env")
+//    }
+//    // connectionString should be MONGODB=mongodb://localhost:27017,localhost:27018,localhost:27019/social-messaging-server
+//    print(connectionString)
+//    try app.initializeMongoDB(connectionString: connectionString)
+    
+    // Use `ExtendedJSONEncoder` and `ExtendedJSONDecoder` for encoding/decoding `Content`. We use extended JSON both
+    // here and on the frontend to ensure all MongoDB type information is correctly preserved.
+    // See: https://docs.mongodb.com/manual/reference/mongodb-extended-json
+    // Note that for _encoding_ content, this encoder only gets used for the REST API methods, since Leaf uses its own
+    // custom encoder to encode data for rendering in Leaf views.
+    ContentConfiguration.global.use(encoder: ExtendedJSONEncoder(), for: .json)
+    ContentConfiguration.global.use(decoder: ExtendedJSONDecoder(), for: .json)
+    
+    
     app.migrations.add(CreateTodo())
     app.migrations.add(CreateUser())
     app.migrations.add(CreateMapping())
@@ -53,7 +75,6 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateMessage())
     app.migrations.add(CreateToken())
     app.migrations.add(CreateAdminUser())
-    
     
     
     // MARK: - App's configuration

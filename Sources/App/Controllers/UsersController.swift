@@ -33,21 +33,29 @@ import Fluent
 struct UsersController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let usersRoute = routes.grouped("api", "users")
+        
         usersRoute.get(use: getAllHandler)
         usersRoute.get(":userID", use: getHandler)
         usersRoute.get(":userID", "mapping", use: getMappingsHandler)
         usersRoute.post("siwa", use: signInWithApple)
         usersRoute.post(use: createHandler)
+        
+        /// Basic Auth
         let basicAuthMiddleware = User.authenticator()
         let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware)
+        
         basicAuthGroup.post("login", use: loginHandler)
         
+        /// Auth
         let tokenAuthMiddleware = Token.authenticator()
         let guardAuthMiddleware = User.guardMiddleware()
         let tokenAuthGroup = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
+        
         tokenAuthGroup.put(use: updateHandler)
     }
     
+    
+    // MARK: - Create
     func createHandler(_ req: Request) async throws -> User {
         let newUser = try req.content.decode(User.self)
         newUser.password = try Bcrypt.hash(newUser.password)
@@ -56,17 +64,17 @@ struct UsersController: RouteCollection {
         return newUser
     }
     
+    
+    // MARK: - Get
     func getAllHandler(_ req: Request) async throws -> [User] {
         try await User.query(on: req.db).all()
     }
-    
     func getHandler(_ req: Request) async throws -> User {
         guard let user = try await User.find(req.parameters.get("userID"), on: req.db) else {
            throw Abort(.notFound)
         }
         return user
     }
-    
     func getMappingsHandler(_ req: Request) async throws -> [Mapping] {
         guard let user = try await User.find(req.parameters.get("userID"), on: req.db) else {
             return []
@@ -74,35 +82,19 @@ struct UsersController: RouteCollection {
         return try await user.$mappings.get(on: req.db)
     }
     
+    
+    // MARK: - Post <methods>
     func loginHandler(_ req: Request) async throws -> Token {
         let user = try req.auth.require(User.self)
         let token = try Token.generate(for: user)
         try await token.save(on: req.db)
         return token
     }
-    
-    func updateHandler(_ req: Request) async throws -> User {
-        print("handler 😀😀😀: \(#function), line: \(#line)")
-        let user = try req.auth.require(User.self)
-        let updateUserData = try req.content.decode(User.ResolveUpdateModel.self)
-        guard let user = try await User.find(user.id, on: req.db) else {
-            throw Abort(.notFound)
-        }
-        user.name = updateUserData.name
-        user.username = updateUserData.username
-        if let email = updateUserData.email { user.email = email }
-        if let phone = updateUserData.phone { user.phone = phone }
-        if let avatar = updateUserData.avatar { user.avatar = avatar }
-        if let gender = updateUserData.gender { user.gender = gender }
-        if let birth = updateUserData.birth { user.birth = birth }
-        if let country = updateUserData.country { user.country = country }
-        if let join = updateUserData.join { user.join = join }
-        print("handler 😀😀😀: \(#function), line: \(#line), \(String(describing: user.country))")
-        try await user.save(on: req.db)
-        return user
-    }
-    
     func signInWithApple(_ req: Request) throws -> EventLoopFuture<Token> {
+        struct SignInWithAppleToken: Content {
+            let token: String
+            let name: String?
+        }
         let data = try req.content.decode(SignInWithAppleToken.self)
         guard let appIdentifier = Environment.get("IOS_APPLICATION_IDENTIFIER") else {
             throw Abort(.internalServerError)
@@ -131,9 +123,28 @@ struct UsersController: RouteCollection {
             }
         }
     }
-}
-
-struct SignInWithAppleToken: Content {
-    let token: String
-    let name: String?
+    
+    
+    // MARK: - Update
+    func updateHandler(_ req: Request) async throws -> User {
+        print("handler 😀😀😀: \(#function), line: \(#line)")
+        let user = try req.auth.require(User.self)
+        let updateUserData = try req.content.decode(User.ResolveUpdateModel.self)
+        guard let user = try await User.find(user.id, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        user.name = updateUserData.name
+        user.username = updateUserData.username
+        if let email = updateUserData.email { user.email = email }
+        if let phone = updateUserData.phone { user.phone = phone }
+        if let avatar = updateUserData.avatar { user.avatar = avatar }
+        if let gender = updateUserData.gender { user.gender = gender }
+        if let birth = updateUserData.birth { user.birth = birth }
+        if let country = updateUserData.country { user.country = country }
+        if let join = updateUserData.join { user.join = join }
+        print("handler 😀😀😀: \(#function), line: \(#line), \(String(describing: user.country))")
+        try await user.save(on: req.db)
+        return user
+    }
+    
 }

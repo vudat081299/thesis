@@ -96,7 +96,7 @@ final class RequestService {
     
     // MARK: - Mapping
     static func readMyChatBoxes() {
-        AF.request("\(baseURL(.mappings))/\(AuthenticationService.myMappingID!)/chatBoxes")
+        AF.request("\(baseURL(.mappings))/\(AuthenticationService.myMappingId!)/chatBoxes")
             .responseDecodable(of: [ChatBox].self) { response in
                 switch response.result {
                 case .success(let chatBoxes):
@@ -118,7 +118,7 @@ final class RequestService {
                 switch response.result {
                 case .success(let mappings):
                     mappings.forEach { mapping in
-                        DataService.userIDMappingIDMap[mapping.user.id] = mapping.id
+                        DataService.userIDMappingIdMap[mapping.user.id] = mapping.id
                     }
                     break
                 case .failure:
@@ -128,11 +128,11 @@ final class RequestService {
     }
     static func createChatBoxes(with friendID: UUID) {
         var params: Parameters = [:]
-        guard let friendMappingID = DataService.userIDMappingIDMap[friendID] else { return }
-        params["mappingIDs"] = [AuthenticationService.myMappingID!, friendMappingID]
+        guard let friendMappingId = DataService.userIDMappingIdMap[friendID] else { return }
+        params["mappingIds"] = [AuthenticationService.myMappingId!, friendMappingId]
         
         let headers: HTTPHeaders = [.authorization(bearerToken: AuthenticationService.token!)]
-        AF.request("\(baseURL(.mappings))/\(AuthenticationService.myMappingID!)/chatBoxes",
+        AF.request("\(baseURL(.mappings))/\(AuthenticationService.myMappingId!)/chatBoxes",
                    method: .post,
                    parameters: params,
                    headers: headers)

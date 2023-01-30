@@ -13,6 +13,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
         .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0"),
+        .package(url: "https://github.com/mongodb/mongodb-vapor", .upToNextMajor(from: "1.1.0")),
     ],
     targets: [
         .target(
@@ -22,7 +23,8 @@ let package = Package(
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Leaf", package: "leaf"),
                 .product(name: "Vapor", package: "vapor"),
-                .product(name: "JWT", package: "jwt")
+                .product(name: "JWT", package: "jwt"),
+                .product(name: "MongoDBVapor", package: "mongodb-vapor"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

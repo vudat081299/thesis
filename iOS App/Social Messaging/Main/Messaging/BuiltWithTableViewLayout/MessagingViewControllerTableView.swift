@@ -80,7 +80,7 @@ class MessagingViewControllerTableView: UIViewController, MessagePullThread, Mes
             return
         }
         
-        AF.request("\(requestProtocol)://\(ip):\(port)/\(RequestService.mappingGroupRoute)/\(AuthenticationService.mappingID!)/chatBoxes")
+        AF.request("\(requestProtocol)://\(ip):\(port)/\(RequestService.mappingGroupRoute)/\(AuthenticationService.mappingId!)/chatBoxes")
                 .responseDecodable(of: [ChatBox].self) { response in
                     switch response.result {
                     case .success(let chatBoxes):
