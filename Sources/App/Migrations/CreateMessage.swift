@@ -11,9 +11,10 @@ struct CreateMessage: AsyncMigration {
     func prepare(on database: Database) async throws {
         try await database.schema("messages")
             .id()
-            .field("sender", .string, .required)
-            .field("message", .string, .required)
             .field("createdAt", .string)
+            .field("sender", .string, .required)
+            .field("isFile", .bool, .required)
+            .field("message", .string, .required)
             .field("chatBoxId", .uuid, .required, .references("chatBoxes", "id"))
             .create()
     }

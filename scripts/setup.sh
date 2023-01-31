@@ -9,17 +9,17 @@ mongo --host mongo-1:27017 <<EOF
                 "_id": 0,
                 "host": "mongo-1:27017",
                 "priority": 2
-            },
-            {
-                "_id": 1,
-                "host": "mongo-2:27017",
-                "priority": 0
-            },
-            {
-                "_id": 2,
-                "host": "mongo-3:27017",
-                "priority": 0
             }
+#            {
+#                "_id": 1,
+#                "host": "mongo-2:27017",
+#                "priority": 0
+#            },
+#            {
+#                "_id": 2,
+#                "host": "mongo-3:27017",
+#                "priority": 0
+#            }
         ]
     };
     rs.initiate(cfg, { force: true });

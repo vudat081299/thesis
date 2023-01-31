@@ -12,9 +12,9 @@ final class WebSocketManager {
     var dictionary: [String: WebSocket] = [:]
     
     // MARK: - Session manager
-    func add(ws: WebSocket, to userID: String) {
-        dictionary[userID] = ws
-        print("Add new WebSocket connection user ID: \(userID)!")
+    func add(ws: WebSocket, to mappingId: String) {
+        dictionary[mappingId] = ws
+        print("Add new WebSocket connection user ID: \(mappingId)!")
     }
     
     func removeSession(of userID: String) {
@@ -26,11 +26,11 @@ final class WebSocketManager {
     
     
     // MARK: -
-    func mess(to userMapping: [Mapping], message: Message) {
+    func send(to userMapping: [Mapping], message: Message) {
         print(dictionary)
         userMapping.forEach { mapping in
-            let userID = mapping.$user.id
-            if let ws = dictionary[userID.uuidString] {
+            if let mappingId = mapping.id,
+               let ws = dictionary[mappingId.uuidString] {
                 ws.send(message)
             }
         }

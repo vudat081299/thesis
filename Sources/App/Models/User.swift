@@ -89,6 +89,7 @@ final class User: Model, Content {
          join: String? = nil,
          bio: String? = nil,
          siwaIdentifier: String? = nil) {
+//        self.id = id
         self.name = name
         self.username = username
         self.password = password

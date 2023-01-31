@@ -7,6 +7,7 @@
 
 import Vapor
 import Fluent
+import MongoKitten
 
 struct MessagesController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
@@ -16,7 +17,7 @@ struct MessagesController: RouteCollection {
         messagesRoutes.delete("remove", "all", use: deleteAllHandler)
         
         /// WebSocket
-        messagesRoutes.webSocket("listen", ":userID", onUpgrade: webSocketHandler)
+        messagesRoutes.webSocket("listen", ":mappingId", onUpgrade: webSocketHandler)
         
         /// Auth
         let tokenAuthMiddleware = Token.authenticator()
@@ -30,13 +31,13 @@ struct MessagesController: RouteCollection {
     // MARK: - Create
     func createHandler(_ req: Request) async throws -> Message {
 //        let user = try req.auth.require(User.self)
-        let message = try Message(req.content.decode(ResolveMessage.self))
+        let message = try Message(req.content.decode(ResolveWebSocketPackage.self))
         try await message.save(on: req.db)
         guard let chatBox = try await ChatBox.find(message.chatBox.id, on: req.db) else {
             throw Abort(.notFound)
         }
         let mappings = try await chatBox.$mappings.get(on: req.db)
-        webSocketManager.mess(to: mappings, message: message)
+        webSocketManager.send(to: mappings, message: message)
         return message
     }
     
@@ -60,19 +61,38 @@ struct MessagesController: RouteCollection {
     // MARK: - WebSocket
     /*
      {
-     "sender":"175EE261-2E4C-437A-9782-50B2048785B5",
-     "chatBoxId":"D87FD086-3BE3-4895-B604-890474AFF4C3",
-     "message":"test1"
+        "type": 0,
+        "content": {
+          "sender":"9B655BEA-9D66-40FD-907D-32F94E30FE6E",
+          "chatBoxId":"CB2638C3-A01C-4810-9C04-8CDCD4449069",
+          "isFile": false,
+          "message":"test"
+        }
      }
      */
     func webSocketHandler(_ req: Request, _ ws: WebSocket) {
-        guard let userID = req.parameters.get("userID", as: UUID.self) else { return }
-        webSocketManager.add(ws: ws, to: userID.uuidString)
+        let users = req.mongoDB["users"]
+        
+        let myNewUser: Document = ["username": Data(), "password": "meow"]
+
+        let insertResult: EventLoopFuture<InsertReply> = users.insert(myNewUser)
+
+        insertResult.whenSuccess { _ in
+            print("Inserted!")
+        }
+
+        insertResult.whenFailure { error in
+            print("Insertion failed", error)
+        }
+        
+        
+        guard let mappingId = req.parameters.get("mappingId", as: UUID.self) else { return }
+        webSocketManager.add(ws: ws, to: mappingId.uuidString)
         ws.onClose.whenComplete { result in
             // Succeeded or failed to close.
             switch result {
             case .success:
-                webSocketManager.removeSession(of: userID.uuidString)
+                webSocketManager.removeSession(of: mappingId.uuidString)
                 print("close ws successful!")
                 break
                 
@@ -86,19 +106,33 @@ struct MessagesController: RouteCollection {
         func onTextHandler(_ ws: WebSocket, _ text: String) {
             print(text)
             guard let data = text.data(using: .utf8),
-                  let resolvedMessage = try? JSONDecoder().decode(ResolveMessage.self, from: data) else {
-                      return
-                  }
-            let message = Message(resolvedMessage)
-            print(message)
-            let _ = message.save(on: req.db).flatMap {
-                ChatBox.find(message.$chatBox.id, on: req.db)
+                  let resolveWebSocketPackage = try? JSONDecoder().decode(ResolveWebSocketPackage.self, from: data) else {
+                return
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            switch resolveWebSocketPackage.type {
+            case .message:
+                let message = Message(resolveWebSocketPackage)
+                print(message)
+                let _ = message.save(on: req.db).flatMap {
+                    ChatBox.find(message.$chatBox.id, on: req.db)
                         .unwrap(or: Abort(.notFound))
                         .map { chatBox in
                             chatBox.$mappings.get(on: req.db).map { mappings in
-                                webSocketManager.mess(to: mappings, message: message)
+                                webSocketManager.send(to: mappings, message: message)
                             }
                         }
+                }
+                break
+            default:
+                break
             }
         }
     }
