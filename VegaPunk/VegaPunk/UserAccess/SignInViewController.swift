@@ -52,15 +52,6 @@ class SignInViewController: UIViewController {
         passwordTextFieldContainer.dropShadow()
         
         let _ = UserData.store(networkConfigure: NetworkConfigure(domain: "http://192.168.1.24:8080/", ip: "192.168.1.24", port: "8080"))
-//        let _ = UserData.store(credential: Credential(username: "dat3", password: "dat3"))
-//        RequestEngine.getAllUsers() //
-//        RequestEngine.getAllMappings() //
-//        RequestEngine.getMessagesOfChatBox(UUID(uuidString: "C3016DD5-5360-4E18-93BC-A0DE9E12A00B")!)
-//        RequestEngine.getAllMappingPivots() //
-//        RequestEngine.getMemberInChatBox(UUID(uuidString: "C3016DD5-5360-4E18-93BC-A0DE9E12A00B")!)
-        
-//        Auth.signUp(User(name: "trantradang", username: "trangtadsfasdfrang3009", join: Date().iso8601String, password: "vasdfudat0812")) //
-        
     }
     
     
@@ -115,65 +106,71 @@ class SignInViewController: UIViewController {
         credential.password = password
         return true
     }
-    
+    /// Leave dispatchGroup.
+    func leave(_ dispatchGroup: DispatchGroup) {
+        DispatchQueue.main.async {
+            dispatchGroup.leave()
+        }
+    }
+    /// Fetch data and perform task after all fetching tasks is finished executing.
+    func fetchData() {
+        var countSuccessTask = 0
+        let dispatchGroup = DispatchGroup()
+        
+        dispatchGroup.enter()
+        RequestEngine.getAllUsers {
+            self.leave(dispatchGroup)
+        } onSuccess: {
+            countSuccessTask += 1
+        }
+        dispatchGroup.enter()
+        RequestEngine.getAllMappings {
+            self.leave(dispatchGroup)
+        } onSuccess: {
+            countSuccessTask += 1
+        }
+        dispatchGroup.enter()
+        RequestEngine.getAllMappingPivots {
+            self.leave(dispatchGroup)
+        } onSuccess: {
+            countSuccessTask += 1
+        }
+        dispatchGroup.enter()
+        RequestEngine.getMyChatBoxes {
+            self.leave(dispatchGroup)
+        } onSuccess: {
+            countSuccessTask += 1
+        }
+        
+        if (countSuccessTask == 4) {
+            dispatchGroup.notify(queue: .main) {
+                DispatchQueue.main.async { [self] in
+                    self.stopLoadingAnimation()
+                    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()!
+                    viewController.modalPresentationStyle = .fullScreen
+                    present(viewController, animated:true, completion:nil)
+                }
+            }
+        }
+    }
     
     
     // MARK: IBActions
     @IBAction func signIn(_ sender: UIButton) {
         if verifyInput() {
-            Auth.signIn(credential) {
+            Auth.signIn(credential, onSuccess: {
                 self.startLoadingAnimation()
-                RequestEngine.getAllUsers {
-                    RequestEngine.getAllMappings {
-                        RequestEngine.getAllMappingPivots {
-                            RequestEngine.getMyChatBoxes {
-                                self.stopLoadingAnimation()
-                                DispatchQueue.main.async { [self] in
-                                    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()!
-                                    viewController.modalPresentationStyle = .fullScreen
-                                    self.present(viewController, animated:true, completion:nil)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                self.fetchData()
+            })
         }
-//        Auth.login(username: username, password: password) { result in
-//            switch result {
-//            case .success:
-//                DispatchQueue.main.async { [self] in
-//                    startLoading {
-//                        let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()!
-//                        viewController.modalPresentationStyle = .fullScreen
-//                        self.present(viewController, animated:true, completion:nil)
-//                    }
-//                }
-//            case .failure:
-//                let message = "Could not login. Check your credentials and try again!"
-//                ErrorPresenter.showError(message: message, on: self)
-//            }
-//        }
     }
-    
+        
     @IBAction func hideKeyBoardTap(_ sender: UITapGestureRecognizer) {
         self.view.endEditing(true)
     }
     
     @IBAction func customIpAction(_ sender: UIButton) {
     }
-    
-    
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 }
 
 

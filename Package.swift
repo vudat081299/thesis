@@ -25,7 +25,7 @@ let package = Package(
                 .product(name: "Leaf", package: "leaf"),
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "JWT", package: "jwt"),
-                .product(name: "FluentMongoDriver", package: "fluent-mongo-driver")
+                .product(name: "FluentMongoDriver", package: "fluent-mongo-driver"),
 //                .product(name: "MongoDBVapor", package: "mongodb-vapor"),
             ],
             swiftSettings: [

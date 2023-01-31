@@ -9,7 +9,10 @@ import UIKit
 import Alamofire
 
 class Auth {
-    static func signIn(_ credential: Credential, _ completion: (() -> ())? = nil) {
+    static func signIn(_ credential: Credential,
+                       completion: (() -> ())? = nil,
+                       onSuccess: (() -> ())? = nil,
+                       onFailure: (() -> ())? = nil) {
         let _ = UserData.store(credential: credential)
         let headers: HTTPHeaders = [.authorization(username: credential.username, password: credential.password)]
         guard let query = queries.queryInfomation(.signIn) else { return }
@@ -19,12 +22,14 @@ class Auth {
                 case .success(let token):
                     print(token.value)
                     let _ = UserData.store(token: token)
-                    getUserMapping(completion) // Tested
+                    getUserMapping(onSuccess: onSuccess)
                     break
                 case .failure:
                     print("Sign in fail!")
+                    if let onFailure = onFailure { onFailure() }
                     break
                 }
+                if let completion = completion { completion() }
             }
     }
     static func signUp(_ user: User, _ completion: (() -> ())? = nil) {
@@ -55,7 +60,9 @@ class Auth {
                 }
             }
     }
-    static func getUserMapping(_ completion: (() -> ())? = nil) {
+    static func getUserMapping(completion: (() -> ())? = nil,
+                               onSuccess: (() -> ())? = nil,
+                               onFailure: (() -> ())? = nil) {
         guard let query = queries.queryInfomation(.getUserMapping) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ResolveMapping].self) { response in
@@ -67,12 +74,14 @@ class Auth {
                         userData.mappingId = resolvedMapping[0].id
                         let _ = userData.store()
                     }
-                    if let completion = completion { completion() }
+                    if let onSuccess = onSuccess { onSuccess() }
                     break
                 case .failure:
                     print("getUserMapping() fail!")
+                    if let onFailure = onFailure { onFailure() }
                     break
                 }
+                if let completion = completion { completion() }
             }
     }
 }

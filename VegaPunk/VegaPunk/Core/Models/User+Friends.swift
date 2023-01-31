@@ -1,5 +1,5 @@
 //
-//  Friend.swift
+//  User+Friends.swift
 //  VegaPunk
 //
 //  Created by Dat Vu on 08/01/2023.
@@ -9,14 +9,29 @@ import Foundation
 
 var friendsGlobal = Friend.retrieve()
 
+// MARK: Definition
+struct User: Codable {
+    var id: UUID?
+    var name: String?
+    var username: String?
+    var email: String?
+    var join: String?
+    var bio: String?
+    var phone: String?
+    var birth: String?
+    var siwaIdentifier: String?
+    var avatar: String?
+    var password: String?
+    var country: String?
+    var gender: Int?
+}
+
 struct Friend {
     var friends: [User]
-    
     init(_ friends: [User] = []) {
         self.friends = friends.filter { $0.id != UserData.retrieve()?.userId }
     }
 }
-
 
 
 // MARK: - Apply Codable
@@ -97,7 +112,6 @@ extension Friend: Codable {
 }
 
 
-
 // MARK: - Data handler
 extension Friend {
     func store() {
@@ -132,19 +146,18 @@ extension Friend {
     mutating func update() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let storageFilePath = dir.appendingPathComponent("Friends")
-            print("Retrieve data from friends storage filepath: \(storageFilePath)")
+            print("Update data from friends storage filepath: \(storageFilePath)")
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
                 let friend = try JSONDecoder().decode(Friend.self, from: jsonData)
                 self.friends = friend.friends
             }
             catch {
-                print("update friends failed! \(error)")
+                print("Update friends failed! \(error)")
             }
         }
     }
 }
-
 
 
 // MARK: - Mini tasks

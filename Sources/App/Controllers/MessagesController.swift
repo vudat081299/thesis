@@ -15,6 +15,8 @@ struct MessagesController: RouteCollection {
         
         messagesRoutes.get(use: index)
         messagesRoutes.delete("remove", "all", use: deleteAllHandler)
+        messagesRoutes.get("lastestUpdate", use: lastestUpdateTime)
+        messagesRoutes.get("from", ":time", use: getMessageFromTime)
         
         /// WebSocket
         messagesRoutes.webSocket("listen", ":mappingId", onUpgrade: webSocketHandler)
@@ -31,7 +33,9 @@ struct MessagesController: RouteCollection {
     // MARK: - Create
     func createHandler(_ req: Request) async throws -> Message {
 //        let user = try req.auth.require(User.self)
-        let message = try Message(req.content.decode(ResolveWebSocketPackage.self))
+        guard let message = try Message(req.content.decode(WebSocketPackage.self)) else {
+            throw Abort(.notAcceptable)
+        }
         try await message.save(on: req.db)
         guard let chatBox = try await ChatBox.find(message.chatBox.id, on: req.db) else {
             throw Abort(.notFound)
@@ -46,6 +50,19 @@ struct MessagesController: RouteCollection {
     func index(req: Request) async throws -> [Message] {
         try await Message.query(on: req.db).all()
     }
+    func lastestUpdateTime(req: Request) async throws -> String {
+        guard let lastestUpdateTime = try await Message.query(on: req.db).max(\.$createdAt) else {
+            throw Abort(.notFound)
+        }
+        return lastestUpdateTime
+    }
+    func getMessageFromTime(req: Request) async throws -> [Message] {
+        guard let timestamp = req.parameters.get("time") else {
+            throw Abort(.badRequest)
+        }
+        return try await Message.query(on: req.db).filter(\.$createdAt > timestamp).all()
+    }
+    
     
     
     // MARK: - Delete
@@ -65,27 +82,12 @@ struct MessagesController: RouteCollection {
         "content": {
           "sender":"9B655BEA-9D66-40FD-907D-32F94E30FE6E",
           "chatBoxId":"CB2638C3-A01C-4810-9C04-8CDCD4449069",
-          "isFile": false,
+          "mediaType": 0,
           "message":"test"
         }
      }
      */
     func webSocketHandler(_ req: Request, _ ws: WebSocket) {
-        let users = req.mongoDB["users"]
-        
-        let myNewUser: Document = ["username": Data(), "password": "meow"]
-
-        let insertResult: EventLoopFuture<InsertReply> = users.insert(myNewUser)
-
-        insertResult.whenSuccess { _ in
-            print("Inserted!")
-        }
-
-        insertResult.whenFailure { error in
-            print("Insertion failed", error)
-        }
-        
-        
         guard let mappingId = req.parameters.get("mappingId", as: UUID.self) else { return }
         webSocketManager.add(ws: ws, to: mappingId.uuidString)
         ws.onClose.whenComplete { result in
@@ -104,23 +106,15 @@ struct MessagesController: RouteCollection {
         ws.onText() { onTextHandler($0, $1) }
         
         func onTextHandler(_ ws: WebSocket, _ text: String) {
-            print(text)
             guard let data = text.data(using: .utf8),
-                  let resolveWebSocketPackage = try? JSONDecoder().decode(ResolveWebSocketPackage.self, from: data) else {
+                  let webSocketPackage = try? JSONDecoder().decode(WebSocketPackage.self, from: data) else {
                 return
             }
-            
-            
-            
-            
-            
-            
-            
-            
-            switch resolveWebSocketPackage.type {
+            switch webSocketPackage.type {
             case .message:
-                let message = Message(resolveWebSocketPackage)
-                print(message)
+                guard let message = Message(webSocketPackage) else {
+                    return
+                }
                 let _ = message.save(on: req.db).flatMap {
                     ChatBox.find(message.$chatBox.id, on: req.db)
                         .unwrap(or: Abort(.notFound))
@@ -131,6 +125,10 @@ struct MessagesController: RouteCollection {
                         }
                 }
                 break
+//            case .chatBox:
+//                break
+//            case .user:
+//                break
             default:
                 break
             }

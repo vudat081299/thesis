@@ -59,7 +59,7 @@ class DataCentral {
 class RequestEngine {
     
     // MARK: - User
-    static func getAllUsers(_ completion: (() -> ())? = nil) {
+    static func getAllUsers(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = queries.queryInfomation(.getAllUsers) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [User].self) { response in
@@ -67,16 +67,17 @@ class RequestEngine {
                 case .success(let users):
                     print(users)
                     Friend(users).store()
-                    if let completion = completion { completion() }
+                    if let onSuccess = onSuccess { onSuccess() }
                     break
                 case .failure:
                     print("getAllUsers fail!")
                     break
                 }
+                if let completion = completion { completion() }
             }
     }
     /// Update my user information
-    static func updateUser(_ myUserInformation: User, _ completion: (() -> ())? = nil) {
+    static func updateUser(_ myUserInformation: User, completion: (() -> ())? = nil) {
         guard let query = queries.queryInfomation(.updateUser) else { return }
         AF.request(
             query.genUrl(),
@@ -99,7 +100,7 @@ class RequestEngine {
     
     
     // MARK: - Mapping
-    static func getAllMappings(_ completion: (() -> ())? = nil) {
+    static func getAllMappings(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = queries.queryInfomation(.getAllMappings) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ResolveMapping].self) { response in
@@ -107,15 +108,16 @@ class RequestEngine {
                 case .success(let mappings):
                     print(mappings)
                     Mappings(resolveMappings: mappings).store()
-                    if let completion = completion { completion() }
+                    if let onSuccess = onSuccess { onSuccess() }
                     break
                 case .failure:
                     print("getAllMappings fail!")
                     break
                 }
+                if let completion = completion { completion() }
             }
     }
-    static func getMyChatBoxes(_ completion: (() -> ())? = nil) {
+    static func getMyChatBoxes(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = queries.queryInfomation(.getMyChatBoxes) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ChatBox].self) { response in
@@ -123,12 +125,13 @@ class RequestEngine {
                 case .success(let chatBoxes):
                     print(chatBoxes)
                     ChatBoxes(chatBoxes).store()
-                    if let completion = completion { completion() }
+                    if let onSuccess = onSuccess { onSuccess() }
                     break
                 case .failure:
                     print("getMyChatBoxes fail!")
                     break
                 }
+                if let completion = completion { completion() }
             }
     }
     static func createChatBox(_ friendMappingId: UUID, _ completion: (() -> ())? = nil) {
@@ -233,7 +236,7 @@ class RequestEngine {
         parameters["createdAt"] = message.createdAt
         parameters["sender"] = message.sender
         parameters["chatBoxId"] = message.chatBoxId
-        parameters["message"] = message.message
+        parameters["message"] = message.content
         AF.request(
             url,
             method: query.httpMethod,
@@ -255,7 +258,7 @@ class RequestEngine {
     
     
     // MARK: - Pivot
-    static func getAllMappingPivots(_ completion: (() -> ())? = nil) {
+    static func getAllMappingPivots(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = queries.queryInfomation(.getAllMappingPivots) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ResolvePivot].self) { response in
@@ -270,35 +273,15 @@ class RequestEngine {
                         print("Unable to Encode Array of Mappings (\(error))")
                     }
                     pivotGlobal = DataCentral.getPivot()
-                    if let completion = completion { completion() }
+                    if let onSuccess = onSuccess { onSuccess() }
                     break
                 case .failure:
                     break
                 }
+                if let completion = completion { completion() }
             }
     }
 }
-
-
-struct Message: Codable {
-    let id: UUID?
-    let sender: UUID
-    let createdAt: String?
-    let chatBoxId: UUID
-    let message: String
-    let mediaType: MediaType
-}
-
-enum MediaType: Int, Codable {
-    case text, file
-}
-
-struct ChatBox: Codable {
-    let id: UUID
-    let name: String?
-    let avatar: String?
-}
-extension ChatBox: Hashable {} // To use UICollectionViewDiffableDataSource
 
 /// Resolve Mapping structure or other Structure have mapping(sibling) relationship.
 struct ResolveMapping: Codable {
@@ -338,25 +321,11 @@ struct ResolveUUID: Codable {
 
 struct WebSocketMessage: Codable {
     let id: UUID
+    let createdAt: String
     let chatBox: ResolveUUID
+    let mediaType: String
     let message: String
     let sender: UUID
-    let createdAt: String
 }
 
-struct User: Codable {
-    var id: UUID?
-    var name: String?
-    var username: String?
-    var email: String?
-    var join: String?
-    var bio: String?
-    var phone: String?
-    var birth: String?
-    var siwaIdentifier: String?
-    var avatar: String?
-    var password: String?
-    var country: String?
-    var gender: Int?
-}
 

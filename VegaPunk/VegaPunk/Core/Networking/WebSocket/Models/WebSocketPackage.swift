@@ -1,6 +1,6 @@
 //
 //  WebSocketPackage.swift
-//  
+//
 //
 //  Created by Dat Vu on 29/11/2022.
 //
@@ -11,16 +11,16 @@ enum WebSocketPackageType: Int, Codable {
     case message, chatBox, user
 }
 
-struct WebSocketPackageMessage: Codable {
+struct WebSocketPackageContent: Codable {
     // message
     let createdAt: String?
     let sender: UUID? // mappingId
     let chatBoxId: UUID?
-    let mediaType: String?
-    let content: String?
+    let mediaType: String
+    let message: String?
 }
 
 struct WebSocketPackage: Codable {
     let type: WebSocketPackageType
-    let message: WebSocketPackageMessage
+    let content: WebSocketPackageContent
 }

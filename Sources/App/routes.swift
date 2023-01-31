@@ -16,6 +16,6 @@ func routes(_ app: Application) throws {
     try app.register(collection: ChatBoxesController())
     try app.register(collection: MessagesController())
     try app.register(collection: PivotsController())
-//    try app.register(collection: FilesController())
+    try app.register(collection: FilesController())
     
 }

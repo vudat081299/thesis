@@ -9,17 +9,26 @@ import Foundation
 
 var chatBoxesGlobal = ChatBoxes.retrieve()
 
+
+// MARK: Definition
+struct ChatBox: Codable {
+    let id: UUID
+    let name: String?
+    let avatar: String?
+}
+extension ChatBox: Hashable {} // To use UICollectionViewDiffableDataSource
+
 struct ChatBoxes {
     var chatBoxes: [ChatBox] = []
-    
     init(_ chatBoxes: [ChatBox] = []) {
         self.chatBoxes = chatBoxes
     }
 }
 
+
 // MARK: - Apply Codable
 extension ChatBoxes: Codable {
-    struct UserKey: CodingKey {
+    struct ChatBoxKey: CodingKey {
         var stringValue: String
         init?(stringValue: String) {
             self.stringValue = stringValue
@@ -28,18 +37,18 @@ extension ChatBoxes: Codable {
         var intValue: Int? { return nil }
         init?(intValue: Int) { return nil }
 
-        static let id = UserKey(stringValue: "id")!
-        static let name = UserKey(stringValue: "name")!
-        static let avatar = UserKey(stringValue: "avatar")!
+        static let id = ChatBoxKey(stringValue: "id")!
+        static let name = ChatBoxKey(stringValue: "name")!
+        static let avatar = ChatBoxKey(stringValue: "avatar")!
     }
     
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: UserKey.self)
+        var container = encoder.container(keyedBy: ChatBoxKey.self)
         
         for chatBox in chatBoxes {
             // Any product's `name` can be used as a key name.
-            let chatBoxId = UserKey(stringValue: chatBox.id.uuidString)!
-            var productContainer = container.nestedContainer(keyedBy: UserKey.self, forKey: chatBoxId)
+            let chatBoxId = ChatBoxKey(stringValue: chatBox.id.uuidString)!
+            var productContainer = container.nestedContainer(keyedBy: ChatBoxKey.self, forKey: chatBoxId)
             
             // The rest of the keys use static names defined in `ProductKey`.
             try productContainer.encode(chatBox.name, forKey: .name)
@@ -49,10 +58,10 @@ extension ChatBoxes: Codable {
     
     public init(from decoder: Decoder) throws {
         var chatBoxes = [ChatBox]()
-        let container = try decoder.container(keyedBy: UserKey.self)
+        let container = try decoder.container(keyedBy: ChatBoxKey.self)
         for key in container.allKeys {
             // Note how the `key` in the loop above is used immediately to access a nested container.
-            let productContainer = try container.nestedContainer(keyedBy: UserKey.self, forKey: key)
+            let productContainer = try container.nestedContainer(keyedBy: ChatBoxKey.self, forKey: key)
             let name = try productContainer.decodeIfPresent(String.self, forKey: .name)
             let avatar = try productContainer.decodeIfPresent(String.self, forKey: .avatar)
 
@@ -63,7 +72,6 @@ extension ChatBoxes: Codable {
         self.init(chatBoxes)
     }
 }
-
 
 
 // MARK: - Data handler
@@ -101,19 +109,18 @@ extension ChatBoxes {
     mutating func update() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let storageFilePath = dir.appendingPathComponent("ChatBoxes")
-            print("Retrieve data from chatBoxes storage filepath: \(storageFilePath)")
+            print("Update data from chatBoxes storage filepath: \(storageFilePath)")
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
                 let chatBoxes = try JSONDecoder().decode(ChatBoxes.self, from: jsonData)
                 self.chatBoxes = chatBoxes.chatBoxes
             }
             catch {
-                print("Retrieve chatBoxes failed! \(error)")
+                print("Update chatBoxes failed! \(error)")
             }
         }
     }
 }
-
 
 
 // MARK: - Mini tasks

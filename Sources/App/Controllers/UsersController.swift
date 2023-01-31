@@ -37,6 +37,8 @@ struct UsersController: RouteCollection {
         usersRoute.get(use: getAllHandler)
         usersRoute.get(":userID", use: getHandler)
         usersRoute.get(":userID", "mapping", use: getMappingsHandler)
+        usersRoute.get("lastestUpdate", use: lastestUpdateTime)
+        usersRoute.get("from", ":time", use: getMessageFromTime)
         usersRoute.post("siwa", use: signInWithApple)
         usersRoute.post(use: createHandler)
         
@@ -80,6 +82,18 @@ struct UsersController: RouteCollection {
             return []
         }
         return try await user.$mappings.get(on: req.db)
+    }
+    func lastestUpdateTime(req: Request) async throws -> String {
+        guard let lastestUpdateTime = try await User.query(on: req.db).max(\.$join) else {
+            throw Abort(.notFound)
+        }
+        return lastestUpdateTime
+    }
+    func getMessageFromTime(req: Request) async throws -> [User] {
+        guard let timestamp = req.parameters.get("time") else {
+            throw Abort(.badRequest)
+        }
+        return try await User.query(on: req.db).filter(\.$join > timestamp).all()
     }
     
     

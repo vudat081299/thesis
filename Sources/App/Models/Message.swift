@@ -8,6 +8,10 @@
 import Vapor
 import Fluent
 
+enum MediaType: String, Codable {
+    case text, file
+}
+
 final class Message: Model {
     static let schema = "messages"
     
@@ -21,11 +25,11 @@ final class Message: Model {
     /// mappingId of user
     var sender: UUID
     
-    @Boolean(key: "isFile")
-    var isFile: Bool
+    @Field(key: "mediaType")
+    var mediaType: String
     
-    @Field(key: "message")
-    var message: String
+    @Field(key: "content")
+    var content: String
     
     @Parent(key: "chatBoxId")
     var chatBox: ChatBox
@@ -33,39 +37,39 @@ final class Message: Model {
     //
     init() {}
     
-    init(id: UUID? = nil, sender: UUID, isFile: Bool?, message: String, chatBoxID: ChatBox.IDValue) {
+    init(id: UUID? = nil, sender: UUID, mediaType: String?, content: String, chatBoxID: ChatBox.IDValue) {
         self.id = id
         self.createdAt = Date().milliStampString
         self.sender = sender
-        self.isFile = isFile ?? false
-        self.message = message
+        self.mediaType = mediaType ?? MediaType.text.rawValue
+        self.content = content
         self.$chatBox.id = chatBoxID
     }
     
-    init(id: UUID? = nil, _ package: ResolveWebSocketPackage) {
+    init?(id: UUID? = nil, _ package: WebSocketPackage) {
         self.id = id
         self.createdAt = Date().milliStampString
-        self.sender = package.content.sender
-        self.isFile = package.content.isFile ?? false
-        self.message = package.content.message
-        self.$chatBox.id = package.content.chatBoxId
+        guard let packageMessageSender = package.message.sender,
+              let packageMessageMediaType = package.message.mediaType,
+              let packageMessageContent = package.message.content,
+              let packageMessageChatBoxId = package.message.chatBoxId
+        else {
+            return nil
+        }
+        self.sender = packageMessageSender
+        self.mediaType = packageMessageMediaType
+        self.content = packageMessageContent
+        self.$chatBox.id = packageMessageChatBoxId
     }
 }
 
 extension Message: Content {}
+extension Message {
+    func convertToWebSocketPackage() -> WebSocketPackage {
+        return WebSocketPackage(type: .message, message: WebSocketPackageMessage(createdAt: createdAt, sender: sender, chatBoxId: self.$chatBox.id, mediaType: mediaType, content: content))
+    }
+}
 
 
 
 // MARK: - WebSocket model
-struct WSResolvedData: Decodable {
-    let type: WSResolvedMajorDataType
-}
-
-enum WSResolvedMajorDataType: Int, Codable {
-    case notify, newMess, newBox, userTyping
-}
-
-struct WSEncodeMessage: Encodable {
-    let type: WSResolvedMajorDataType
-    let majorData: Message
-}

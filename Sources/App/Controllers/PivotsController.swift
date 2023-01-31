@@ -10,9 +10,9 @@ import Vapor
 struct PivotsController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let chatBoxesRoute = routes.grouped("api", "mapping", "pivot")
+        
         chatBoxesRoute.get(use: getMappingPivotAllHandler)
         chatBoxesRoute.delete(":id", use: deleteMappingPivotHandler)
-        
     }
     
     

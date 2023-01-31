@@ -20,7 +20,7 @@
 		84A9385B296AAA0F008ED0DC /* VegaPunkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9385A296AAA0F008ED0DC /* VegaPunkTests.swift */; };
 		84A93865296AAA10008ED0DC /* VegaPunkUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93864296AAA10008ED0DC /* VegaPunkUITests.swift */; };
 		84A93867296AAA10008ED0DC /* VegaPunkUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93866296AAA10008ED0DC /* VegaPunkUITestsLaunchTests.swift */; };
-		84A938CA296AAABD008ED0DC /* WebServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93877296AAABD008ED0DC /* WebServices.swift */; };
+		84A938CA296AAABD008ED0DC /* WebSocketPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93877296AAABD008ED0DC /* WebSocketPackage.swift */; };
 		84A938CC296AAABD008ED0DC /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9387A296AAABD008ED0DC /* AuthenticationService.swift */; };
 		84A938CD296AAABD008ED0DC /* ErrorControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9387C296AAABD008ED0DC /* ErrorControl.swift */; };
 		84A938D1296AAABD008ED0DC /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93881296AAABD008ED0DC /* Token.swift */; };
@@ -83,12 +83,13 @@
 		84A93912296AD43B008ED0DC /* ResourceRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93911296AD43B008ED0DC /* ResourceRequest.swift */; };
 		84A93914296AF86C008ED0DC /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93913296AF86C008ED0DC /* UserData.swift */; };
 		84A93916296B1965008ED0DC /* RouteCoodinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93915296B1965008ED0DC /* RouteCoodinator.swift */; };
-		84A93918296B219C008ED0DC /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93917296B219C008ED0DC /* Friend.swift */; };
+		84A93918296B219C008ED0DC /* User+Friends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93917296B219C008ED0DC /* User+Friends.swift */; };
 		84A9391A296B2BB7008ED0DC /* Mappings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93919296B2BB7008ED0DC /* Mappings.swift */; };
 		84A9391C296B2E7B008ED0DC /* ChatBoxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391B296B2E7B008ED0DC /* ChatBoxes.swift */; };
 		84A9391E296B3C36008ED0DC /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391D296B3C36008ED0DC /* Array+Extensions.swift */; };
-		84A93921296B65C0008ED0DC /* PaymentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391F296B65C0008ED0DC /* PaymentCell.swift */; };
-		84A93922296B65C0008ED0DC /* PaymentCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A93920296B65C0008ED0DC /* PaymentCell.xib */; };
+		84A93921296B65C0008ED0DC /* UserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */; };
+		84A93922296B65C0008ED0DC /* UserCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */; };
+		84CDE8DB298985360067C512 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CDE8DA298985360067C512 /* Messages.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,7 +126,7 @@
 		84A93860296AAA10008ED0DC /* VegaPunkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VegaPunkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		84A93864296AAA10008ED0DC /* VegaPunkUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VegaPunkUITests.swift; sourceTree = "<group>"; };
 		84A93866296AAA10008ED0DC /* VegaPunkUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VegaPunkUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		84A93877296AAABD008ED0DC /* WebServices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebServices.swift; sourceTree = "<group>"; };
+		84A93877296AAABD008ED0DC /* WebSocketPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketPackage.swift; sourceTree = "<group>"; };
 		84A9387A296AAABD008ED0DC /* AuthenticationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
 		84A9387C296AAABD008ED0DC /* ErrorControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorControl.swift; sourceTree = "<group>"; };
 		84A93881296AAABD008ED0DC /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
@@ -187,12 +188,13 @@
 		84A93911296AD43B008ED0DC /* ResourceRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceRequest.swift; sourceTree = "<group>"; };
 		84A93913296AF86C008ED0DC /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		84A93915296B1965008ED0DC /* RouteCoodinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteCoodinator.swift; sourceTree = "<group>"; };
-		84A93917296B219C008ED0DC /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
+		84A93917296B219C008ED0DC /* User+Friends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Friends.swift"; sourceTree = "<group>"; };
 		84A93919296B2BB7008ED0DC /* Mappings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mappings.swift; sourceTree = "<group>"; };
 		84A9391B296B2E7B008ED0DC /* ChatBoxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBoxes.swift; sourceTree = "<group>"; };
 		84A9391D296B3C36008ED0DC /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
-		84A9391F296B65C0008ED0DC /* PaymentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentCell.swift; sourceTree = "<group>"; };
-		84A93920296B65C0008ED0DC /* PaymentCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PaymentCell.xib; sourceTree = "<group>"; };
+		84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserCollectionViewCell.swift; sourceTree = "<group>"; };
+		84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UserCollectionViewCell.xib; sourceTree = "<group>"; };
+		84CDE8DA298985360067C512 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -315,7 +317,7 @@
 		84A93875296AAABD008ED0DC /* WebSocket */ = {
 			isa = PBXGroup;
 			children = (
-				84A93877296AAABD008ED0DC /* WebServices.swift */,
+				84CDE8D9298984CF0067C512 /* Models */,
 			);
 			path = WebSocket;
 			sourceTree = "<group>";
@@ -343,7 +345,8 @@
 			children = (
 				84A93913296AF86C008ED0DC /* UserData.swift */,
 				84A93881296AAABD008ED0DC /* Token.swift */,
-				84A93917296B219C008ED0DC /* Friend.swift */,
+				84CDE8DA298985360067C512 /* Messages.swift */,
+				84A93917296B219C008ED0DC /* User+Friends.swift */,
 				84A93919296B2BB7008ED0DC /* Mappings.swift */,
 				84A9391B296B2E7B008ED0DC /* ChatBoxes.swift */,
 				84A93882296AAABD008ED0DC /* Archived */,
@@ -444,8 +447,8 @@
 		84A938A5296AAABD008ED0DC /* MessagingFunction */ = {
 			isa = PBXGroup;
 			children = (
-				84A9391F296B65C0008ED0DC /* PaymentCell.swift */,
-				84A93920296B65C0008ED0DC /* PaymentCell.xib */,
+				84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */,
+				84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */,
 				84A938A6296AAABD008ED0DC /* CustomListCell.xib */,
 				84A938A7296AAABD008ED0DC /* CustomListCell.swift */,
 				84A938A8296AAABD008ED0DC /* BoxTableViewCell.swift */,
@@ -566,6 +569,14 @@
 				84A93907296AAB63008ED0DC /* UserAccess.storyboard */,
 			);
 			path = UserAccess;
+			sourceTree = "<group>";
+		};
+		84CDE8D9298984CF0067C512 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				84A93877296AAABD008ED0DC /* WebSocketPackage.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -696,7 +707,7 @@
 				84A93848296AAA0C008ED0DC /* Main.storyboard in Resources */,
 				84A938EC296AAABD008ED0DC /* UserView.xib in Resources */,
 				84A938F1296AAABE008ED0DC /* BoxTableViewCell.xib in Resources */,
-				84A93922296B65C0008ED0DC /* PaymentCell.xib in Resources */,
+				84A93922296B65C0008ED0DC /* UserCollectionViewCell.xib in Resources */,
 				84A938F5296AAABE008ED0DC /* HeaderSessionChat.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -723,6 +734,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84A938D2296AAABD008ED0DC /* Upload.swift in Sources */,
+				84CDE8DB298985360067C512 /* Messages.swift in Sources */,
 				84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */,
 				84A938D8296AAABD008ED0DC /* UICollectionViewCell.swift in Sources */,
 				84A93914296AF86C008ED0DC /* UserData.swift in Sources */,
@@ -730,8 +742,8 @@
 				84A9391E296B3C36008ED0DC /* Array+Extensions.swift in Sources */,
 				84A9390D296ABDB1008ED0DC /* MainTapBarController.swift in Sources */,
 				84A938CD296AAABD008ED0DC /* ErrorControl.swift in Sources */,
-				84A93918296B219C008ED0DC /* Friend.swift in Sources */,
-				84A938CA296AAABD008ED0DC /* WebServices.swift in Sources */,
+				84A93918296B219C008ED0DC /* User+Friends.swift in Sources */,
+				84A938CA296AAABD008ED0DC /* WebSocketPackage.swift in Sources */,
 				84A938D4296AAABD008ED0DC /* UIColor.swift in Sources */,
 				84A93909296AAB63008ED0DC /* SignInViewController.swift in Sources */,
 				84A938FB296AAABE008ED0DC /* NVActivityIndicatorView.swift in Sources */,
@@ -739,7 +751,7 @@
 				84A938F3296AAABE008ED0DC /* HeaderSessionChat.swift in Sources */,
 				84A938FC296AAABE008ED0DC /* NVActivityIndicatorAnimationBallPulseSync.swift in Sources */,
 				84A938EB296AAABD008ED0DC /* UserView.swift in Sources */,
-				84A93921296B65C0008ED0DC /* PaymentCell.swift in Sources */,
+				84A93921296B65C0008ED0DC /* UserCollectionViewCell.swift in Sources */,
 				84A9384B296AAA0C008ED0DC /* VegaPunk.xcdatamodeld in Sources */,
 				84A938EA296AAABD008ED0DC /* SignupInputTableViewCell.swift in Sources */,
 				84A938F8296AAABE008ED0DC /* NVActivityIndicatorViewable.swift in Sources */,

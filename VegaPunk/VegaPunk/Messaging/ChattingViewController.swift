@@ -87,7 +87,7 @@ class ChattingViewController: UIViewController, UIImagePickerControllerDelegate,
     var messagesOfBox: [WebSocketMessage] = []
     var socket: WebSocket!
     
-    var data: UserCellData?
+    var data: UserExtractedData?
     
     
     
@@ -273,8 +273,8 @@ class ChattingViewController: UIViewController, UIImagePickerControllerDelegate,
 //        push
 //        delegate?.sendMessage(data: data)
         FeedBackTapEngine.tapped(style: .medium)
-        guard let message = chatTextField.text else { return }
-        let messageObject = Message(id: nil, sender: (userDataGlobal?.mappingId)!, createdAt: Date().iso8601String, chatBoxId: (data?.chatBox!.id)!, message: message, mediaType: .text)
+        guard let content = chatTextField.text else { return }
+        let messageObject = Message(id: nil, createdAt: Date().iso8601String, sender: (userDataGlobal?.mappingId)!, chatBoxId: (data?.chatBox!.id)!, mediaType: .text, content: content)
         RequestEngine.createMessage(messageObject)
 //        let encoder = JSONEncoder()
 //        guard let data = try? encoder.encode(messageObject) else { return }
@@ -490,7 +490,7 @@ extension ChattingViewController {
                     cell.senderName.text = userDataGlobal?.userInformation?.name
                     cell.senderName.textColor = .orange
                 } else {
-                    cell.senderName.text = self.data?.friendInformation.name
+                    cell.senderName.text = self.data?.user.name
                     cell.senderName.textColor = .link
                 }
                 cell.timeLabel.text = message.createdAt.toDate().iso8601StringShortDateTime

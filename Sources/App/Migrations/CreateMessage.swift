@@ -13,8 +13,8 @@ struct CreateMessage: AsyncMigration {
             .id()
             .field("createdAt", .string)
             .field("sender", .string, .required)
-            .field("isFile", .bool, .required)
-            .field("message", .string, .required)
+            .field("mediaType", .int64, .required)
+            .field("content", .string, .required)
             .field("chatBoxId", .uuid, .required, .references("chatBoxes", "id"))
             .create()
     }

@@ -12,9 +12,11 @@ class ViewController: UIViewController {
     // MARK: -
     static let headerElementKind = "header-element-kind"
     static let footerElementKind = "footer-element-kind"
+    
     @IBOutlet weak var collectionView: UICollectionView!
-    var dataSource: UICollectionViewDiffableDataSource<Int, UserCellData>! = nil
-    var cellData = [UserCellData]()
+    
+    var dataSource: UICollectionViewDiffableDataSource<Int, UserExtractedData>! = nil
+    var userExtractedDataList = [UserExtractedData]()
     
     
     // MARK: - App default configuration
@@ -55,7 +57,7 @@ class ViewController: UIViewController {
 //        }
         Friend.retrieve().friends.forEach {
             if let friendId = $0.id, let friendMappingId = mappingsGlobal.mappingId(friendId) {
-                cellData.append(UserCellData(friendInformation: $0, friendMappingId: friendMappingId))
+                userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
             }
         }
     }
@@ -65,7 +67,6 @@ class ViewController: UIViewController {
 
 // MARK: - Tasks
 extension ViewController {
-    
     
     
     // MARK: - Prepare
@@ -149,7 +150,7 @@ extension ViewController {
         
         // collection view hierarchy
         view.addSubview(collectionView)
-        collectionView.register(UINib(nibName: PaymentCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: PaymentCell.reuseIdentifier)
+        collectionView.register(UINib(nibName: UserCollectionViewCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: UserCollectionViewCell.reuseIdentifier)
     }
     func createLayout() -> UICollectionViewLayout {
         let config = UICollectionViewCompositionalLayoutConfiguration()
@@ -166,11 +167,11 @@ extension ViewController {
         return layout
     }
     func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Int, UserCellData>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, data: UserCellData) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Int, UserExtractedData>(collectionView: collectionView) {
+            (collectionView: UICollectionView, indexPath: IndexPath, data: UserExtractedData) -> UICollectionViewCell? in
             guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: PaymentCell.reuseIdentifier,
-                for: indexPath) as? PaymentCell else { fatalError("Cannot create new cell!") }
+                withReuseIdentifier: UserCollectionViewCell.reuseIdentifier,
+                for: indexPath) as? UserCollectionViewCell else { fatalError("Cannot create new cell!") }
             cell.data = data
             cell.prepareCell()
             return cell
@@ -178,10 +179,9 @@ extension ViewController {
     }
     
     func applySnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, UserCellData>()
+        var snapshot = NSDiffableDataSourceSnapshot<Int, UserExtractedData>()
         var numberOfSections = 0
-        for data in cellData {
-            let payments = data
+        for data in userExtractedDataList {
             snapshot.appendSections([numberOfSections])
             numberOfSections += 1
             snapshot.appendItems([data])
@@ -198,9 +198,9 @@ extension ViewController: UICollectionViewDelegate {
         collectionView.deselectItem(at: indexPath, animated: true)
         
         let chattingViewController = ChattingViewController()
-        let data = cellData[indexPath.section]
+        let data = userExtractedDataList[indexPath.section]
         chattingViewController.data = data
-        chattingViewController.title = data.friendInformation.name
+        chattingViewController.title = data.user.name
         chattingViewController.navigationItem.largeTitleDisplayMode = .never
         chattingViewController.tabBarController?.tabBar.isHidden = true
         navigationController?.pushViewController(chattingViewController, animated: true)

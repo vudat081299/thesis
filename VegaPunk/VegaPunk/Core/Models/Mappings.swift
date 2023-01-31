@@ -23,7 +23,7 @@ struct Mappings {
 
 // MARK: - Apply Codable
 extension Mappings: Codable {
-    struct UserKey: CodingKey {
+    struct MappingKey: CodingKey {
         var stringValue: String
         init?(stringValue: String) {
             self.stringValue = stringValue
@@ -32,17 +32,17 @@ extension Mappings: Codable {
         var intValue: Int? { return nil }
         init?(intValue: Int) { return nil }
 
-        static let id = UserKey(stringValue: "id")!
-        static let userId = UserKey(stringValue: "name")!
+        static let id = MappingKey(stringValue: "id")!
+        static let userId = MappingKey(stringValue: "name")!
     }
     
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: UserKey.self)
+        var container = encoder.container(keyedBy: MappingKey.self)
         
         for mapping in mappings {
             // Any product's `name` can be used as a key name.
-            let mappingId = UserKey(stringValue: mapping.id.uuidString)!
-            var productContainer = container.nestedContainer(keyedBy: UserKey.self, forKey: mappingId)
+            let mappingId = MappingKey(stringValue: mapping.id.uuidString)!
+            var productContainer = container.nestedContainer(keyedBy: MappingKey.self, forKey: mappingId)
             
             // The rest of the keys use static names defined in `ProductKey`.
             try productContainer.encode(mapping.userId, forKey: .userId)
@@ -51,10 +51,10 @@ extension Mappings: Codable {
     
     public init(from decoder: Decoder) throws {
         var mappings = [Mapping]()
-        let container = try decoder.container(keyedBy: UserKey.self)
+        let container = try decoder.container(keyedBy: MappingKey.self)
         for key in container.allKeys {
             // Note how the `key` in the loop above is used immediately to access a nested container.
-            let productContainer = try container.nestedContainer(keyedBy: UserKey.self, forKey: key)
+            let productContainer = try container.nestedContainer(keyedBy: MappingKey.self, forKey: key)
             let userId = try productContainer.decode(UUID.self, forKey: .userId)
 
             // The key is used again here and completes the collapse of the nesting that existed in the JSON representation.

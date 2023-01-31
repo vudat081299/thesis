@@ -1,6 +1,6 @@
 //
-//  PaymentCell.swift
-//  Spending
+//  UserCollectionViewCell.swift
+//  VegaPunk
 //
 //  Created by Dat Vu on 02/01/2023.
 //
@@ -23,22 +23,22 @@ enum HighLightColor: Int {
     }
 }
 
-struct UserCellData: Hashable {
+struct UserExtractedData: Hashable {
+    var mappingId: UUID
+    var user: User
     var chatBox: ChatBox?
-    var friendInformation: User
-    var friendMappingId: UUID
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(friendMappingId)
+        hasher.combine(mappingId)
     }
     
-    static func == (lhs: UserCellData, rhs: UserCellData) -> Bool {
-        return lhs.friendMappingId == rhs.friendMappingId
+    static func == (lhs: UserExtractedData, rhs: UserExtractedData) -> Bool {
+        return lhs.mappingId == rhs.mappingId
     }
 }
 
-class PaymentCell: UICollectionViewCell {
-    static let reuseIdentifier = "PaymentCell"
+class UserCollectionViewCell: UICollectionViewCell {
+    static let reuseIdentifier = "UserCollectionViewCell"
     
     @IBOutlet weak var iconBackGround: UIImageView!
     @IBOutlet weak var icon: UILabel!
@@ -47,7 +47,7 @@ class PaymentCell: UICollectionViewCell {
     @IBOutlet weak var note: UILabel!
     @IBOutlet weak var bio: UILabel!
     
-    var data: UserCellData!
+    var data: UserExtractedData!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -68,16 +68,16 @@ class PaymentCell: UICollectionViewCell {
     
     func prepareCell() {
         let avatarLabels = ["🐝", "😝", "🍌", "☔️", "😊", "☕️"]
-        if let userInfor = data.friendInformation.avatar, let avatar = Int(userInfor) {
+        if let userInfor = data.user.avatar, let avatar = Int(userInfor) {
             icon.text = avatarLabels[avatar]
         }
-        if let name = data.friendInformation.name {
+        if let name = data.user.name {
             type.text = name
         }
-        if let username = data.friendInformation.username {
+        if let username = data.user.username {
             note.text = username
         }
-        if let bio = data.friendInformation.bio {
+        if let bio = data.user.bio {
             self.bio.text = bio
         }
     }

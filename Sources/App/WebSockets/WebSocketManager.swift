@@ -11,6 +11,7 @@ let webSocketManager = WebSocketManager()
 final class WebSocketManager {
     var dictionary: [String: WebSocket] = [:]
     
+    
     // MARK: - Session manager
     func add(ws: WebSocket, to mappingId: String) {
         dictionary[mappingId] = ws
@@ -24,14 +25,12 @@ final class WebSocketManager {
     }
     
     
-    
     // MARK: -
     func send(to userMapping: [Mapping], message: Message) {
-        print(dictionary)
         userMapping.forEach { mapping in
             if let mappingId = mapping.id,
                let ws = dictionary[mappingId.uuidString] {
-                ws.send(message)
+                ws.send(message.convertToWebSocketPackage())
             }
         }
     }
