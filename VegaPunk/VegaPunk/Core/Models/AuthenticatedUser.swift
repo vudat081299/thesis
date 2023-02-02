@@ -1,5 +1,5 @@
 //
-//  UserData.swift
+//  AuthenticatedUser.swift
 //  VegaPunk
 //
 //  Created by Dat Vu on 08/01/2023.
@@ -8,13 +8,9 @@
 import Foundation
 import Alamofire
 
-var userDataGlobal = UserData.retrieve()
+var userDataGlobal = AuthenticatedUser.retrieve()
 
-enum FunctionResult: Int {
-    case success, failure
-}
-
-struct UserData {
+struct AuthenticatedUser {
     var userInformation: User?
     var userId: UUID?
     var token: String?
@@ -40,8 +36,7 @@ struct NetworkConfigure {
 }
 
 // MARK: - Apply Codable
-extension UserData: Codable {
-    
+extension AuthenticatedUser: Codable {
     enum Key: String, CodingKey {
         case userInformation
         case userId
@@ -54,7 +49,6 @@ extension UserData: Codable {
         case ip
         case port
     }
-    
     
     
     // MARK: - Initializations
@@ -110,10 +104,17 @@ extension UserData: Codable {
         try container.encode(ip, forKey: .ip)
         try container.encode(port, forKey: .port)
     }
+}
+
+
+// MARK: - Data handler
+extension AuthenticatedUser {
+    static var key: String {
+        get {
+            return "Authenticated_User_SAVING_KEY"
+        }
+    }
     
-    
-    
-    // MARK: - Tasks
     static func store(credential: Credential? = nil,
                       token: Token? = nil,
                       networkConfigure: NetworkConfigure? = nil,
@@ -146,20 +147,20 @@ extension UserData: Codable {
         
         // Create and store
         if let token = token {
-            return UserData(token).store()
+            return AuthenticatedUser(token).store()
         }
         if let credential = credential {
-            return UserData(credential).store()
+            return AuthenticatedUser(credential).store()
         }
         if let userInformation = userInformation {
-            return UserData(userInformation).store()
+            return AuthenticatedUser(userInformation).store()
         }
         return .failure
     }
-    static func retrieve() -> UserData? {
-        if let data = UserDefaults.standard.data(forKey: "UserData_Object_SAVING_KEY") {
+    static func retrieve() -> AuthenticatedUser? {
+        if let data = UserDefaults.standard.data(forKey: key) {
             do {
-                return try PropertyListDecoder().decode(UserData?.self, from: data)
+                return try PropertyListDecoder().decode(AuthenticatedUser?.self, from: data)
             } catch {
                 print("Retrieve UserData object failed!")
             }
@@ -167,9 +168,9 @@ extension UserData: Codable {
         return nil
     }
     func update() {
-        if let data = UserDefaults.standard.data(forKey: "UserData_Object_SAVING_KEY") {
+        if let data = UserDefaults.standard.data(forKey: AuthenticatedUser.key) {
             do {
-                if let userData = try PropertyListDecoder().decode(UserData?.self, from: data) {
+                if let userData = try PropertyListDecoder().decode(AuthenticatedUser?.self, from: data) {
                     userDataGlobal = userData
                 }
             } catch {
@@ -180,7 +181,7 @@ extension UserData: Codable {
     func store() -> FunctionResult {
         do {
             let userData = try PropertyListEncoder().encode(self)
-            UserDefaults.standard.set(userData, forKey: "UserData_Object_SAVING_KEY")
+            UserDefaults.standard.set(userData, forKey: AuthenticatedUser.key)
             self.update()
             return .success
         } catch {

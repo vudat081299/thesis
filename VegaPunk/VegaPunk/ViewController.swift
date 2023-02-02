@@ -55,8 +55,11 @@ class ViewController: UIViewController {
 //                cellData.append(UserCellData(chatBox: ChatBoxes.retrieve()[chatBoxId], friendInformation: $0, friendMappingId: friendMappingId))
 //            }
 //        }
-        Friend.retrieve().friends.forEach {
-            if let friendId = $0.id, let friendMappingId = mappingsGlobal.mappingId(friendId) {
+        let mappings = Mappings.retrieve()
+        let friends = Friend.retrieve().friends
+        friends.forEach {
+            if let friendId = $0.id,
+               let friendMappingId = mappings.mappingId(friendId) {
                 userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
             }
         }

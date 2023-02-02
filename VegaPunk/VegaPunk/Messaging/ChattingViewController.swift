@@ -274,7 +274,7 @@ class ChattingViewController: UIViewController, UIImagePickerControllerDelegate,
 //        delegate?.sendMessage(data: data)
         FeedBackTapEngine.tapped(style: .medium)
         guard let content = chatTextField.text else { return }
-        let messageObject = Message(id: nil, createdAt: Date().iso8601String, sender: (userDataGlobal?.mappingId)!, chatBoxId: (data?.chatBox!.id)!, mediaType: .text, content: content)
+        let messageObject = Message(id: UUID(), createdAt: Date().iso8601String, sender: (userDataGlobal?.mappingId)!, chatBoxId: (data?.chatBox!.id)!, mediaType: .text, content: content)
         RequestEngine.createMessage(messageObject)
 //        let encoder = JSONEncoder()
 //        guard let data = try? encoder.encode(messageObject) else { return }

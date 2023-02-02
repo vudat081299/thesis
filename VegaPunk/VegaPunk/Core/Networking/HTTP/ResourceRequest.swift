@@ -10,7 +10,7 @@ import Alamofire
 
 var queries = Queries()
 var bearerTokenHeaders: HTTPHeaders? {
-    guard let token = (UserData.retrieve()?.token) else { return nil }
+    guard let token = (AuthenticatedUser.retrieve()?.token) else { return nil }
     return [.authorization(bearerToken: token)]
 }
 
@@ -88,7 +88,7 @@ class RequestEngine {
         .responseDecodable(of: User.self) { response in
             switch response.result {
             case .success(let users):
-                let _ = UserData.store(userInformation: users)
+                let _ = AuthenticatedUser.store(userInformation: users)
                 if let completion = completion { completion() }
                 break
             case .failure:
@@ -136,7 +136,7 @@ class RequestEngine {
     }
     static func createChatBox(_ friendMappingId: UUID, _ completion: (() -> ())? = nil) {
         guard let query = queries.queryInfomation(.createChatBox),
-              let userData = UserData.retrieve(),
+              let userData = AuthenticatedUser.retrieve(),
               let myMappingId = userData.mappingId,
               let url = URL(string: query.genUrl()),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
@@ -291,11 +291,6 @@ struct ResolveMapping: Codable {
     func flatten() -> Mapping {
         Mapping(id: id, userId: user.id)
     }
-}
-
-struct Mapping: Codable {
-    let id: UUID
-    let userId: UUID
 }
 
 struct Pivot {

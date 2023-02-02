@@ -51,7 +51,7 @@ class SignInViewController: UIViewController {
         passwordTextFieldContainer.border()
         passwordTextFieldContainer.dropShadow()
         
-        let _ = UserData.store(networkConfigure: NetworkConfigure(domain: "http://192.168.1.24:8080/", ip: "192.168.1.24", port: "8080"))
+        let _ = AuthenticatedUser.store(networkConfigure: NetworkConfigure(domain: "http://192.168.1.24:8080/", ip: "192.168.1.24", port: "8080"))
     }
     
     
@@ -139,16 +139,19 @@ class SignInViewController: UIViewController {
         RequestEngine.getMyChatBoxes {
             self.leave(dispatchGroup)
         } onSuccess: {
-            countSuccessTask += 1
+//            countSuccessTask += 1
         }
         
-        if (countSuccessTask == 4) {
-            dispatchGroup.notify(queue: .main) {
-                DispatchQueue.main.async { [self] in
+        dispatchGroup.notify(queue: .main) {
+            DispatchQueue.main.async { [self] in
+                if (countSuccessTask == 3) {
                     self.stopLoadingAnimation()
                     let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()!
                     viewController.modalPresentationStyle = .fullScreen
                     present(viewController, animated:true, completion:nil)
+                    
+                } else {
+                    self.stopLoadingAnimation()
                 }
             }
         }

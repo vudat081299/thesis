@@ -7,9 +7,8 @@
 
 import Foundation
 
-var friendsGlobal = Friend.retrieve()
-
 // MARK: Definition
+/// This is a structure of `User` table on `Database`
 struct User: Codable {
     var id: UUID?
     var name: String?
@@ -29,7 +28,7 @@ struct User: Codable {
 struct Friend {
     var friends: [User]
     init(_ friends: [User] = []) {
-        self.friends = friends.filter { $0.id != UserData.retrieve()?.userId }
+        self.friends = friends.filter { $0.id != AuthenticatedUser.retrieve()?.userId }
     }
 }
 
@@ -113,10 +112,15 @@ extension Friend: Codable {
 
 
 // MARK: - Data handler
-extension Friend {
+extension Friend: Storing {
+    static var key: String {
+        get {
+            return "Friends"
+        }
+    }
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let friendsStorageFilePath = dir.appendingPathComponent("Friends")
+            let friendsStorageFilePath = dir.appendingPathComponent(Friend.key)
             print("Friends storage filepath: \(friendsStorageFilePath)")
             do {
                 let encoder = JSONEncoder()
@@ -130,7 +134,7 @@ extension Friend {
     }
     static func retrieve() -> Friend {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent("Friends")
+            let storageFilePath = dir.appendingPathComponent(key)
             print("Retrieve data from friends storage filepath: \(storageFilePath)")
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
@@ -145,7 +149,7 @@ extension Friend {
     }
     mutating func update() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent("Friends")
+            let storageFilePath = dir.appendingPathComponent(Friend.key)
             print("Update data from friends storage filepath: \(storageFilePath)")
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)

@@ -9,6 +9,19 @@ import Foundation
 
 var mappingsGlobal = Mappings.retrieve()
 
+// MARK: Definition
+/// This is a structure of `Mapping` table on `Database`
+struct Mapping: Codable {
+    let id: UUID?
+    var user: ResolveUUID?
+    var userId: UUID?
+    
+    func flatten() -> Mapping? {
+        guard let user = user else { return nil }
+        return Mapping(id: id, userId: user.id)
+    }
+}
+
 struct Mappings {
     var mappings: [Mapping] = []
     
@@ -25,15 +38,15 @@ struct Mappings {
 extension Mappings: Codable {
     struct MappingKey: CodingKey {
         var stringValue: String
-        init?(stringValue: String) {
+        init(stringValue: String) {
             self.stringValue = stringValue
         }
 
         var intValue: Int? { return nil }
         init?(intValue: Int) { return nil }
 
-        static let id = MappingKey(stringValue: "id")!
-        static let userId = MappingKey(stringValue: "name")!
+        static let id = MappingKey(stringValue: "id")
+        static let userId = MappingKey(stringValue: "name")
     }
     
     func encode(to encoder: Encoder) throws {
@@ -41,8 +54,9 @@ extension Mappings: Codable {
         
         for mapping in mappings {
             // Any product's `name` can be used as a key name.
-            let mappingId = MappingKey(stringValue: mapping.id.uuidString)!
-            var productContainer = container.nestedContainer(keyedBy: MappingKey.self, forKey: mappingId)
+            guard let mappingId = mapping.id else { continue }
+            let mappingKeyId = MappingKey(stringValue: mappingId.uuidString)
+            var productContainer = container.nestedContainer(keyedBy: MappingKey.self, forKey: mappingKeyId)
             
             // The rest of the keys use static names defined in `ProductKey`.
             try productContainer.encode(mapping.userId, forKey: .userId)
@@ -58,7 +72,8 @@ extension Mappings: Codable {
             let userId = try productContainer.decode(UUID.self, forKey: .userId)
 
             // The key is used again here and completes the collapse of the nesting that existed in the JSON representation.
-            let mapping = Mapping(id: UUID(uuidString: key.stringValue)!, userId: userId)
+            guard let mappingUUID = UUID(uuidString: key.stringValue) else { continue }
+            let mapping = Mapping(id: mappingUUID, userId: userId)
             mappings.append(mapping)
         }
         self.init(mappings)
@@ -68,16 +83,20 @@ extension Mappings: Codable {
 
 
 // MARK: - Data handler
-extension Mappings {
+extension Mappings: Storing {
+    static var key: String {
+        get {
+            return "Mappings"
+        }
+    }
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent("Mappings")
+            let storageFilePath = dir.appendingPathComponent(Mappings.key)
             print("Mappings storage filepath: \(storageFilePath)")
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
                 try encoder.encode(self).write(to: storageFilePath)
-                mappingsGlobal.update()
             }
             catch {
                 print("Store mappings failed! \(error)")
@@ -86,7 +105,7 @@ extension Mappings {
     }
     static func retrieve() -> Mappings {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent("Mappings")
+            let storageFilePath = dir.appendingPathComponent(key)
             print("Retrieve data from mappings storage filepath: \(storageFilePath)")
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
@@ -101,7 +120,7 @@ extension Mappings {
     }
     mutating func update() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent("Mappings")
+            let storageFilePath = dir.appendingPathComponent(Mappings.key)
             print("Retrieve data from mappings storage filepath: \(storageFilePath)")
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)

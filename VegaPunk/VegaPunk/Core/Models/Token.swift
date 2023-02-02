@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// This is a structure of `Token` table on `Database`
 final class Token: Codable {
     var id: String
     var value: String

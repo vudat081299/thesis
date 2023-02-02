@@ -13,7 +13,7 @@ class Auth {
                        completion: (() -> ())? = nil,
                        onSuccess: (() -> ())? = nil,
                        onFailure: (() -> ())? = nil) {
-        let _ = UserData.store(credential: credential)
+        let _ = AuthenticatedUser.store(credential: credential)
         let headers: HTTPHeaders = [.authorization(username: credential.username, password: credential.password)]
         guard let query = queries.queryInfomation(.signIn) else { return }
         AF.request(query.genUrl(), method: query.httpMethod, headers: headers)
@@ -21,7 +21,7 @@ class Auth {
                 switch response.result {
                 case .success(let token):
                     print(token.value)
-                    let _ = UserData.store(token: token)
+                    let _ = AuthenticatedUser.store(token: token)
                     getUserMapping(onSuccess: onSuccess)
                     break
                 case .failure:
@@ -51,7 +51,7 @@ class Auth {
                 switch response.result {
                 case .success(let user):
                     print(user)
-                    let _ = UserData.store(userInformation: user)
+                    let _ = AuthenticatedUser.store(userInformation: user)
                     if let completion = completion { completion() }
                     break
                 case .failure:
@@ -69,7 +69,7 @@ class Auth {
                 switch response.result {
                 case .success(let resolvedMapping):
                     print(resolvedMapping)
-                    guard var userData = UserData.retrieve() else { break }
+                    guard var userData = AuthenticatedUser.retrieve() else { break }
                     if resolvedMapping.count > 0 {
                         userData.mappingId = resolvedMapping[0].id
                         let _ = userData.store()

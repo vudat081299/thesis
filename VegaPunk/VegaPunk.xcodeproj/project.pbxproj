@@ -10,6 +10,7 @@
 		843CEE27296B991C00A09695 /* ChattingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843CEE25296B991C00A09695 /* ChattingViewController.swift */; };
 		843CEE28296B991C00A09695 /* ChattingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 843CEE26296B991C00A09695 /* ChattingViewController.xib */; };
 		843CEE38296BAD7300A09695 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 843CEE37296BAD7300A09695 /* Starscream */; };
+		84A4F6A8298C340900E5FEC4 /* Storing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A4F6A7298C340900E5FEC4 /* Storing.swift */; };
 		84A93841296AAA0C008ED0DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93840296AAA0C008ED0DC /* AppDelegate.swift */; };
 		84A93843296AAA0C008ED0DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93842296AAA0C008ED0DC /* SceneDelegate.swift */; };
 		84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93844296AAA0C008ED0DC /* ViewController.swift */; };
@@ -81,7 +82,7 @@
 		84A9390D296ABDB1008ED0DC /* MainTapBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9390C296ABDB1008ED0DC /* MainTapBarController.swift */; };
 		84A93910296AD3F8008ED0DC /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 84A9390F296AD3F8008ED0DC /* Alamofire */; };
 		84A93912296AD43B008ED0DC /* ResourceRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93911296AD43B008ED0DC /* ResourceRequest.swift */; };
-		84A93914296AF86C008ED0DC /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93913296AF86C008ED0DC /* UserData.swift */; };
+		84A93914296AF86C008ED0DC /* AuthenticatedUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93913296AF86C008ED0DC /* AuthenticatedUser.swift */; };
 		84A93916296B1965008ED0DC /* RouteCoodinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93915296B1965008ED0DC /* RouteCoodinator.swift */; };
 		84A93918296B219C008ED0DC /* User+Friends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93917296B219C008ED0DC /* User+Friends.swift */; };
 		84A9391A296B2BB7008ED0DC /* Mappings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93919296B2BB7008ED0DC /* Mappings.swift */; };
@@ -112,6 +113,7 @@
 /* Begin PBXFileReference section */
 		843CEE25296B991C00A09695 /* ChattingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChattingViewController.swift; sourceTree = "<group>"; };
 		843CEE26296B991C00A09695 /* ChattingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChattingViewController.xib; sourceTree = "<group>"; };
+		84A4F6A7298C340900E5FEC4 /* Storing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storing.swift; sourceTree = "<group>"; };
 		84A9383D296AAA0C008ED0DC /* VegaPunk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VegaPunk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84A93840296AAA0C008ED0DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84A93842296AAA0C008ED0DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -186,7 +188,7 @@
 		84A93908296AAB63008ED0DC /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		84A9390C296ABDB1008ED0DC /* MainTapBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTapBarController.swift; sourceTree = "<group>"; };
 		84A93911296AD43B008ED0DC /* ResourceRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceRequest.swift; sourceTree = "<group>"; };
-		84A93913296AF86C008ED0DC /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
+		84A93913296AF86C008ED0DC /* AuthenticatedUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatedUser.swift; sourceTree = "<group>"; };
 		84A93915296B1965008ED0DC /* RouteCoodinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteCoodinator.swift; sourceTree = "<group>"; };
 		84A93917296B219C008ED0DC /* User+Friends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Friends.swift"; sourceTree = "<group>"; };
 		84A93919296B2BB7008ED0DC /* Mappings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mappings.swift; sourceTree = "<group>"; };
@@ -256,18 +258,18 @@
 		84A9383F296AAA0C008ED0DC /* VegaPunk */ = {
 			isa = PBXGroup;
 			children = (
+				84A93851296AAA0F008ED0DC /* Info.plist */,
 				84A93840296AAA0C008ED0DC /* AppDelegate.swift */,
+				84A9390C296ABDB1008ED0DC /* MainTapBarController.swift */,
+				84A93842296AAA0C008ED0DC /* SceneDelegate.swift */,
+				84A93844296AAA0C008ED0DC /* ViewController.swift */,
 				84A9384C296AAA0F008ED0DC /* Assets.xcassets */,
 				84A93873296AAABD008ED0DC /* Core */,
-				84A93851296AAA0F008ED0DC /* Info.plist */,
 				84A9384E296AAA0F008ED0DC /* LaunchScreen.storyboard */,
 				84A93846296AAA0C008ED0DC /* Main.storyboard */,
-				84A9390C296ABDB1008ED0DC /* MainTapBarController.swift */,
 				843CEE35296B998C00A09695 /* Messaging */,
-				84A93842296AAA0C008ED0DC /* SceneDelegate.swift */,
 				84A93905296AAAFC008ED0DC /* UserAccess */,
 				84A93849296AAA0C008ED0DC /* VegaPunk.xcdatamodeld */,
-				84A93844296AAA0C008ED0DC /* ViewController.swift */,
 			);
 			path = VegaPunk;
 			sourceTree = "<group>";
@@ -343,12 +345,13 @@
 		84A9387D296AAABD008ED0DC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				84A93913296AF86C008ED0DC /* UserData.swift */,
+				84A93913296AF86C008ED0DC /* AuthenticatedUser.swift */,
 				84A93881296AAABD008ED0DC /* Token.swift */,
 				84CDE8DA298985360067C512 /* Messages.swift */,
 				84A93917296B219C008ED0DC /* User+Friends.swift */,
 				84A93919296B2BB7008ED0DC /* Mappings.swift */,
 				84A9391B296B2E7B008ED0DC /* ChatBoxes.swift */,
+				84A4F6A7298C340900E5FEC4 /* Storing.swift */,
 				84A93882296AAABD008ED0DC /* Archived */,
 			);
 			path = Models;
@@ -476,7 +479,7 @@
 			children = (
 				84A938B2296AAABD008ED0DC /* LoadingAndIndicatorAnimation */,
 				84A938BD296AAABD008ED0DC /* GradientView.swift */,
-				84A938BE296AAABD008ED0DC /* Presentỏ */,
+				84A938BE296AAABD008ED0DC /* Presentor */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -519,13 +522,14 @@
 			path = Animations;
 			sourceTree = "<group>";
 		};
-		84A938BE296AAABD008ED0DC /* Presentỏ */ = {
+		84A938BE296AAABD008ED0DC /* Presentor */ = {
 			isa = PBXGroup;
 			children = (
 				84A938BF296AAABD008ED0DC /* MessagePresenter.swift */,
 				84A938C0296AAABD008ED0DC /* SuccessRequestServerView.xib */,
 				84A938C1296AAABD008ED0DC /* SuccessRequestServerView.swift */,
 			);
+			name = Presentor;
 			path = "Presentỏ";
 			sourceTree = "<group>";
 		};
@@ -737,7 +741,7 @@
 				84CDE8DB298985360067C512 /* Messages.swift in Sources */,
 				84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */,
 				84A938D8296AAABD008ED0DC /* UICollectionViewCell.swift in Sources */,
-				84A93914296AF86C008ED0DC /* UserData.swift in Sources */,
+				84A93914296AF86C008ED0DC /* AuthenticatedUser.swift in Sources */,
 				84A93841296AAA0C008ED0DC /* AppDelegate.swift in Sources */,
 				84A9391E296B3C36008ED0DC /* Array+Extensions.swift in Sources */,
 				84A9390D296ABDB1008ED0DC /* MainTapBarController.swift in Sources */,
@@ -785,6 +789,7 @@
 				84A938EE296AAABD008ED0DC /* CustomListCell.swift in Sources */,
 				84A9390B296AAB63008ED0DC /* SignUpViewController.swift in Sources */,
 				84A938DC296AAABD008ED0DC /* URLRequest+Extensions.swift in Sources */,
+				84A4F6A8298C340900E5FEC4 /* Storing.swift in Sources */,
 				84A938F4296AAABE008ED0DC /* MessContentCell.swift in Sources */,
 				84A938E4296AAABD008ED0DC /* SoundFeedBack.swift in Sources */,
 				84A938D1296AAABD008ED0DC /* Token.swift in Sources */,

@@ -10,7 +10,8 @@ import UIKit
 enum ApplicationState {
     case authorized, unauthorized
     
-    func viewControllerOnState() -> UIViewController {
+    /// Handle `instantiateViewController` on app state
+    func handleHierarchyOnState() -> UIViewController {
         switch self {
         case .unauthorized:
             let storyboard = UIStoryboard(name: "UserAccess", bundle: nil)
@@ -37,14 +38,67 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // MARK: - App become active
         var appState: ApplicationState
         appState = .unauthorized
-//        if Auth.token == nil {
-//            appState = .unauthorized
-//        } else {
-//            appState = .authorized
-//        }
+        if let authUser = AuthenticatedUser.retrieve(), authUser.token != nil {
+            appState = .authorized
+        } else {
+            appState = .unauthorized
+        }
+        fetchData {
+            self.window?.rootViewController = appState.handleHierarchyOnState()
+            self.window?.makeKeyAndVisible()
+        } onFailure: {
+            appState = .unauthorized
+            self.window?.rootViewController = appState.handleHierarchyOnState()
+            self.window?.makeKeyAndVisible()
+        }
         
-        self.window?.rootViewController = appState.viewControllerOnState()
-        self.window?.makeKeyAndVisible()
+    }
+    
+    /// Leave dispatchGroup.
+    func leave(_ dispatchGroup: DispatchGroup) {
+        DispatchQueue.main.async {
+            dispatchGroup.leave()
+        }
+    }
+    /// Fetch data and perform task after all fetching tasks is finished executing.
+    func fetchData(_ onSuccess: @escaping () -> (), onFailure: @escaping () -> ()) {
+        var countSuccessTask = 0
+        let dispatchGroup = DispatchGroup()
+        
+        dispatchGroup.enter()
+        RequestEngine.getAllUsers {
+            self.leave(dispatchGroup)
+        } onSuccess: {
+            countSuccessTask += 1
+        }
+        dispatchGroup.enter()
+        RequestEngine.getAllMappings {
+            self.leave(dispatchGroup)
+        } onSuccess: {
+            countSuccessTask += 1
+        }
+        dispatchGroup.enter()
+        RequestEngine.getAllMappingPivots {
+            self.leave(dispatchGroup)
+        } onSuccess: {
+            countSuccessTask += 1
+        }
+        dispatchGroup.enter()
+        RequestEngine.getMyChatBoxes {
+            self.leave(dispatchGroup)
+        } onSuccess: {
+//            countSuccessTask += 1
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            DispatchQueue.main.async {
+                if (countSuccessTask == 3) {
+                    onSuccess()
+                } else {
+                    onFailure()
+                }
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
