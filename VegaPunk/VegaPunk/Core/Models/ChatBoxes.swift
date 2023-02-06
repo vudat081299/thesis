@@ -10,7 +10,7 @@ import Foundation
 var chatBoxesGlobal = ChatBoxes.retrieve()
 
 
-// MARK: Definition
+// MARK: - Definition
 /// This is a structure of `ChatBox` table on `Database`
 struct ChatBox: Codable {
     let id: UUID
@@ -133,23 +133,4 @@ extension ChatBoxes {
     var count: Int {
         return chatBoxes.count
     }
-    subscript(index: Int) -> ChatBox {
-        get {
-            // Return an appropriate subscript value here.
-            return chatBoxes[index]
-        }
-        set(newValue) {
-            // Perform a suitable setting action here.
-            chatBoxes[index] = newValue
-        }
-    }
-    subscript(chatBoxId: UUID) -> ChatBox? {
-        get {
-            // Return an appropriate subscript value here.
-            return chatBoxes.filter { $0.id == chatBoxId }.first
-        }
-    }
-//    func chatBox(_ memberMappingIds: [UUID]) -> ChatBox {
-//        <#function body#>
-//    }
 }

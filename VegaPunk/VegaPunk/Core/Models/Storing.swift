@@ -12,8 +12,9 @@ protocol Storing {
     /// This is a file name or NSUserDefaults key
     static var key: String { get }
     func store()
+//    func store() -> FunctionResult
     static func retrieve() -> T
-    mutating func update()
+//    mutating func update()
 }
 
 enum FunctionResult: Int {

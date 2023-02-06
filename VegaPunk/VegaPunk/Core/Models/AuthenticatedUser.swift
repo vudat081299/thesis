@@ -8,157 +8,136 @@
 import Foundation
 import Alamofire
 
-var userDataGlobal = AuthenticatedUser.retrieve()
 
+// MARK: - Definition
 struct AuthenticatedUser {
-    var userInformation: User?
-    var userId: UUID?
-    var token: String?
-    var mappingId: UUID?
-    var username: String?
-    var password: String?
-    
-    // NetWork configure
-    var domain: String? /// ex: http://192.168.1.168:8080/
-    var ip: String?
-    var port: String?
+    var credential: Credential?
+    var token: Token?
+    var data: User?
+    /// Network configure
+    var networkConfig: NetworkConfig?
 }
 
-struct Credential {
+struct Credential: Codable {
     var username: String
     var password: String
 }
 
-struct NetworkConfigure {
+struct NetworkConfig: Codable {
+    /// ex: http://192.168.1.168:8080/
     var domain: String
     var ip: String
     var port: String
 }
 
+
 // MARK: - Apply Codable
 extension AuthenticatedUser: Codable {
     enum Key: String, CodingKey {
-        case userInformation
-        case userId
+        case credential
         case token
-        case mappingId
-        case username
-        case password
-        
-        case domain
-        case ip
-        case port
+        case data
+        case networkConfig
     }
     
     
     // MARK: - Initializations
     init(_ credential: Credential) {
-        self.username = credential.username
-        self.password = credential.password
+        self.data = User(username: credential.username, password: credential.password)
     }
     
     init(_ token: Token) {
-        self.userId = token.user.id
-        self.token = token.value
+        self.token = token
+        self.data = User(id: token.user.id, token: token)
     }
     
-    init(_ networkConfigure: NetworkConfigure) {
-        self.domain = networkConfigure.domain
-        self.ip = networkConfigure.ip
-        self.port = networkConfigure.port
+    init(_ data: User) {
+        self.data = data
+        if let token = data.token {
+            self.token = token
+        }
     }
     
-    init(_ userInformation: User) {
-        self.userId = userInformation.id
-        self.username = userInformation.username
-        self.userInformation = userInformation
+    init(_ networkConfig: NetworkConfig) {
+        self.networkConfig = networkConfig
     }
-    
     
     
     // MARK: - Conform to Codable
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
-        userInformation = try container.decode(User?.self, forKey: .userInformation)
-        userId = try container.decode(UUID?.self, forKey: .userId)
-        token = try container.decode(String?.self, forKey: .token)
-        mappingId = try container.decode(UUID?.self, forKey: .mappingId)
-        username = try container.decode(String?.self, forKey: .username)
-        password = try container.decode(String?.self, forKey: .password)
-        
-        domain = try container.decode(String?.self, forKey: .domain)
-        ip = try container.decode(String?.self, forKey: .ip)
-        port = try container.decode(String?.self, forKey: .port)
+        credential = try container.decode(Credential?.self, forKey: .credential)
+        token = try container.decode(Token?.self, forKey: .token)
+        data = try container.decode(User?.self, forKey: .data)
+        networkConfig = try container.decode(NetworkConfig?.self, forKey: .networkConfig)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Key.self)
-        try container.encode(userInformation, forKey: .userInformation)
-        try container.encode(userId, forKey: .userId)
+        try container.encode(credential, forKey: .credential)
         try container.encode(token, forKey: .token)
-        try container.encode(mappingId, forKey: .mappingId)
-        try container.encode(username, forKey: .username)
-        try container.encode(password, forKey: .password)
-        
-        try container.encode(domain, forKey: .domain)
-        try container.encode(ip, forKey: .ip)
-        try container.encode(port, forKey: .port)
+        try container.encode(data, forKey: .data)
+        try container.encode(networkConfig, forKey: .networkConfig)
     }
 }
 
 
 // MARK: - Data handler
-extension AuthenticatedUser {
-    static var key: String {
-        get {
-            return "Authenticated_User_SAVING_KEY"
-        }
-    }
-    
+extension AuthenticatedUser: Storing {
     static func store(credential: Credential? = nil,
                       token: Token? = nil,
-                      networkConfigure: NetworkConfigure? = nil,
-                      userInformation: User? = nil
-    ) -> FunctionResult {
+                      networkConfig: NetworkConfig? = nil,
+                      data: User? = nil
+    ) {
         // Update existed UserData
-        if let existedUserData = retrieve() {
-            var user = existedUserData
-            let existedUserData = retrieve()
+        if var user = retrieve() {
             if let credential = credential {
-                user.username = credential.username
-                user.password = credential.password
+                user.credential = credential
+                if var data = user.data {
+                    data.username = credential.username
+                    data.password = credential.password
+                }
             }
             if let token = token {
-                user.userId = token.user.id
-                user.token = token.value
+                user.token = token
+                if var data = user.data {
+                    data.token = token
+                }
             }
-            if let networkConfigure = networkConfigure {
-                user.domain = networkConfigure.domain
-                user.ip = networkConfigure.ip
-                user.port = networkConfigure.port
+            if let data = data {
+                user.data = data
             }
-            if let userInformation = userInformation {
-                user.userId = userInformation.id
-                user.username = userInformation.username
-                user.userInformation = userInformation
+            if let networkConfig = networkConfig {
+                user.networkConfig = networkConfig
             }
-            return user.store()
+            user.store()
+            return
         }
         
         // Create and store
-        if let token = token {
-            return AuthenticatedUser(token).store()
-        }
         if let credential = credential {
             return AuthenticatedUser(credential).store()
         }
-        if let userInformation = userInformation {
-            return AuthenticatedUser(userInformation).store()
+        if let token = token {
+            return AuthenticatedUser(token).store()
         }
-        return .failure
+        if let networkConfig = networkConfig {
+            return AuthenticatedUser(networkConfig).store()
+        }
+        if let data = data {
+            return AuthenticatedUser(data).store()
+        }
+    }
+    
+    
+    // MARK: - Comform to Storing
+    static var key: String {
+        get {
+            return .KeyAuthenticatedUser
+        }
     }
     static func retrieve() -> AuthenticatedUser? {
-        if let data = UserDefaults.standard.data(forKey: key) {
+        if let data = UserDefaults.standard.data(forKey: .KeyAuthenticatedUser) {
             do {
                 return try PropertyListDecoder().decode(AuthenticatedUser?.self, from: data)
             } catch {
@@ -167,26 +146,12 @@ extension AuthenticatedUser {
         }
         return nil
     }
-    func update() {
-        if let data = UserDefaults.standard.data(forKey: AuthenticatedUser.key) {
-            do {
-                if let userData = try PropertyListDecoder().decode(AuthenticatedUser?.self, from: data) {
-                    userDataGlobal = userData
-                }
-            } catch {
-                print("Retrieve UserData object failed!")
-            }
-        }
-    }
-    func store() -> FunctionResult {
+    func store() {
         do {
             let userData = try PropertyListEncoder().encode(self)
-            UserDefaults.standard.set(userData, forKey: AuthenticatedUser.key)
-            self.update()
-            return .success
+            UserDefaults.standard.set(userData, forKey: .KeyAuthenticatedUser)
         } catch {
             print("Error when saving UserData object!")
-            return .failure
         }
     }
 }

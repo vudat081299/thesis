@@ -88,6 +88,11 @@ class ChattingViewController: UIViewController, UIImagePickerControllerDelegate,
     var socket: WebSocket!
     
     var data: UserExtractedData?
+    var authenticatedUser: AuthenticatedUser? {
+        get {
+            AuthenticatedUser.retrieve()
+        }
+    }
     
     
     
@@ -204,8 +209,10 @@ class ChattingViewController: UIViewController, UIImagePickerControllerDelegate,
     }
     
     func prepareWebSocket() {
-        print("ws://192.168.1.24:8080/api/messages/listen/" + (userDataGlobal?.mappingId!.uuidString)!)
-        var request = URLRequest(url: URL(string: "ws://192.168.1.24:8080/api/messages/listen/" + (userDataGlobal?.mappingId!.uuidString)!)!)
+        guard let mappingId = authenticatedUser?.data?.mappingId,
+              let webSocketURL = URL(string: "ws://192.168.1.24:8080/api/messages/listen/" + mappingId.uuidString)
+        else { return }
+        var request = URLRequest(url: webSocketURL)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
         socket.delegate = self
@@ -270,11 +277,10 @@ class ChattingViewController: UIViewController, UIImagePickerControllerDelegate,
     
     // MARK: - IBAction
     @IBAction func sendMessage(_ sender: UIButton) {
-//        push
-//        delegate?.sendMessage(data: data)
+        guard let mappingId = authenticatedUser?.data?.mappingId else { return }
         FeedBackTapEngine.tapped(style: .medium)
         guard let content = chatTextField.text else { return }
-        let messageObject = Message(id: UUID(), createdAt: Date().iso8601String, sender: (userDataGlobal?.mappingId)!, chatBoxId: (data?.chatBox!.id)!, mediaType: .text, content: content)
+        let messageObject = Message(id: UUID(), createdAt: Date().iso8601String, sender: mappingId, chatBoxId: (data?.chatBox!.id)!, mediaType: .text, content: content)
         RequestEngine.createMessage(messageObject)
 //        let encoder = JSONEncoder()
 //        guard let data = try? encoder.encode(messageObject) else { return }
@@ -471,23 +477,23 @@ extension ChattingViewController {
     // MARK: - Config datasource.
     /// - Tag: PinnedHeaderRegistration
     func configureDataSource() {
-            
+        guard let mappingId = authenticatedUser?.data?.mappingId else { return }
         self.dataSource = UICollectionViewDiffableDataSource<Int, Int>(collectionView: chatView) {
             (collectionView: UICollectionView, indexPath: IndexPath, identifier: Int) -> UICollectionViewCell? in
             if indexPath.section == self.messagesOfBox.count {
                 let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: "cell_at_last_section",
-                        for: indexPath)
+                    for: indexPath)
                 return cell
             }
             if indexPath.row == 0 {
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: FirstMessContentCellForSection.reuseIdentifier,
-                        for: indexPath) as? FirstMessContentCellForSection else { fatalError("Cannot create new cell") }
+                    for: indexPath) as? FirstMessContentCellForSection else { fatalError("Cannot create new cell") }
                 let message = self.messagesOfBox[indexPath.section]
                 
-                if message.sender.uuidString == userDataGlobal?.mappingId?.uuidString {
-                    cell.senderName.text = userDataGlobal?.userInformation?.name
+                if message.sender.uuidString == mappingId.uuidString {
+//                    cell.senderName.text = userDataGlobal?.data?.name
                     cell.senderName.textColor = .orange
                 } else {
                     cell.senderName.text = self.data?.user.name

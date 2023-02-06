@@ -51,7 +51,6 @@ class SignInViewController: UIViewController {
         passwordTextFieldContainer.border()
         passwordTextFieldContainer.dropShadow()
         
-        let _ = AuthenticatedUser.store(networkConfigure: NetworkConfigure(domain: "http://192.168.1.24:8080/", ip: "192.168.1.24", port: "8080"))
     }
     
     
@@ -64,7 +63,7 @@ class SignInViewController: UIViewController {
             self.stopLoadingAnimation()
         }
     }
-    func startLoadingAnimation () {
+    func startLoadingAnimation() {
         UIView.animate(withDuration: 0.3,
                        delay: 0.1,
                        options: [.curveEaseIn],
@@ -77,17 +76,18 @@ class SignInViewController: UIViewController {
                        }, completion: nil)
     }
     
-    func stopLoadingAnimation () {
+    func stopLoadingAnimation(_ completion: (() -> ())? = nil) {
         UIView.animate(withDuration: 1,
                        delay: 0.5,
                        options: [.curveEaseIn],
                        animations: { [weak self] in
-                        self!.loadingView.alpha = 0
-                       }, completion: {_ in
-                        self.loadingView.isHidden = true
-                        self.view.sendSubviewToBack(self.loadingView)
-                        self.animationLoadingView.stopAnimating()
-                       })
+            self!.loadingView.alpha = 0
+        }, completion: { _ in
+            if let completion = completion { completion() }
+            self.loadingView.isHidden = true
+            self.view.sendSubviewToBack(self.loadingView)
+            self.animationLoadingView.stopAnimating()
+        })
     }
     
     
@@ -106,68 +106,26 @@ class SignInViewController: UIViewController {
         credential.password = password
         return true
     }
-    /// Leave dispatchGroup.
-    func leave(_ dispatchGroup: DispatchGroup) {
-        DispatchQueue.main.async {
-            dispatchGroup.leave()
-        }
-    }
-    /// Fetch data and perform task after all fetching tasks is finished executing.
-    func fetchData() {
-        var countSuccessTask = 0
-        let dispatchGroup = DispatchGroup()
-        
-        dispatchGroup.enter()
-        RequestEngine.getAllUsers {
-            self.leave(dispatchGroup)
-        } onSuccess: {
-            countSuccessTask += 1
-        }
-        dispatchGroup.enter()
-        RequestEngine.getAllMappings {
-            self.leave(dispatchGroup)
-        } onSuccess: {
-            countSuccessTask += 1
-        }
-        dispatchGroup.enter()
-        RequestEngine.getAllMappingPivots {
-            self.leave(dispatchGroup)
-        } onSuccess: {
-            countSuccessTask += 1
-        }
-        dispatchGroup.enter()
-        RequestEngine.getMyChatBoxes {
-            self.leave(dispatchGroup)
-        } onSuccess: {
-//            countSuccessTask += 1
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            DispatchQueue.main.async { [self] in
-                if (countSuccessTask == 3) {
-                    self.stopLoadingAnimation()
-                    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()!
-                    viewController.modalPresentationStyle = .fullScreen
-                    present(viewController, animated:true, completion:nil)
-                    
-                } else {
-                    self.stopLoadingAnimation()
-                }
-            }
-        }
-    }
     
     
     // MARK: IBActions
     @IBAction func signIn(_ sender: UIButton) {
         if verifyInput() {
-            Auth.signIn(credential, onSuccess: {
-                self.startLoadingAnimation()
-                self.fetchData()
+            self.startLoadingAnimation()
+            Auth.signIn(credential,
+                        onSuccess: { [self] in
+                DataInteraction.fetchData { [self] in
+                    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()!
+                    viewController.modalPresentationStyle = .fullScreen
+                    present(viewController, animated:true, completion:nil)
+                }
+            },
+                        onFailure: { [self] in
+                stopLoadingAnimation()
             })
         }
     }
-        
+    
     @IBAction func hideKeyBoardTap(_ sender: UITapGestureRecognizer) {
         self.view.endEditing(true)
     }

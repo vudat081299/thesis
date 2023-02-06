@@ -16,7 +16,7 @@ struct MessagesController: RouteCollection {
         messagesRoutes.get(use: index)
         messagesRoutes.delete("remove", "all", use: deleteAllHandler)
         messagesRoutes.get("lastestUpdate", use: lastestUpdateTime)
-        messagesRoutes.get("from", ":time", use: getMessageFromTime)
+        messagesRoutes.get("from", ":time", use: getMessagesFromTime)
         
         /// WebSocket
         messagesRoutes.webSocket("listen", ":mappingId", onUpgrade: webSocketHandler)
@@ -56,7 +56,7 @@ struct MessagesController: RouteCollection {
         }
         return lastestUpdateTime
     }
-    func getMessageFromTime(req: Request) async throws -> [Message] {
+    func getMessagesFromTime(req: Request) async throws -> [Message] {
         guard let timestamp = req.parameters.get("time") else {
             throw Abort(.badRequest)
         }

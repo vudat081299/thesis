@@ -8,9 +8,8 @@
 import Foundation
 import Alamofire
 
-var queries = Queries()
 var bearerTokenHeaders: HTTPHeaders? {
-    guard let token = (AuthenticatedUser.retrieve()?.token) else { return nil }
+    guard let token = (AuthenticatedUser.retrieve()?.data?.token?.value) else { return nil }
     return [.authorization(bearerToken: token)]
 }
 
@@ -60,7 +59,7 @@ class RequestEngine {
     
     // MARK: - User
     static func getAllUsers(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.getAllUsers) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getAllUsers) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [User].self) { response in
                 switch response.result {
@@ -77,18 +76,18 @@ class RequestEngine {
             }
     }
     /// Update my user information
-    static func updateUser(_ myUserInformation: User, completion: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.updateUser) else { return }
+    static func updateUser(_ data: User, completion: (() -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(.updateUser) else { return }
         AF.request(
             query.genUrl(),
             method: query.httpMethod,
-            parameters: myUserInformation,
+            parameters: data,
             headers: bearerTokenHeaders
         )
         .responseDecodable(of: User.self) { response in
             switch response.result {
             case .success(let users):
-                let _ = AuthenticatedUser.store(userInformation: users)
+                let _ = AuthenticatedUser.store(data: users)
                 if let completion = completion { completion() }
                 break
             case .failure:
@@ -101,7 +100,7 @@ class RequestEngine {
     
     // MARK: - Mapping
     static func getAllMappings(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.getAllMappings) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getAllMappings) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ResolveMapping].self) { response in
                 switch response.result {
@@ -118,7 +117,7 @@ class RequestEngine {
             }
     }
     static func getMyChatBoxes(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.getMyChatBoxes) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getMyChatBoxes) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ChatBox].self) { response in
                 switch response.result {
@@ -135,14 +134,15 @@ class RequestEngine {
             }
     }
     static func createChatBox(_ friendMappingId: UUID, _ completion: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.createChatBox),
-              let userData = AuthenticatedUser.retrieve(),
-              let myMappingId = userData.mappingId,
+        guard let query = QueryBuilder.queryInfomation(.createChatBox),
+              let user = AuthenticatedUser.retrieve(),
+              let data = user.data,
+              let mappingId = data.mappingId,
               let url = URL(string: query.genUrl()),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
         let friendMappingIdString = friendMappingId.uuidString
-        let myMappingIdString = myMappingId.uuidString
-        let arrayData = [friendMappingIdString, myMappingIdString]
+        let mappingIdString = mappingId.uuidString
+        let arrayData = [friendMappingIdString, mappingIdString]
         var parameters: Parameters = [:]
         parameters["mappingIds"] = arrayData
         AF.request(
@@ -167,7 +167,7 @@ class RequestEngine {
     
     // MARK: - Chat box
     static func getMemberInChatBox(_ chatBoxId: UUID, _ completion: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.getMemberInChatBox, chatBoxId) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getMemberInChatBox, chatBoxId) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ResolveMapping].self) { response in
                 switch response.result {
@@ -203,7 +203,7 @@ class RequestEngine {
             }
     }
     static func getMessagesOfChatBox(_ chatBoxId: UUID, _ completion: (([WebSocketMessage]) -> ())? = nil) {
-        guard let query = queries.queryInfomation(.getMessagesOfChatBox, chatBoxId) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getMessagesOfChatBox, chatBoxId) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [WebSocketMessage].self) { response in
                 switch response.result {
@@ -229,7 +229,7 @@ class RequestEngine {
     
     // MARK: - Messages
     static func createMessage(_ message: Message, _ completion: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.createMessage),
+        guard let query = QueryBuilder.queryInfomation(.createMessage),
               let url = URL(string: query.genUrl()),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
         var parameters: Parameters = [:]
@@ -259,23 +259,16 @@ class RequestEngine {
     
     // MARK: - Pivot
     static func getAllMappingPivots(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.getAllMappingPivots) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getAllMappingPivots) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ResolvePivot].self) { response in
                 switch response.result {
                 case .success(let pivot):
-                    print(pivot)
-                    do {
-                        let encoder = JSONEncoder()
-                        let data = try encoder.encode(pivot)
-                        UserDefaults.standard.set(data, forKey: "Pivot_SAVE_KEY")
-                    } catch {
-                        print("Unable to Encode Array of Mappings (\(error))")
-                    }
-                    pivotGlobal = DataCentral.getPivot()
+                    MappingChatBoxPivots(resolvePivots: pivot).store()
                     if let onSuccess = onSuccess { onSuccess() }
                     break
-                case .failure:
+                case let .failure(error):
+                    print(error)
                     break
                 }
                 if let completion = completion { completion() }
@@ -283,31 +276,7 @@ class RequestEngine {
     }
 }
 
-/// Resolve Mapping structure or other Structure have mapping(sibling) relationship.
-struct ResolveMapping: Codable {
-    let id: UUID
-    let user: ResolveUUID
-    
-    func flatten() -> Mapping {
-        Mapping(id: id, userId: user.id)
-    }
-}
 
-struct Pivot {
-    let id: UUID
-    let mappingId: UUID
-    let chatBoxId: UUID
-}
-
-struct ResolvePivot: Codable {
-    let id: UUID
-    let mapping: ResolveUUID
-    let chatBox: ResolveUUID
-    
-    func flatten() -> Pivot {
-        Pivot(id: id, mappingId: mapping.id, chatBoxId: chatBox.id)
-    }
-}
 
 
 struct ResolveUUID: Codable {

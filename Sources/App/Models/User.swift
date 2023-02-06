@@ -32,6 +32,9 @@ import Vapor
 final class User: Model, Content {
     static let schema = "users"
     
+    var mappingId: UUID?
+    var token: Token?
+    
     @ID
     var id: UUID?
     
@@ -76,19 +79,7 @@ final class User: Model, Content {
     
     init() {}
     
-    init(id: UUID? = nil,
-         name: String,
-         username: String,
-         password: String,
-         email: String? = nil,
-         phone: String? = nil,
-         avatar: String? = nil,
-         gender: Gender? = nil,
-         birth: String? = nil,
-         country: String? = nil,
-         join: String? = nil,
-         bio: String? = nil,
-         siwaIdentifier: String? = nil) {
+    init(id: UUID? = nil, name: String, username: String, password: String, email: String? = nil, phone: String? = nil, avatar: String? = nil, gender: Gender? = nil, birth: String? = nil, country: String? = nil, join: String? = nil, bio: String? = nil, siwaIdentifier: String? = nil) {
 //        self.id = id
         self.name = name
         self.username = username
@@ -118,17 +109,7 @@ final class User: Model, Content {
         var join: String?
         var bio: String?
         
-        init(id: UUID? = nil,
-             name: String,
-             username: String,
-             email: String? = nil,
-             phone: String? = nil,
-             avatar: String? = nil,
-             gender: Gender? = nil,
-             birth: String? = nil,
-             country: String? = nil,
-             join: String? = nil,
-             bio: String? = nil) {
+        init(id: UUID? = nil, name: String, username: String, email: String? = nil, phone: String? = nil, avatar: String? = nil, gender: Gender? = nil, birth: String? = nil, country: String? = nil, join: String? = nil, bio: String? = nil) {
             self.id = id
             self.name = name
             self.username = username
@@ -145,6 +126,8 @@ final class User: Model, Content {
     
     final class Public: Content {
         var id: UUID?
+        var mappingId: UUID?
+        var token: Token?
         var name: String
         var username: String
         
@@ -155,17 +138,10 @@ final class User: Model, Content {
         var join: String?
         var bio: String?
         
-        init(id: UUID?,
-             name: String,
-             username: String,
-             
-             avatar: String? = nil,
-             gender: Gender? = nil,
-             birth: String? = nil,
-             country: String? = nil,
-             join: String? = nil,
-             bio: String? = nil) {
+        init(id: UUID?, mappingId: UUID? = nil, token: Token? = nil, name: String, username: String, avatar: String? = nil, gender: Gender? = nil, birth: String? = nil, country: String? = nil, join: String? = nil, bio: String? = nil) {
             self.id = id
+            self.mappingId = mappingId
+            self.token = token
             self.name = name
             self.username = username
             
@@ -181,7 +157,7 @@ final class User: Model, Content {
 
 extension User {
     func convertToPublic() -> User.Public {
-        return User.Public(id: id, name: name, username: username)
+        return User.Public(id: id, mappingId: mappingId, token: token, name: name, username: username, avatar: avatar, gender: gender, birth: birth, country: country, join: join, bio: bio)
     }
 }
 

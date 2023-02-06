@@ -7,26 +7,9 @@
 
 import UIKit
 
-enum ApplicationState {
-    case authorized, unauthorized
-    
-    /// Handle `instantiateViewController` on app state
-    func handleHierarchyOnState() -> UIViewController {
-        switch self {
-        case .unauthorized:
-            let storyboard = UIStoryboard(name: "UserAccess", bundle: nil)
-            return storyboard.instantiateViewController(identifier: "SignInNavigation")
-        case .authorized:
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            return storyboard.instantiateViewController(identifier: "MainTapBarController")
-        }
-    }
-}
-
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -34,71 +17,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead)
         guard let windowScene = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(windowScene: windowScene)
+        configureApplication()
         
         // MARK: - App become active
-        var appState: ApplicationState
-        appState = .unauthorized
-        if let authUser = AuthenticatedUser.retrieve(), authUser.token != nil {
+        var appState: ApplicationState = .unauthorized
+        if let user = AuthenticatedUser.retrieve(),
+            let data = user.data, data.token != nil {
             appState = .authorized
+        }
+        if appState == .authorized {
+            DataInteraction.fetchData { [self] in
+                configureWindow(on: appState)
+            }
         } else {
-            appState = .unauthorized
+            configureWindow(on: appState)
         }
-        fetchData {
-            self.window?.rootViewController = appState.handleHierarchyOnState()
-            self.window?.makeKeyAndVisible()
-        } onFailure: {
-            appState = .unauthorized
-            self.window?.rootViewController = appState.handleHierarchyOnState()
-            self.window?.makeKeyAndVisible()
-        }
-        
     }
     
-    /// Leave dispatchGroup.
-    func leave(_ dispatchGroup: DispatchGroup) {
-        DispatchQueue.main.async {
-            dispatchGroup.leave()
-        }
+    func configureWindow(on appState: ApplicationState) {
+        self.window?.rootViewController = appState.handleHierarchyOnState()
+        self.window?.makeKeyAndVisible()
     }
-    /// Fetch data and perform task after all fetching tasks is finished executing.
-    func fetchData(_ onSuccess: @escaping () -> (), onFailure: @escaping () -> ()) {
-        var countSuccessTask = 0
-        let dispatchGroup = DispatchGroup()
-        
-        dispatchGroup.enter()
-        RequestEngine.getAllUsers {
-            self.leave(dispatchGroup)
-        } onSuccess: {
-            countSuccessTask += 1
-        }
-        dispatchGroup.enter()
-        RequestEngine.getAllMappings {
-            self.leave(dispatchGroup)
-        } onSuccess: {
-            countSuccessTask += 1
-        }
-        dispatchGroup.enter()
-        RequestEngine.getAllMappingPivots {
-            self.leave(dispatchGroup)
-        } onSuccess: {
-            countSuccessTask += 1
-        }
-        dispatchGroup.enter()
-        RequestEngine.getMyChatBoxes {
-            self.leave(dispatchGroup)
-        } onSuccess: {
-//            countSuccessTask += 1
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            DispatchQueue.main.async {
-                if (countSuccessTask == 3) {
-                    onSuccess()
-                } else {
-                    onFailure()
-                }
-            }
-        }
+    
+    /// Configure default specification for application.
+    /// - ex: domain, ip, port,..
+    func configureApplication() {
+        AuthenticatedUser.store(networkConfig: NetworkConfig(domain: "http://192.168.1.24:8080/", ip: "192.168.1.24", port: "8080"))
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

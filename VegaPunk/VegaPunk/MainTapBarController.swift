@@ -18,7 +18,8 @@ struct ViewControllerData {
     // MARK: - Data.
     static var viewControllerDatas: [ViewControllerData] = {
         let array = [
-            ViewControllerData(title: "Profile", iconNormal: "person", selectedIcon: "person.fill", viewController: UINavigationController(rootViewController: ViewController()))
+//            ViewControllerData(title: "Profile", iconNormal: "person", selectedIcon: "person.fill", viewController: UINavigationController(rootViewController: ViewController())),
+            ViewControllerData(title: "Chat box", iconNormal: "message", selectedIcon: "message.fill", viewController: UINavigationController(rootViewController: ChatBoxViewController())),
         ]
         var dataList: [ViewControllerData] = []
         array.forEach {
@@ -39,6 +40,11 @@ class MainTabBarController: UITabBarController {
     // MARK: - Life cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Do any additional setup after loading the view.
+        ViewControllerData.viewControllerDatas.forEach {
+            viewControllers?.append($0.viewController)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,4 +60,10 @@ class MainTabBarController: UITabBarController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    
+    // MARK: - App default configuration
+//    override var prefersStatusBarHidden: Bool {
+//        return true
+//    }
 }

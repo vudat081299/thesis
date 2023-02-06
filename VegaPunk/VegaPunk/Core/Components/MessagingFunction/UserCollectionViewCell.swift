@@ -7,6 +7,8 @@
 
 import UIKit
 
+
+// MARK: - Definition
 enum HighLightColor: Int {
     case red, blue, orange, green, purple, cyan, mint, gray
     func color() -> UIColor {
@@ -63,10 +65,12 @@ class UserCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        prepareCell()
+        prepare()
     }
     
-    func prepareCell() {
+    func prepare(with userExtractedData: UserExtractedData? = nil) {
+        guard let validatedData = userExtractedData else { return }
+        data = validatedData
         let avatarLabels = ["🐝", "😝", "🍌", "☔️", "😊", "☕️"]
         if let userInfor = data.user.avatar, let avatar = Int(userInfor) {
             icon.text = avatarLabels[avatar]

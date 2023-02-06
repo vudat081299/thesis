@@ -35,10 +35,10 @@ struct UsersController: RouteCollection {
         let usersRoute = routes.grouped("api", "users")
         
         usersRoute.get(use: getAllHandler)
-        usersRoute.get(":userID", use: getHandler)
-        usersRoute.get(":userID", "mapping", use: getMappingsHandler)
+        usersRoute.get(":userId", use: getHandler)
+        usersRoute.get(":userId", "mapping", use: getMappingsHandler)
         usersRoute.get("lastestUpdate", use: lastestUpdateTime)
-        usersRoute.get("from", ":time", use: getMessageFromTime)
+        usersRoute.get("from", ":time", use: getUsersFromTime)
         usersRoute.post("siwa", use: signInWithApple)
         usersRoute.post(use: createHandler)
         
@@ -58,27 +58,36 @@ struct UsersController: RouteCollection {
     
     
     // MARK: - Create
-    func createHandler(_ req: Request) async throws -> User {
+    func createHandler(_ req: Request) async throws -> User.Public {
         let newUser = try req.content.decode(User.self)
         newUser.password = try Bcrypt.hash(newUser.password)
         try await newUser.save(on: req.db)
         try await Mapping(userID: newUser.requireID()).save(on: req.db)
-        return newUser
+        return newUser.convertToPublic()
     }
     
     
     // MARK: - Get
-    func getAllHandler(_ req: Request) async throws -> [User] {
-        try await User.query(on: req.db).all()
+    func getAllHandler(_ req: Request) async throws -> [User.Public] {
+        let users = try await User.query(on: req.db).all()
+//        let mappings = try await Mapping.query(on: req.db).all()
+        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
+        let filledMappingIdUsers: [User] = users.map { publicUser in
+            publicUser.mappingId = mappings[publicUser.id!]
+            return publicUser
+        }
+        return filledMappingIdUsers.convertToPublic()
     }
-    func getHandler(_ req: Request) async throws -> User {
-        guard let user = try await User.find(req.parameters.get("userID"), on: req.db) else {
+    func getHandler(_ req: Request) async throws -> User.Public {
+        guard let user = try await User.find(req.parameters.get("userId"), on: req.db) else {
            throw Abort(.notFound)
         }
-        return user
+        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
+        user.mappingId = mappings[user.id!]
+        return user.convertToPublic()
     }
     func getMappingsHandler(_ req: Request) async throws -> [Mapping] {
-        guard let user = try await User.find(req.parameters.get("userID"), on: req.db) else {
+        guard let user = try await User.find(req.parameters.get("userId"), on: req.db) else {
             return []
         }
         return try await user.$mappings.get(on: req.db)
@@ -89,20 +98,29 @@ struct UsersController: RouteCollection {
         }
         return lastestUpdateTime
     }
-    func getMessageFromTime(req: Request) async throws -> [User] {
+    func getUsersFromTime(req: Request) async throws -> [User.Public] {
         guard let timestamp = req.parameters.get("time") else {
             throw Abort(.badRequest)
         }
-        return try await User.query(on: req.db).filter(\.$join > timestamp).all()
+        let users = try await User.query(on: req.db).filter(\.$join > timestamp).all()
+        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
+        let filledMappingIdUsers: [User] = users.map { user in
+            user.mappingId = mappings[user.id!]
+            return user
+        }
+        return filledMappingIdUsers.convertToPublic()
     }
     
     
-    // MARK: - Post <methods>
-    func loginHandler(_ req: Request) async throws -> Token {
+    // MARK: - Post
+    func loginHandler(_ req: Request) async throws -> User.Public {
         let user = try req.auth.require(User.self)
         let token = try Token.generate(for: user)
         try await token.save(on: req.db)
-        return token
+        user.token = token
+        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
+        user.mappingId = mappings[user.id!]
+        return user.convertToPublic()
     }
     func signInWithApple(_ req: Request) throws -> EventLoopFuture<Token> {
         struct SignInWithAppleToken: Content {
@@ -140,7 +158,7 @@ struct UsersController: RouteCollection {
     
     
     // MARK: - Update
-    func updateHandler(_ req: Request) async throws -> User {
+    func updateHandler(_ req: Request) async throws -> User.Public {
         print("handler 😀😀😀: \(#function), line: \(#line)")
         let user = try req.auth.require(User.self)
         let updateUserData = try req.content.decode(User.ResolveUpdateModel.self)
@@ -158,7 +176,9 @@ struct UsersController: RouteCollection {
         if let join = updateUserData.join { user.join = join }
         print("handler 😀😀😀: \(#function), line: \(#line), \(String(describing: user.country))")
         try await user.save(on: req.db)
-        return user
+        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
+        user.mappingId = mappings[user.id!]
+        return user.convertToPublic()
     }
     
 }

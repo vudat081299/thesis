@@ -9,31 +9,29 @@ import UIKit
 import Alamofire
 
 class Auth {
-    static func signIn(_ credential: Credential,
-                       completion: (() -> ())? = nil,
-                       onSuccess: (() -> ())? = nil,
-                       onFailure: (() -> ())? = nil) {
-        let _ = AuthenticatedUser.store(credential: credential)
+    static func signIn(_ credential: Credential, completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil) {
+        print("Request: file - \(#file), class - \(self), func - \(#function), line: \(#line)")
+        AuthenticatedUser.store(credential: credential)
         let headers: HTTPHeaders = [.authorization(username: credential.username, password: credential.password)]
-        guard let query = queries.queryInfomation(.signIn) else { return }
+        guard let query = QueryBuilder.queryInfomation(.signIn) else { return }
         AF.request(query.genUrl(), method: query.httpMethod, headers: headers)
-            .responseDecodable(of: Token.self) { response in
+            .responseDecodable(of: User.self) { response in
                 switch response.result {
-                case .success(let token):
-                    print(token.value)
-                    let _ = AuthenticatedUser.store(token: token)
-                    getUserMapping(onSuccess: onSuccess)
+                case .success(let user):
+                    print("Request success: file - \(#file), class - \(self), func - \(#function), line: \(#line) \n \(user)")
+                    AuthenticatedUser.store(data: user)
+                    ConcurrencyInteraction.mainQueueAsync(onSuccess)
                     break
-                case .failure:
-                    print("Sign in fail!")
-                    if let onFailure = onFailure { onFailure() }
+                case .failure(let error):
+                    print("Request failure: file - \(#file), class - \(self), func - \(#function), line: \(#line) \n \(error)")
+                    ConcurrencyInteraction.mainQueueAsync(onFailure)
                     break
                 }
-                if let completion = completion { completion() }
+                ConcurrencyInteraction.mainQueueAsync(completion)
             }
     }
     static func signUp(_ user: User, _ completion: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.signUp) else { return }
+        guard let query = QueryBuilder.queryInfomation(.signUp) else { return }
         var parameters: Parameters = [:]
         parameters["id"] = user.id
         parameters["name"] = user.name
@@ -51,7 +49,6 @@ class Auth {
                 switch response.result {
                 case .success(let user):
                     print(user)
-                    let _ = AuthenticatedUser.store(userInformation: user)
                     if let completion = completion { completion() }
                     break
                 case .failure:
@@ -63,25 +60,25 @@ class Auth {
     static func getUserMapping(completion: (() -> ())? = nil,
                                onSuccess: (() -> ())? = nil,
                                onFailure: (() -> ())? = nil) {
-        guard let query = queries.queryInfomation(.getUserMapping) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getUserMapping) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [ResolveMapping].self) { response in
                 switch response.result {
                 case .success(let resolvedMapping):
                     print(resolvedMapping)
-                    guard var userData = AuthenticatedUser.retrieve() else { break }
+                    guard var user = AuthenticatedUser.retrieve() else { break }
                     if resolvedMapping.count > 0 {
-                        userData.mappingId = resolvedMapping[0].id
-                        let _ = userData.store()
+                        user.data?.mappingId = resolvedMapping[0].id
+                        user.store()
                     }
-                    if let onSuccess = onSuccess { onSuccess() }
+                    ConcurrencyInteraction.mainQueueAsync(onSuccess)
                     break
                 case .failure:
                     print("getUserMapping() fail!")
-                    if let onFailure = onFailure { onFailure() }
+                    ConcurrencyInteraction.mainQueueAsync(onFailure)
                     break
                 }
-                if let completion = completion { completion() }
+                ConcurrencyInteraction.mainQueueAsync(completion)
             }
     }
 }

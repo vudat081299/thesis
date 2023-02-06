@@ -7,7 +7,8 @@
 
 import Foundation
 
-// MARK: Definition
+
+// MARK: - Definition
 enum MediaType: String, Codable {
     case text, file
 }

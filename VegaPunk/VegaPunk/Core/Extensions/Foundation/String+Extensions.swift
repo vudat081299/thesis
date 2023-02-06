@@ -44,3 +44,21 @@ extension String {
         return nil
     }
 }
+
+
+// MARK: - Storing UserDefaults Keys or Storing file paths
+extension String {
+    // Keys
+    static let KeyAuthenticatedUser = "KEY_AUTHENTICATED_USER"
+    
+    // File paths
+}
+
+
+// MARK: - Hash to 16bit
+extension String {
+    var fourBitHash: Int {
+        self.utf8.reduce(0) { $0 + Int($1) } % 16
+    }
+}
+

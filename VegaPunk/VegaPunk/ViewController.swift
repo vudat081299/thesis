@@ -19,13 +19,6 @@ class ViewController: UIViewController {
     var userExtractedDataList = [UserExtractedData]()
     
     
-    // MARK: - App default configuration
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
-    
-    
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +30,7 @@ class ViewController: UIViewController {
         applySnapshot()
     }
     
-    
-    
+
     func prepareNavigationViewController() {
         title = "Explore"
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -50,11 +42,6 @@ class ViewController: UIViewController {
     
     // MARK: - Mini tasks
     func prepareData() {
-//        Friend.retrieve().friends.forEach {
-//            if let userMappingId = userDataGlobal?.mappingId, let friendId = $0.id, let friendMappingId = mappingsGlobal.mappingId(friendId), let chatBoxId = pivotGlobal.hasChatBox(between: [userMappingId, friendMappingId]) {
-//                cellData.append(UserCellData(chatBox: ChatBoxes.retrieve()[chatBoxId], friendInformation: $0, friendMappingId: friendMappingId))
-//            }
-//        }
         let mappings = Mappings.retrieve()
         let friends = Friend.retrieve().friends
         friends.forEach {
@@ -175,8 +162,7 @@ extension ViewController {
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: UserCollectionViewCell.reuseIdentifier,
                 for: indexPath) as? UserCollectionViewCell else { fatalError("Cannot create new cell!") }
-            cell.data = data
-            cell.prepareCell()
+            cell.prepare(with: data)
             return cell
         }
     }

@@ -9,16 +9,21 @@ import Foundation
 
 var mappingsGlobal = Mappings.retrieve()
 
-// MARK: Definition
+
+// MARK: - Definition
 /// This is a structure of `Mapping` table on `Database`
 struct Mapping: Codable {
     let id: UUID?
-    var user: ResolveUUID?
     var userId: UUID?
+}
+
+/// Resolve Mapping structure or other Structure have mapping(sibling) relationship.
+struct ResolveMapping: Codable {
+    let id: UUID
+    let user: ResolveUUID
     
-    func flatten() -> Mapping? {
-        guard let user = user else { return nil }
-        return Mapping(id: id, userId: user.id)
+    func flatten() -> Mapping {
+        Mapping(id: id, userId: user.id)
     }
 }
 
@@ -30,7 +35,7 @@ struct Mappings {
     }
     
     init(resolveMappings: [ResolveMapping]) {
-        self.mappings = resolveMappings.map { Mapping(id: $0.id, userId: $0.user.id) }
+        self.mappings = resolveMappings.map { $0.flatten() }
     }
 }
 

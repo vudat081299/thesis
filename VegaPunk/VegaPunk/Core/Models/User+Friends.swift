@@ -7,10 +7,13 @@
 
 import Foundation
 
-// MARK: Definition
+
+// MARK: - Definition
 /// This is a structure of `User` table on `Database`
 struct User: Codable {
     var id: UUID?
+    var mappingId: UUID?
+    var token: Token?
     var name: String?
     var username: String?
     var email: String?
@@ -28,7 +31,7 @@ struct User: Codable {
 struct Friend {
     var friends: [User]
     init(_ friends: [User] = []) {
-        self.friends = friends.filter { $0.id != AuthenticatedUser.retrieve()?.userId }
+        self.friends = friends.filter { $0.id != AuthenticatedUser.retrieve()?.data?.id }
     }
 }
 

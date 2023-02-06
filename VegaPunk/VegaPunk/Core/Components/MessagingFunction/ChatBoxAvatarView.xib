@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatBoxAvatarView" customModule="VegaPunk" customModuleProvider="target">
+            <connections>
+                <outlet property="icon" destination="Ezb-RQ-5BS" id="ViQ-7P-ua6"/>
+                <outlet property="image" destination="k1P-dD-bcP" id="y7M-4z-84H"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="603" height="151"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wKT-ko-Vj2">
+                    <rect key="frame" x="0.0" y="0.0" width="603" height="151"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="k1P-dD-bcP">
+                            <rect key="frame" x="0.0" y="0.0" width="603" height="151"/>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="😁" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ezb-RQ-5BS">
+                            <rect key="frame" x="0.0" y="65" width="603" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="Ezb-RQ-5BS" secondAttribute="trailing" id="1c7-yg-IaH"/>
+                        <constraint firstItem="k1P-dD-bcP" firstAttribute="top" secondItem="wKT-ko-Vj2" secondAttribute="top" id="6kH-EL-MUX"/>
+                        <constraint firstItem="k1P-dD-bcP" firstAttribute="leading" secondItem="wKT-ko-Vj2" secondAttribute="leading" id="Kga-CF-stM"/>
+                        <constraint firstItem="Ezb-RQ-5BS" firstAttribute="centerY" secondItem="wKT-ko-Vj2" secondAttribute="centerY" id="PbY-Ms-6Gb"/>
+                        <constraint firstAttribute="trailing" secondItem="k1P-dD-bcP" secondAttribute="trailing" id="fjt-Sw-EzC"/>
+                        <constraint firstAttribute="bottom" secondItem="k1P-dD-bcP" secondAttribute="bottom" id="lUk-gw-jmF"/>
+                        <constraint firstItem="Ezb-RQ-5BS" firstAttribute="leading" secondItem="wKT-ko-Vj2" secondAttribute="leading" id="pL9-ab-G7H"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="wKT-ko-Vj2" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="HxC-tC-tMS"/>
+                <constraint firstItem="wKT-ko-Vj2" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="KCT-nX-pqA"/>
+                <constraint firstItem="wKT-ko-Vj2" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="OFz-lF-sbg"/>
+                <constraint firstAttribute="bottom" secondItem="wKT-ko-Vj2" secondAttribute="bottom" id="fPf-c4-oLW"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="274.63768115942031" y="339.17410714285711"/>
+        </view>
+    </objects>
+</document>
