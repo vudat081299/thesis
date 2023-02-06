@@ -18,8 +18,8 @@
 		84A8276E298FACB800753846 /* ChatBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A8276C298FACB800753846 /* ChatBoxViewController.xib */; };
 		84A82770298FAD8E00753846 /* MappingChatBoxPivot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8276F298FAD8E00753846 /* MappingChatBoxPivot.swift */; };
 		84A827742990188D00753846 /* UUID+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A827732990188D00753846 /* UUID+Extensions.swift */; };
-		84A827852990412100753846 /* ChatBoxAvatarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A827832990412100753846 /* ChatBoxAvatarView.xib */; };
-		84A827862990412100753846 /* ChatBoxAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A827842990412100753846 /* ChatBoxAvatarView.swift */; };
+		84A827852990412100753846 /* ChatBoxAvatarView-Deprecated.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A827832990412100753846 /* ChatBoxAvatarView-Deprecated.xib */; };
+		84A827862990412100753846 /* ChatBoxAvatarView-Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A827842990412100753846 /* ChatBoxAvatarView-Deprecated.swift */; };
 		84A93841296AAA0C008ED0DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93840296AAA0C008ED0DC /* AppDelegate.swift */; };
 		84A93843296AAA0C008ED0DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93842296AAA0C008ED0DC /* SceneDelegate.swift */; };
 		84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93844296AAA0C008ED0DC /* ViewController.swift */; };
@@ -99,6 +99,10 @@
 		84A9391E296B3C36008ED0DC /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391D296B3C36008ED0DC /* Array+Extensions.swift */; };
 		84A93921296B65C0008ED0DC /* UserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */; };
 		84A93922296B65C0008ED0DC /* UserCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */; };
+		84B950C129916F7F009EBBB8 /* ChatBoxAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B950C029916F7F009EBBB8 /* ChatBoxAvatarView.swift */; };
+		84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84B950C229916F88009EBBB8 /* ChatBoxAvatarView.xib */; };
+		84B950C529918820009EBBB8 /* ReusableUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B950C429918820009EBBB8 /* ReusableUIView.swift */; };
+		84B950C829919492009EBBB8 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 84B950C729919492009EBBB8 /* Nuke */; };
 		84CDE8DB298985360067C512 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CDE8DA298985360067C512 /* Messages.swift */; };
 /* End PBXBuildFile section */
 
@@ -130,8 +134,8 @@
 		84A8276C298FACB800753846 /* ChatBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatBoxViewController.xib; sourceTree = "<group>"; };
 		84A8276F298FAD8E00753846 /* MappingChatBoxPivot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MappingChatBoxPivot.swift; sourceTree = "<group>"; };
 		84A827732990188D00753846 /* UUID+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UUID+Extensions.swift"; sourceTree = "<group>"; };
-		84A827832990412100753846 /* ChatBoxAvatarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatBoxAvatarView.xib; sourceTree = "<group>"; };
-		84A827842990412100753846 /* ChatBoxAvatarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatBoxAvatarView.swift; sourceTree = "<group>"; };
+		84A827832990412100753846 /* ChatBoxAvatarView-Deprecated.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "ChatBoxAvatarView-Deprecated.xib"; sourceTree = "<group>"; };
+		84A827842990412100753846 /* ChatBoxAvatarView-Deprecated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatBoxAvatarView-Deprecated.swift"; sourceTree = "<group>"; };
 		84A9383D296AAA0C008ED0DC /* VegaPunk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VegaPunk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84A93840296AAA0C008ED0DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84A93842296AAA0C008ED0DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -214,6 +218,9 @@
 		84A9391D296B3C36008ED0DC /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserCollectionViewCell.swift; sourceTree = "<group>"; };
 		84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UserCollectionViewCell.xib; sourceTree = "<group>"; };
+		84B950C029916F7F009EBBB8 /* ChatBoxAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBoxAvatarView.swift; sourceTree = "<group>"; };
+		84B950C229916F88009EBBB8 /* ChatBoxAvatarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatBoxAvatarView.xib; sourceTree = "<group>"; };
+		84B950C429918820009EBBB8 /* ReusableUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableUIView.swift; sourceTree = "<group>"; };
 		84CDE8DA298985360067C512 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -222,6 +229,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84B950C829919492009EBBB8 /* Nuke in Frameworks */,
 				84A93910296AD3F8008ED0DC /* Alamofire in Frameworks */,
 				843CEE38296BAD7300A09695 /* Starscream in Frameworks */,
 			);
@@ -244,15 +252,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		843CEE35296B998C00A09695 /* Messaging */ = {
+		843CEE35296B998C00A09695 /* ChatBox */ = {
 			isa = PBXGroup;
 			children = (
+				84B950BF29916EB7009EBBB8 /* Components */,
 				84A8276B298FACB700753846 /* ChatBoxViewController.swift */,
 				84A8276C298FACB800753846 /* ChatBoxViewController.xib */,
 				843CEE25296B991C00A09695 /* ChattingViewController.swift */,
 				843CEE26296B991C00A09695 /* ChattingViewController.xib */,
 			);
-			path = Messaging;
+			path = ChatBox;
 			sourceTree = "<group>";
 		};
 		84A93834296AAA0C008ED0DC = {
@@ -287,7 +296,7 @@
 				84A93873296AAABD008ED0DC /* Core */,
 				84A9384E296AAA0F008ED0DC /* LaunchScreen.storyboard */,
 				84A93846296AAA0C008ED0DC /* Main.storyboard */,
-				843CEE35296B998C00A09695 /* Messaging */,
+				843CEE35296B998C00A09695 /* ChatBox */,
 				84A93905296AAAFC008ED0DC /* UserAccess */,
 				84A93849296AAA0C008ED0DC /* VegaPunk.xcdatamodeld */,
 			);
@@ -475,10 +484,6 @@
 		84A938A5296AAABD008ED0DC /* MessagingFunction */ = {
 			isa = PBXGroup;
 			children = (
-				84A827842990412100753846 /* ChatBoxAvatarView.swift */,
-				84A827832990412100753846 /* ChatBoxAvatarView.xib */,
-				84A938A8296AAABD008ED0DC /* ChatBoxTableViewCell.swift */,
-				84A938AA296AAABD008ED0DC /* ChatBoxTableViewCell.xib */,
 				84A938A7296AAABD008ED0DC /* CustomListCell.swift */,
 				84A938A6296AAABD008ED0DC /* CustomListCell.xib */,
 				84A938AF296AAABD008ED0DC /* FirstMessContentCellForSection.swift */,
@@ -507,6 +512,7 @@
 				84A938B2296AAABD008ED0DC /* LoadingAndIndicatorAnimation */,
 				84A938BD296AAABD008ED0DC /* GradientView.swift */,
 				84A938BE296AAABD008ED0DC /* Presentor */,
+				84B950C429918820009EBBB8 /* ReusableUIView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -602,6 +608,19 @@
 			path = UserAccess;
 			sourceTree = "<group>";
 		};
+		84B950BF29916EB7009EBBB8 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				84A827842990412100753846 /* ChatBoxAvatarView-Deprecated.swift */,
+				84A827832990412100753846 /* ChatBoxAvatarView-Deprecated.xib */,
+				84A938A8296AAABD008ED0DC /* ChatBoxTableViewCell.swift */,
+				84A938AA296AAABD008ED0DC /* ChatBoxTableViewCell.xib */,
+				84B950C029916F7F009EBBB8 /* ChatBoxAvatarView.swift */,
+				84B950C229916F88009EBBB8 /* ChatBoxAvatarView.xib */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		84CDE8D9298984CF0067C512 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -629,6 +648,7 @@
 			packageProductDependencies = (
 				84A9390F296AD3F8008ED0DC /* Alamofire */,
 				843CEE37296BAD7300A09695 /* Starscream */,
+				84B950C729919492009EBBB8 /* Nuke */,
 			);
 			productName = VegaPunk;
 			productReference = 84A9383D296AAA0C008ED0DC /* VegaPunk.app */;
@@ -706,6 +726,7 @@
 				84A9390E296AD3F8008ED0DC /* XCRemoteSwiftPackageReference "Alamofire" */,
 				843CEE36296BAD7300A09695 /* XCRemoteSwiftPackageReference "Starscream" */,
 				843CEE39296BD4F900A09695 /* XCRemoteSwiftPackageReference "WebRTC" */,
+				84B950C629919491009EBBB8 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			productRefGroup = 84A9383E296AAA0C008ED0DC /* Products */;
 			projectDirPath = "";
@@ -724,8 +745,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				84A938E9296AAABD008ED0DC /* SignupInputTableViewCell.xib in Resources */,
+				84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */,
 				84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */,
-				84A827852990412100753846 /* ChatBoxAvatarView.xib in Resources */,
+				84A827852990412100753846 /* ChatBoxAvatarView-Deprecated.xib in Resources */,
 				84A938ED296AAABD008ED0DC /* CustomListCell.xib in Resources */,
 				84A938F0296AAABE008ED0DC /* MessContentCell.xib in Resources */,
 				84A938F2296AAABE008ED0DC /* FirstMessContentCellForSection.xib in Resources */,
@@ -768,7 +790,7 @@
 			files = (
 				84A938D2296AAABD008ED0DC /* Upload.swift in Sources */,
 				84A8276D298FACB800753846 /* ChatBoxViewController.swift in Sources */,
-				84A827862990412100753846 /* ChatBoxAvatarView.swift in Sources */,
+				84A827862990412100753846 /* ChatBoxAvatarView-Deprecated.swift in Sources */,
 				84CDE8DB298985360067C512 /* Messages.swift in Sources */,
 				84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */,
 				84A938D8296AAABD008ED0DC /* UICollectionViewCell.swift in Sources */,
@@ -783,6 +805,7 @@
 				84A93909296AAB63008ED0DC /* SignInViewController.swift in Sources */,
 				84A82770298FAD8E00753846 /* MappingChatBoxPivot.swift in Sources */,
 				84A938FB296AAABE008ED0DC /* NVActivityIndicatorView.swift in Sources */,
+				84B950C129916F7F009EBBB8 /* ChatBoxAvatarView.swift in Sources */,
 				84A93912296AD43B008ED0DC /* ResourceRequest.swift in Sources */,
 				84A938F3296AAABE008ED0DC /* HeaderSessionChat.swift in Sources */,
 				84A827742990188D00753846 /* UUID+Extensions.swift in Sources */,
@@ -801,6 +824,7 @@
 				84A938E0296AAABD008ED0DC /* CacheData.swift in Sources */,
 				84A93916296B1965008ED0DC /* RouteCoodinator.swift in Sources */,
 				84A938E7296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift in Sources */,
+				84B950C529918820009EBBB8 /* ReusableUIView.swift in Sources */,
 				84A938DF296AAABD008ED0DC /* Data+Extensions.swift in Sources */,
 				84A938E5296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift in Sources */,
 				84A938F7296AAABE008ED0DC /* NVActivityIndicatorPresenter.swift in Sources */,
@@ -1204,6 +1228,14 @@
 				kind = branch;
 			};
 		};
+		84B950C629919491009EBBB8 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vudat081299/Nuke.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1216,6 +1248,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 84A9390E296AD3F8008ED0DC /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		84B950C729919492009EBBB8 /* Nuke */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84B950C629919491009EBBB8 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = Nuke;
 		};
 /* End XCSwiftPackageProductDependency section */
 

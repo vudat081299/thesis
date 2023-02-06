@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "nuke",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vudat081299/Nuke.git",
+      "state" : {
+        "revision" : "3ed0597082b40932481fb8971af8813a4284203c",
+        "version" : "1.0.0"
+      }
+    },
+    {
       "identity" : "starscream",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/daltoniam/Starscream",

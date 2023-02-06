@@ -49,7 +49,6 @@ extension UIView {
 
     func addDashedBorder(width: CGFloat? = nil, height: CGFloat? = nil, lineWidth: CGFloat = 2, lineDashPattern:[NSNumber]? = [6,3], strokeColor: UIColor = UIColor.red, fillColor: UIColor = UIColor.clear) {
         
-        
         var fWidth: CGFloat? = width
         var fHeight: CGFloat? = height
         
@@ -77,5 +76,4 @@ extension UIView {
         
         self.layer.addSublayer(shapeLayer)
     }
-    
 }
