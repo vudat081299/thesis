@@ -15,17 +15,18 @@ var mappingsGlobal = Mappings.retrieve()
 struct Mapping: Codable {
     let id: UUID?
     var userId: UUID?
-}
-
-/// Resolve Mapping structure or other Structure have mapping(sibling) relationship.
-struct ResolveMapping: Codable {
-    let id: UUID
-    let user: ResolveUUID
     
-    func flatten() -> Mapping {
-        Mapping(id: id, userId: user.id)
+    /// Resolve Mapping structure or other Structure have mapping(sibling) relationship.
+    struct Resolve: Codable {
+        let id: UUID
+        let user: ResolveUUID
+        
+        func flatten() -> Mapping {
+            Mapping(id: id, userId: user.id)
+        }
     }
 }
+
 
 struct Mappings {
     var mappings: [Mapping] = []
@@ -34,8 +35,8 @@ struct Mappings {
         self.mappings = mappings
     }
     
-    init(resolveMappings: [ResolveMapping]) {
-        self.mappings = resolveMappings.map { $0.flatten() }
+    init(resolves: [Mapping.Resolve]) {
+        self.mappings = resolves.map { $0.flatten() }
     }
 }
 
@@ -89,51 +90,41 @@ extension Mappings: Codable {
 
 // MARK: - Data handler
 extension Mappings: Storing {
-    static var key: String {
-        get {
-            return "Mappings"
-        }
-    }
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(Mappings.key)
-            print("Mappings storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
                 try encoder.encode(self).write(to: storageFilePath)
             }
             catch {
-                print("Store mappings failed! \(error)")
+                print("Store mappings to file failed! \(error)")
             }
         }
     }
     static func retrieve() -> Mappings {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(key)
-            print("Retrieve data from mappings storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
                 let mappings = try JSONDecoder().decode(Mappings.self, from: jsonData)
                 return mappings
             }
             catch {
-                print("Retrieve mappings failed! \(error)")
+                print("Retrieve mappings from file failed! \(error)")
             }
         }
         return Mappings()
     }
-    mutating func update() {
+    static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(Mappings.key)
-            print("Retrieve data from mappings storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
-                let mappings = try JSONDecoder().decode(Mappings.self, from: jsonData)
-                self.mappings = mappings.mappings
+                try FileManager.default.removeItem(at: storageFilePath)
             }
             catch {
-                print("Retrieve mappings failed! \(error)")
+                print("Remove mappings file failed! \(error)")
             }
         }
     }

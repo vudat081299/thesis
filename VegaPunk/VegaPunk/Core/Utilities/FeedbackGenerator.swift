@@ -10,17 +10,17 @@ import UIKit
 struct FeedBackTapEngine {
     static func tapped(style: UIImpactFeedbackGenerator.FeedbackStyle?, type: UINotificationFeedbackGenerator.FeedbackType? = .success) {
         
-        if let feedbackStyle = style {
-            let generator = UIImpactFeedbackGenerator(style: feedbackStyle)
-            generator.impactOccurred()
-            return
-        }
-        
-        if let feedbackType = type {
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(feedbackType)
-            return
-        }
+//        if let feedbackStyle = style {
+//            let generator = UIImpactFeedbackGenerator(style: feedbackStyle)
+//            generator.impactOccurred()
+//            return
+//        }
+//        
+//        if let feedbackType = type {
+//            let generator = UINotificationFeedbackGenerator()
+//            generator.notificationOccurred(feedbackType)
+//            return
+//        }
         
         //    switch type {
         //    case 1:

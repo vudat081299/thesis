@@ -34,7 +34,7 @@ class HeaderSessionChat: UICollectionReusableView {
         super.prepareForReuse()
         
         constraint.constant = 0
-        avatar.image = nil
+//        avatar.image = nil
     }
 }
 

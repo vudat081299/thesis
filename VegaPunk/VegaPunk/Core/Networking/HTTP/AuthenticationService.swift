@@ -18,9 +18,14 @@ class Auth {
             .responseDecodable(of: User.self) { response in
                 switch response.result {
                 case .success(let user):
-                    print("Request success: file - \(#file), class - \(self), func - \(#function), line: \(#line) \n \(user)")
-                    AuthenticatedUser.store(data: user)
-                    ConcurrencyInteraction.mainQueueAsync(onSuccess)
+                    if (user.mappingId != nil) {
+                        print("Request success: file - \(#file), class - \(self), func - \(#function), line: \(#line) \n \(user)")
+                        AuthenticatedUser.store(data: user)
+                        ConcurrencyInteraction.mainQueueAsync(onSuccess)
+                    } else {
+                        print("Request failure: file - \(#file), class - \(self), func - \(#function), line: \(#line)")
+                        ConcurrencyInteraction.mainQueueAsync(onFailure)
+                    }
                     break
                 case .failure(let error):
                     print("Request failure: file - \(#file), class - \(self), func - \(#function), line: \(#line) \n \(error)")
@@ -57,28 +62,28 @@ class Auth {
                 }
             }
     }
-    static func getUserMapping(completion: (() -> ())? = nil,
-                               onSuccess: (() -> ())? = nil,
-                               onFailure: (() -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(.getUserMapping) else { return }
-        AF.request(query.genUrl(), method: query.httpMethod)
-            .responseDecodable(of: [ResolveMapping].self) { response in
-                switch response.result {
-                case .success(let resolvedMapping):
-                    print(resolvedMapping)
-                    guard var user = AuthenticatedUser.retrieve() else { break }
-                    if resolvedMapping.count > 0 {
-                        user.data?.mappingId = resolvedMapping[0].id
-                        user.store()
-                    }
-                    ConcurrencyInteraction.mainQueueAsync(onSuccess)
-                    break
-                case .failure:
-                    print("getUserMapping() fail!")
-                    ConcurrencyInteraction.mainQueueAsync(onFailure)
-                    break
-                }
-                ConcurrencyInteraction.mainQueueAsync(completion)
-            }
-    }
+//    static func getUserMapping(completion: (() -> ())? = nil,
+//                               onSuccess: (() -> ())? = nil,
+//                               onFailure: (() -> ())? = nil) {
+//        guard let query = QueryBuilder.queryInfomation(.getUserMapping) else { return }
+//        AF.request(query.genUrl(), method: query.httpMethod)
+//            .responseDecodable(of: [ResolveMapping].self) { response in
+//                switch response.result {
+//                case .success(let resolvedMapping):
+//                    print(resolvedMapping)
+//                    guard var user = AuthenticatedUser.retrieve() else { break }
+//                    if resolvedMapping.count > 0 {
+//                        user.data?.mappingId = resolvedMapping[0].id
+//                        user.store()
+//                    }
+//                    ConcurrencyInteraction.mainQueueAsync(onSuccess)
+//                    break
+//                case .failure:
+//                    print("getUserMapping() fail!")
+//                    ConcurrencyInteraction.mainQueueAsync(onFailure)
+//                    break
+//                }
+//                ConcurrencyInteraction.mainQueueAsync(completion)
+//            }
+//    }
 }

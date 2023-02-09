@@ -77,51 +77,41 @@ extension ChatBoxes: Codable {
 
 // MARK: - Data handler
 extension ChatBoxes: Storing {
-    static var key: String {
-        get {
-            return "ChatBoxes"
-        }
-    }
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(ChatBoxes.key)
-            print("ChatBoxes storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
                 try encoder.encode(self).write(to: storageFilePath)
             }
             catch {
-                print("Store chatBoxes failed! \(error)")
+                print("Store chatBoxes to file failed! \(error)")
             }
         }
     }
     static func retrieve() -> ChatBoxes {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(key)
-            print("Retrieve data from chatBoxes storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
                 let chatBoxes = try JSONDecoder().decode(ChatBoxes.self, from: jsonData)
                 return chatBoxes
             }
             catch {
-                print("Retrieve chatBoxes failed! \(error)")
+                print("Retrieve chatBoxes from file failed! \(error)")
             }
         }
         return ChatBoxes()
     }
-    mutating func update() {
+    static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(ChatBoxes.key)
-            print("Update data from chatBoxes storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
-                let chatBoxes = try JSONDecoder().decode(ChatBoxes.self, from: jsonData)
-                self.chatBoxes = chatBoxes.chatBoxes
+                try FileManager.default.removeItem(at: storageFilePath)
             }
             catch {
-                print("Update chatBoxes failed! \(error)")
+                print("Remove chatBoxes file failed! \(error)")
             }
         }
     }

@@ -63,4 +63,22 @@ extension Date {
         let iso8601String = dateFormatter.string(from: self)
         return iso8601String
     }
+    
+    
+    
+    // MARK: - Remake
+    var dayTime: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "h:mm a"
+        dateFormatter.calendar = Calendar(identifier: .gregorian)
+        let timeString = dateFormatter.string(from: self)
+        return timeString
+    }
+    var weekDay: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EE"
+        dateFormatter.calendar = Calendar(identifier: .gregorian)
+        let timeString = dateFormatter.string(from: self)
+        return timeString
+    }
 }

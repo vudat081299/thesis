@@ -10,26 +10,113 @@ import Foundation
 
 // MARK: - Definition
 enum MediaType: String, Codable {
-    case text, file
+    case text, file, notify
 }
 
 /**
  This is a structure of `ChatBox` table on `Database`
  - `createdAt`: this is a millisecond timestamp - 13 bits of Date()
  */
-struct Message: Codable {
+struct Message: Hashable {
     let id: UUID
     let createdAt: String
-    let sender: UUID
+    let sender: UUID?
     let chatBoxId: UUID
     let mediaType: MediaType
-    let content: String
+    let content: String?
+    
+    struct Resolve: Codable {
+        let id: UUID
+        let createdAt: String
+        let sender: UUID?
+        let chatBox: ResolveUUID
+        let mediaType: String
+        let content: String?
+        
+        func flatten() -> Message {
+            Message(id: id, createdAt: createdAt, sender: sender, chatBoxId: chatBox.id, mediaType: MediaType.init(rawValue: mediaType) ?? .text, content: content)
+        }
+    }
+    
+    static func == (lhs: Message, rhs: Message) -> Bool {
+        return lhs.id == rhs.id
+    }
+    static func < (lhs: Message, rhs: Message) -> Bool {
+        return lhs.createdAt < rhs.createdAt
+    }
+    static func > (lhs: Message, rhs: Message) -> Bool {
+        return lhs.createdAt > rhs.createdAt
+    }
+}
+
+
+// MARK: - Apply Codable
+extension Message: Codable {
+    enum Key: String, CodingKey {
+        case id
+        case createdAt
+        case sender
+        case chatBoxId
+        case mediaType
+        case content
+    }
+    
+    
+    // MARK: - Conform to Codable
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Key.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        createdAt = try container.decode(String.self, forKey: .createdAt)
+        sender = try container.decode(UUID?.self, forKey: .sender)
+        chatBoxId = try container.decode(UUID.self, forKey: .chatBoxId)
+        mediaType = try container.decode(MediaType.self, forKey: .mediaType)
+        content = try container.decode(String?.self, forKey: .content)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: Key.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(sender, forKey: .sender)
+        try container.encode(chatBoxId, forKey: .chatBoxId)
+        try container.encode(mediaType, forKey: .mediaType)
+        try container.encode(content, forKey: .content)
+    }
+
+    // MARK: - Data handler
+    func store() {
+        do {
+            let userData = try PropertyListEncoder().encode(self)
+            UserDefaults.standard.set(userData, forKey: UserDefaults.Keys.lastestMessage.genKey(self.chatBoxId.uuidString))
+        } catch {
+            print("Error when saving AuthenticatedUser object!")
+        }
+    }
+    static func retrieve(with chatBoxId: UUID) -> Message? {
+        if let data = UserDefaults.standard.data(forKey: UserDefaults.Keys.lastestMessage.genKey(chatBoxId.uuidString)) {
+            do {
+                let message = try PropertyListDecoder().decode(Message?.self, from: data)
+                return message
+            } catch {
+                print("Retrieve AuthenticatedUser object failed!")
+            }
+        }
+        return nil
+    }
+    static func remove(with chatBoxId: UUID) {
+        UserDefaults.standard.removeObject(forKey: UserDefaults.Keys.lastestMessage.genKey(chatBoxId.uuidString))
+    }
 }
 
 struct Messages {
     var messages: [Message] = []
+    
     init(_ messages: [Message] = []) {
         self.messages = messages
+    }
+    
+    init(resolveMessages: [Message.Resolve]) {
+        self.messages = resolveMessages.map { $0.flatten() }
     }
 }
 
@@ -101,52 +188,49 @@ extension Messages: Codable {
 
 
 // MARK: - Data handler
-extension Messages: Storing {
-    static var key: String {
-        get {
-            return "Messages"
-        }
-    }
+extension Messages {
     func store() {
-        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(Messages.key)
-            print("Messages storage filepath: \(storageFilePath)")
-            do {
-                let encoder = JSONEncoder()
-//                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self).write(to: storageFilePath)
-            }
-            catch {
-                print("Store messages failed! \(error)")
+        let groupedMessagesByChatBox = messages.groupByChatBox()
+        for (chatBoxId, messages) in groupedMessagesByChatBox {
+            let messages = Messages(messages.sorted(by: <))
+            messages.messages.last?.store()
+            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                let storageDirectoryPath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue)
+                let storageFilePath = storageDirectoryPath.appendingPathComponent(chatBoxId.uuidString)
+                do {
+                    FileManager.default.confirmFileExists(atPath: storageDirectoryPath, isDirectory: true)
+                    let encoder = JSONEncoder()
+    //                encoder.outputFormatting = .prettyPrinted
+                    try encoder.encode(messages).write(to: storageFilePath, options: .atomic)
+                }
+                catch {
+                    print("Store messages to file failed! \(error)")
+                }
             }
         }
     }
-    static func retrieve() -> Messages {
+    static func retrieve(with chatBoxId: UUID) -> Messages {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(key)
-            print("Retrieve data from messages storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue).appendingPathComponent(chatBoxId.uuidString)
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
-                let chatBoxes = try JSONDecoder().decode(Messages.self, from: jsonData)
-                return chatBoxes
+                let messages = try JSONDecoder().decode(Messages.self, from: jsonData)
+                return Messages(messages.messages.sorted(by: <))
             }
             catch {
-                print("Retrieve messages failed! \(error)")
+                print("Retrieve messages from file failed! \(error)")
             }
         }
         return Messages()
     }
-    mutating func update() {
+    static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(Messages.key)
-            print("Retrieve data from messages storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
-                let messages = try JSONDecoder().decode(Messages.self, from: jsonData)
-                self.messages = messages.messages
+                try FileManager.default.removeItem(at: storageFilePath)
             }
             catch {
-                print("Retrieve messages failed! \(error)")
+                print("Remove messages file failed! \(error)")
             }
         }
     }

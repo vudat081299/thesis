@@ -127,41 +127,63 @@ struct MappingsController: RouteCollection {
     //    }
 
     /// Optimal code syntax write by vzsg convert to async version
-    //        func addchatBoxesHandler(_ req: Request) async throws -> HTTPStatus {
-    //            struct ResolveCreateMappingChatBox: Codable {
-    //                let mappingIds: [UUID]
-    //            }
-    //
-    //            let updateUserData = try req.content.decode(ResolveCreateMappingChatBox.self)
-    //            let chatBox = ChatBox(name: "Friend")
-    //            try await chatBox.save(on: req.db)
-    //
-    //                updateUserData.mappingIds.map { mappingId in
-    //                    guard let mapping = try Mapping.find(mappingId, on: req.db) else {
-    //                        throw Abort(.notFound)
-    //                    }
-    //                    mapping.$chatBoxes.attach(chatBox, on: req.db)
-    //                }
-    //            return .created
-    //        }
-    /// Optimal code syntax write by vzsg
-    
-    func addchatBoxesHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+    func addchatBoxesHandler(_ req: Request) async throws -> HTTPStatus {
         struct ResolveCreateMappingChatBox: Codable {
             let mappingIds: [UUID]
         }
-        
+        let user = try req.auth.require(User.self)
         let resolvedModel = try req.content.decode(ResolveCreateMappingChatBox.self)
         let chatBox = ChatBox(name: "Friend")
+        try await chatBox.save(on: req.db)
+        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
+        user.mappingId = mappings[user.id!]
+        let message = Message(sender: user.mappingId!, mediaType: MediaType.notify.rawValue, content: "👋 Hi! I just create this chat box, I'm @\(user.username)!", chatBoxId: chatBox.id!)
+        try await message.save(on: req.db)
         
-        return chatBox.save(on: req.db).flatMap {
-            resolvedModel.mappingIds.map { mappingId in
-                Mapping.find(mappingId, on: req.db)
-                    .unwrap(or: Abort(.notFound))
-                    .flatMap { $0.$chatBoxes.attach(chatBox, on: req.db) }
-            }.flatten(on: req.eventLoop).transform(to: .created)
+        for mappingId in resolvedModel.mappingIds {
+            guard let mapping = try await Mapping.find(mappingId, on: req.db) else {
+                throw Abort(.notFound)
+            }
+            try await mapping.$chatBoxes.attach(chatBox, on: req.db)
         }
+        return .created
+        
+        
+//        let updateUserData = try req.content.decode(ResolveCreateMappingChatBox.self)
+//        let chatBox = ChatBox(name: "Friend")
+//        try await chatBox.save(on: req.db)
+//
+//        updateUserData.mappingIds.map { mappingId in
+//            guard let mapping = try Mapping.find(mappingId, on: req.db) else {
+//                throw Abort(.notFound)
+//            }
+//            mapping.$chatBoxes.attach(chatBox, on: req.db)
+//        }
+//        return .created
     }
+    /// Optimal code syntax write by vzsg
+    /// Non async version
+//    func addchatBoxesHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+//        struct ResolveCreateMappingChatBox: Codable {
+//            let mappingIds: [UUID]
+//        }
+//        let user = try req.auth.require(User.self)
+//
+//        let resolvedModel = try req.content.decode(ResolveCreateMappingChatBox.self)
+//        let chatBox = ChatBox(name: "Friend")
+//
+//        return chatBox.save(on: req.db).flatMap {
+//            // confuse: - need change to mapping id
+////            let message = Message(sender: user.id!, mediaType: MediaType.notify.rawValue, content: "Hi! I just create this chat box, I'm @\(user.username)!", chatBoxId: chatBox.id!)
+////            message.save(on: req.db).flatMap {
+//                resolvedModel.mappingIds.map { mappingId in
+//                    Mapping.find(mappingId, on: req.db)
+//                        .unwrap(or: Abort(.notFound))
+//                        .flatMap { $0.$chatBoxes.attach(chatBox, on: req.db) }
+//                }.flatten(on: req.eventLoop).transform(to: .created)
+////            }
+//        }
+//    }
     
     
     // MARK: - Update

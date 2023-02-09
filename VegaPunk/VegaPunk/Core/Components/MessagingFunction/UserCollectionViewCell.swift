@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Nuke
 
 
 // MARK: - Definition
@@ -42,8 +43,8 @@ struct UserExtractedData: Hashable {
 class UserCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifier = "UserCollectionViewCell"
     
-    @IBOutlet weak var iconBackGround: UIImageView!
-    @IBOutlet weak var icon: UILabel!
+    @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var emoji: UILabel!
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var type: UILabel!
     @IBOutlet weak var note: UILabel!
@@ -54,32 +55,49 @@ class UserCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-//        self.contentView.layer.cornerRadius = 16
-//        self.contentView.clipsToBounds = true
-        icon.text = ""
+        
         self.contentView.backgroundColor = .systemBackground
-        iconBackGround.layer.cornerRadius = iconBackGround.bounds.width / 2
-        iconBackGround.clipsToBounds = true
-        iconBackGround.borderOutline(2, color: .link)
+        image.roundedBorder()
+        image.image = nil
+        emoji.text = ""
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        prepare()
+        
+        image.image = nil
+        emoji.text = ""
     }
     
     func prepare(with userExtractedData: UserExtractedData? = nil) {
         guard let validatedData = userExtractedData else { return }
         data = validatedData
-        let avatarLabels = ["🐝", "😝", "🍌", "☔️", "😊", "☕️"]
-        if let userInfor = data.user.avatar, let avatar = Int(userInfor) {
-            icon.text = avatarLabels[avatar]
+        
+        prepareAvatar()
+        fillTextIBOutlets()
+    }
+    
+    func prepareAvatar() {
+        image.isHidden = data.user.avatar?.count == 1
+        emoji.isHidden = !image.isHidden
+        if (data.user.avatar?.count == 1) {
+            emoji.text = data.user.avatar
+        } else {
+            Nuke.loadImage(with: URL(string: imageUrl)!, into: image)
         }
+        
+//        let avatarLabels = ["🐝", "😝", "🍌", "☔️", "😊", "☕️"]
+//        if let userInfor = data.user.avatar, let avatar = Int(userInfor) {
+//            emoji.text = avatarLabels[avatar]
+//        }
+    }
+    
+    func fillTextIBOutlets() {
         if let name = data.user.name {
             type.text = name
         }
         if let username = data.user.username {
-            note.text = username
+            note.text = "@" + username
         }
         if let bio = data.user.bio {
             self.bio.text = bio

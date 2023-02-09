@@ -12,10 +12,10 @@
     {
       "identity" : "nuke",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/vudat081299/Nuke.git",
+      "location" : "https://github.com/kean/Nuke.git",
       "state" : {
-        "revision" : "3ed0597082b40932481fb8971af8813a4284203c",
-        "version" : "1.0.0"
+        "revision" : "7f73ceaeacd5df75a7994cd82e165ad9ff1815db",
+        "version" : "9.6.1"
       }
     },
     {

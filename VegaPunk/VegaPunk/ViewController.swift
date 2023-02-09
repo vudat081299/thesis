@@ -23,11 +23,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        prepareData()
+        fetchData()
         prepareNavigationViewController()
         configureHierarchy()
         configureDataSource()
-        applySnapshot()
+        setUpNavigationBar()
     }
     
 
@@ -38,19 +38,54 @@ class ViewController: UIViewController {
         self.navigationController?.navigationItem.largeTitleDisplayMode = .always
         
     }
+    // MARK: - Set up methods.
+    func setUpNavigationBar() {
+        // BarButtonItem.
+        let leftBarButtonItem: UIBarButtonItem = {
+            let bt = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(signOut))
+            bt.tintColor = .systemRed
+            return bt
+        }()
+        navigationItem.leftBarButtonItem = leftBarButtonItem
+    }
     
     
-    // MARK: - Mini tasks
-    func prepareData() {
-        let mappings = Mappings.retrieve()
-        let friends = Friend.retrieve().friends
-        friends.forEach {
-            if let friendId = $0.id,
-               let friendMappingId = mappings.mappingId(friendId) {
-                userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
+    // MARK: - Tasks
+    func fetchData() {
+        DataInteraction.fetchData { [self] in
+            let mappings = Mappings.retrieve()
+            let friends = Friend.retrieve().friends
+            friends.forEach {
+                if let friendId = $0.id,
+                   let friendMappingId = mappings.mappingId(friendId) {
+                    userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
+                }
+            }
+            applySnapshot()
+            if let mappingId = AuthenticatedUser.retrieve()?.data?.mappingId {
+                MappingChatBoxPivots.retrieve().pivots[mappingId].forEach {
+                    RequestEngine.getMessagesOfChatBox($0) { messages in
+                        Messages(resolveMessages: messages).store()
+                    }
+                }
             }
         }
     }
+    @objc func signOut() {
+        resetApplicationMetadata()
+        let vc = UIStoryboard(name: "UserAccess", bundle: nil).instantiateInitialViewController()!
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated:true, completion:nil)
+    }
+    
+    func resetApplicationMetadata() {
+        AuthenticatedUser.remove()
+        ChatBoxes.remove()
+        Mappings.remove()
+        Messages.remove()
+        Friend.remove()
+    }
+    
 }
 
 
@@ -186,14 +221,8 @@ extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        let chattingViewController = ChattingViewController()
-        let data = userExtractedDataList[indexPath.section]
-        chattingViewController.data = data
-        chattingViewController.title = data.user.name
-        chattingViewController.navigationItem.largeTitleDisplayMode = .never
-        chattingViewController.tabBarController?.tabBar.isHidden = true
-        navigationController?.pushViewController(chattingViewController, animated: true)
-        self.tabBarController?.tabBar.isHidden = true
+        let chatBoxViewController = ChatBoxViewController()
+        navigationController?.pushViewController(chatBoxViewController, animated: true)
     }
 }
 

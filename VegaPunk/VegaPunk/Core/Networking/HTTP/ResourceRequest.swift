@@ -17,11 +17,11 @@ var pivotGlobal = DataCentral.getPivot()
 
 class DataCentral {
     
-    static func getPivot() -> [ResolvePivot] {
+    static func getPivot() -> [MappingChatBoxPivot.Resolve] {
         if let data = UserDefaults.standard.data(forKey: "Pivot_SAVE_KEY") {
             do {
                 let decoder = JSONDecoder()
-                let pivot = try decoder.decode([ResolvePivot].self, from: data)
+                let pivot = try decoder.decode([MappingChatBoxPivot.Resolve].self, from: data)
                 return pivot
             } catch {
                 print("Unable to Decode ResolvePivot (\(error))")
@@ -29,11 +29,11 @@ class DataCentral {
         }
         return []
     }
-    static func getMessages(of chatBoxId: UUID) -> [WebSocketMessage] {
+    static func getMessages(of chatBoxId: UUID) -> [Message.Resolve] {
         if let data = UserDefaults.standard.data(forKey: chatBoxId.uuidString + "_Messages_SAVE_KEY") {
             do {
                 let decoder = JSONDecoder()
-                let messages = try decoder.decode([WebSocketMessage].self, from: data)
+                let messages = try decoder.decode([Message.Resolve].self, from: data)
                 return messages
             } catch {
                 print("Unable to Decode ResolvePivot (\(error))")
@@ -41,11 +41,11 @@ class DataCentral {
         }
         return []
     }
-    static func getMembers(of chatBoxId: UUID) -> [ResolveMapping] {
+    static func getMembers(of chatBoxId: UUID) -> [Mapping.Resolve] {
         if let data = UserDefaults.standard.data(forKey: chatBoxId.uuidString + "_Members_SAVE_KEY") {
             do {
                 let decoder = JSONDecoder()
-                let members = try decoder.decode([ResolveMapping].self, from: data)
+                let members = try decoder.decode([Mapping.Resolve].self, from: data)
                 return members
             } catch {
                 print("Unable to Decode ResolvePivot (\(error))")
@@ -64,7 +64,6 @@ class RequestEngine {
             .responseDecodable(of: [User].self) { response in
                 switch response.result {
                 case .success(let users):
-                    print(users)
                     Friend(users).store()
                     if let onSuccess = onSuccess { onSuccess() }
                     break
@@ -102,11 +101,11 @@ class RequestEngine {
     static func getAllMappings(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.getAllMappings) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
-            .responseDecodable(of: [ResolveMapping].self) { response in
+            .responseDecodable(of: [Mapping.Resolve].self) { response in
                 switch response.result {
-                case .success(let mappings):
-                    print(mappings)
-                    Mappings(resolveMappings: mappings).store()
+                case .success(let mappingResolves):
+                    print(mappingResolves)
+                    Mappings(resolves: mappingResolves).store()
                     if let onSuccess = onSuccess { onSuccess() }
                     break
                 case .failure:
@@ -167,9 +166,9 @@ class RequestEngine {
     
     // MARK: - Chat box
     static func getMemberInChatBox(_ chatBoxId: UUID, _ completion: (() -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(.getMemberInChatBox, chatBoxId) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getMemberInChatBox, ["chatBoxId": chatBoxId]) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
-            .responseDecodable(of: [ResolveMapping].self) { response in
+            .responseDecodable(of: [Mapping.Resolve].self) { response in
                 switch response.result {
                 case .success(let mappings):
                     print(mappings)
@@ -202,13 +201,12 @@ class RequestEngine {
                 }
             }
     }
-    static func getMessagesOfChatBox(_ chatBoxId: UUID, _ completion: (([WebSocketMessage]) -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(.getMessagesOfChatBox, chatBoxId) else { return }
+    static func getMessagesOfChatBox(_ chatBoxId: UUID, _ completion: (([Message.Resolve]) -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(.getMessagesOfChatBox, ["chatBoxId": chatBoxId]) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
-            .responseDecodable(of: [WebSocketMessage].self) { response in
+            .responseDecodable(of: [Message.Resolve].self) { response in
                 switch response.result {
                 case .success(let messages):
-                    print(messages)
                     do {
                         let encoder = JSONEncoder()
                         let data = try encoder.encode(messages)
@@ -261,7 +259,7 @@ class RequestEngine {
     static func getAllMappingPivots(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.getAllMappingPivots) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
-            .responseDecodable(of: [ResolvePivot].self) { response in
+            .responseDecodable(of: [MappingChatBoxPivot.Resolve].self) { response in
                 switch response.result {
                 case .success(let pivot):
                     MappingChatBoxPivots(resolvePivots: pivot).store()
@@ -274,6 +272,32 @@ class RequestEngine {
                 if let completion = completion { completion() }
             }
     }
+    
+    
+    // MARK: - File
+    static func upload(_ data: Data, _ completion: (() -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(.uploadFile),
+              let url = URL(string: query.genUrl()),
+              let bearerTokenHeaders = bearerTokenHeaders else { return }
+        var parameters: Parameters = [:]
+        parameters["data"] = data
+        AF.request(
+            url,
+            method: query.httpMethod,
+            parameters: parameters,
+            headers: bearerTokenHeaders)
+        .responseDecodable(of: String.self) { response in
+                switch response.result {
+                case .success(let fileId):
+                    print("Create chat box successful!")
+                    if let completion = completion { completion() }
+                    break
+                case let .failure(error):
+                    print(error)
+                    break
+                }
+            }
+    }
 }
 
 
@@ -283,13 +307,5 @@ struct ResolveUUID: Codable {
     let id: UUID
 }
 
-struct WebSocketMessage: Codable {
-    let id: UUID
-    let createdAt: String
-    let chatBox: ResolveUUID
-    let mediaType: String
-    let message: String
-    let sender: UUID
-}
 
 

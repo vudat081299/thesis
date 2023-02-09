@@ -10,11 +10,11 @@ import Foundation
 protocol Storing {
     associatedtype T
     /// This is a file name or NSUserDefaults key
-    static var key: String { get }
     func store()
 //    func store() -> FunctionResult
     static func retrieve() -> T
 //    mutating func update()
+    static func remove()
 }
 
 enum FunctionResult: Int {

@@ -25,13 +25,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let data = user.data, data.token != nil {
             appState = .authorized
         }
-        if appState == .authorized {
-            DataInteraction.fetchData { [self] in
-                configureWindow(on: appState)
-            }
-        } else {
-            configureWindow(on: appState)
-        }
+        
+        configureWindow(on: appState)
+//        if appState == .authorized {
+//            DataInteraction.fetchData { [self] in
+//                configureWindow(on: appState)
+//            }
+//        } else {
+//            configureWindow(on: appState)
+//        }
     }
     
     func configureWindow(on appState: ApplicationState) {

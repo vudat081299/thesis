@@ -48,6 +48,8 @@ extension Friend: Codable {
         init?(intValue: Int) { return nil }
 
         static let id = UserKey(stringValue: "id")!
+        static let mappingId = UserKey(stringValue: "mappingId")!
+        static let token = UserKey(stringValue: "token")!
         static let name = UserKey(stringValue: "name")!
         static let username = UserKey(stringValue: "username")!
         static let email = UserKey(stringValue: "email")!
@@ -71,6 +73,8 @@ extension Friend: Codable {
             var productContainer = container.nestedContainer(keyedBy: UserKey.self, forKey: userId)
             
             // The rest of the keys use static names defined in `ProductKey`.
+            try productContainer.encode(friend.mappingId, forKey: .mappingId)
+            try productContainer.encode(friend.token, forKey: .token)
             try productContainer.encode(friend.name, forKey: .name)
             try productContainer.encode(friend.username, forKey: .username)
             try productContainer.encode(friend.email, forKey: .email)
@@ -92,6 +96,8 @@ extension Friend: Codable {
         for key in container.allKeys {
             // Note how the `key` in the loop above is used immediately to access a nested container.
             let productContainer = try container.nestedContainer(keyedBy: UserKey.self, forKey: key)
+            let mappingId = try productContainer.decodeIfPresent(UUID.self, forKey: .mappingId)
+            let token = try productContainer.decodeIfPresent(Token.self, forKey: .token)
             let name = try productContainer.decodeIfPresent(String.self, forKey: .name)
             let username = try productContainer.decodeIfPresent(String.self, forKey: .username)
             let email = try productContainer.decodeIfPresent(String.self, forKey: .email)
@@ -106,7 +112,7 @@ extension Friend: Codable {
             let gender = try productContainer.decodeIfPresent(Int.self, forKey: .gender)
 
             // The key is used again here and completes the collapse of the nesting that existed in the JSON representation.
-            let friend = User(id: UUID(uuidString: key.stringValue)!, name: name!, username: username!, email: email, join: join, bio: bio, phone: phone, birth: birth, siwaIdentifier: siwaIdentifier, avatar: avatar, password: password, country: country, gender: gender)
+            let friend = User(id: UUID(uuidString: key.stringValue)!, mappingId: mappingId, name: name!, username: username!, email: email, join: join, bio: bio, phone: phone, birth: birth, siwaIdentifier: siwaIdentifier, avatar: avatar, password: password, country: country, gender: gender)
             friends.append(friend)
         }
         self.init(friends)
@@ -115,52 +121,42 @@ extension Friend: Codable {
 
 
 // MARK: - Data handler
-extension Friend: Storing {
-    static var key: String {
-        get {
-            return "Friends"
-        }
-    }
+extension Friend {
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let friendsStorageFilePath = dir.appendingPathComponent(Friend.key)
-            print("Friends storage filepath: \(friendsStorageFilePath)")
+            let friendsStorageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self).write(to: friendsStorageFilePath)
+                try encoder.encode(self.friends.clean()).write(to: friendsStorageFilePath)
             }
             catch {
-                print("Store friends failed! \(error)")
+                print("Store friends to file failed! \(error)")
             }
         }
     }
     static func retrieve() -> Friend {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(key)
-            print("Retrieve data from friends storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
                 let friend = try JSONDecoder().decode(Friend.self, from: jsonData)
                 return friend
             }
             catch {
-                print("retrieve friends failed! \(error)")
+                print("Retrieve friends from file failed! \(error)")
             }
         }
         return Friend()
     }
-    mutating func update() {
+    static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(Friend.key)
-            print("Update data from friends storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
-                let friend = try JSONDecoder().decode(Friend.self, from: jsonData)
-                self.friends = friend.friends
+                try FileManager.default.removeItem(at: storageFilePath)
             }
             catch {
-                print("Update friends failed! \(error)")
+                print("Remove friends file failed! \(error)")
             }
         }
     }

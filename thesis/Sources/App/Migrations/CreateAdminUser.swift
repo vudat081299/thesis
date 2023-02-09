@@ -33,7 +33,8 @@ struct CreateAdminUser: AsyncMigration {
     func prepare(on database: Database) async throws {
         let passwordHash = try Bcrypt.hash("password")
         let user = User(name: "Admin", username: "admin", password: passwordHash)
-        return try await user.save(on: database)
+        try await user.save(on: database)
+//        try await Mapping(userID: user.requireID()).save(on: database)
     }
     
     func revert(on database: Database) async throws {

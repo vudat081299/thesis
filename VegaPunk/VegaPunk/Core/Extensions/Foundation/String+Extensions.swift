@@ -9,16 +9,16 @@ import Foundation
 import UIKit
 
 extension String {
-    func toDate() -> Date {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
-        dateFormatter.calendar = Calendar(identifier: .gregorian)
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ssZ" // 2022-12-28 17:09:15 +0000
-        guard let date = dateFormatter.date(from: self) else {
-            return Date()
-        }
-        return date
-    }
+//    func toDate() -> Date {
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
+//        dateFormatter.calendar = Calendar(identifier: .gregorian)
+//        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ssZ" // 2022-12-28 17:09:15 +0000
+//        guard let date = dateFormatter.date(from: self) else {
+//            return Date()
+//        }
+//        return date
+//    }
     
     /// Convert from date String to shortTime String.
     func transformToShortTime() -> String {
@@ -43,13 +43,21 @@ extension String {
         }
         return nil
     }
+    
+    
+    
+    // MARK: - Remake
+    func toDate() -> Date {
+        guard let epochTime = Int(self) else { return Date() }
+        return Date(timeIntervalSince1970: TimeInterval(epochTime))
+    }
 }
 
 
 // MARK: - Storing UserDefaults Keys or Storing file paths
 extension String {
     // Keys
-    static let KeyAuthenticatedUser = "KEY_AUTHENTICATED_USER"
+//    static let KeyAuthenticatedUser = "KEY_AUTHENTICATED_USER"
     
     // File paths
 }

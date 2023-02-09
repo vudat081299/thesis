@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChattingViewController" customModule="Social_Messaging" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MessagingViewController" customModule="VegaPunk" customModuleProvider="target">
             <connections>
                 <outlet property="bottomAlignCollectionViewCS" destination="5To-Sb-QbA" id="tfS-YF-3D8"/>
                 <outlet property="chatTextField" destination="ZsU-pF-wsg" id="m3V-56-9pJ"/>
@@ -28,7 +28,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ppt-uq-Ng3">
-                    <rect key="frame" x="8" y="694" width="110" height="110"/>
+                    <rect key="frame" x="8" y="728" width="110" height="110"/>
                     <subviews>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rSq-X4-QhG">
                             <rect key="frame" x="0.0" y="20" width="90" height="90"/>
@@ -64,7 +64,7 @@
                     </constraints>
                 </view>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" keyboardDismissMode="interactive" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="orl-LS-sm8">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="812"/>
+                    <rect key="frame" x="0.0" y="92" width="414" height="804"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="f5O-kz-Q9t">
                         <size key="itemSize" width="128" height="128"/>
@@ -74,9 +74,9 @@
                     </collectionViewFlowLayout>
                 </collectionView>
                 <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0M1-D9-qUS">
-                    <rect key="frame" x="0.0" y="812" width="414" height="84"/>
+                    <rect key="frame" x="0.0" y="846" width="414" height="50"/>
                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="miG-jx-vci">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="84"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9B3-Oe-DYM">
@@ -156,10 +156,16 @@
                         </constraints>
                     </view>
                     <constraints>
-                        <constraint firstAttribute="height" constant="84" id="myS-zI-JKS"/>
+                        <constraint firstAttribute="height" constant="50" id="myS-zI-JKS"/>
                     </constraints>
-                    <blurEffect style="systemMaterial"/>
+                    <blurEffect style="prominent"/>
                 </visualEffectView>
+                <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KbE-DE-vaU">
+                    <rect key="frame" x="0.0" y="48" width="414" height="44"/>
+                    <items>
+                        <navigationItem title="Title" id="mfg-8w-kCJ"/>
+                    </items>
+                </navigationBar>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -169,12 +175,15 @@
                 <constraint firstItem="0M1-D9-qUS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="54E-b8-gVr"/>
                 <constraint firstAttribute="bottom" secondItem="0M1-D9-qUS" secondAttribute="bottom" id="5To-Sb-QbA"/>
                 <constraint firstItem="Ppt-uq-Ng3" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="8" id="Arz-Sd-gYU"/>
+                <constraint firstItem="KbE-DE-vaU" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="OJj-uy-HxL"/>
                 <constraint firstItem="Ppt-uq-Ng3" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="8" id="OYS-E0-Glo"/>
-                <constraint firstItem="0M1-D9-qUS" firstAttribute="top" secondItem="orl-LS-sm8" secondAttribute="bottom" id="PBI-Uv-ePX"/>
+                <constraint firstAttribute="bottom" secondItem="orl-LS-sm8" secondAttribute="bottom" id="PBI-Uv-ePX"/>
                 <constraint firstItem="0M1-D9-qUS" firstAttribute="top" secondItem="Ppt-uq-Ng3" secondAttribute="bottom" constant="8" id="VeS-ot-MMj"/>
-                <constraint firstItem="orl-LS-sm8" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="c4F-E1-8kP"/>
+                <constraint firstItem="orl-LS-sm8" firstAttribute="top" secondItem="KbE-DE-vaU" secondAttribute="bottom" id="c4F-E1-8kP"/>
                 <constraint firstItem="0M1-D9-qUS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="cwW-nb-FKx"/>
                 <constraint firstAttribute="trailing" secondItem="orl-LS-sm8" secondAttribute="trailing" id="etR-Yn-9Xi"/>
+                <constraint firstItem="KbE-DE-vaU" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="tNK-0J-jgb"/>
+                <constraint firstAttribute="trailing" secondItem="KbE-DE-vaU" secondAttribute="trailing" id="vbB-YJ-T1f"/>
             </constraints>
             <connections>
                 <outletCollection property="gestureRecognizers" destination="6M3-Bq-dDw" appends="YES" id="X2F-ic-LzM"/>
@@ -189,12 +198,12 @@
         </tapGestureRecognizer>
     </objects>
     <resources>
-        <image name="flame" catalog="system" width="108" height="128"/>
-        <image name="paperplane.fill" catalog="system" width="128" height="118"/>
-        <image name="photo.on.rectangle.angled" catalog="system" width="128" height="101"/>
-        <image name="xmark.circle" catalog="system" width="128" height="121"/>
+        <image name="flame" catalog="system" width="106" height="128"/>
+        <image name="paperplane.fill" catalog="system" width="128" height="119"/>
+        <image name="photo.on.rectangle.angled" catalog="system" width="128" height="98"/>
+        <image name="xmark.circle" catalog="system" width="128" height="123"/>
         <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

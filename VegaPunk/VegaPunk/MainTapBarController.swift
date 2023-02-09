@@ -7,6 +7,8 @@
 
 import UIKit
 
+let imageUrl = "http://192.168.1.24:8080/api/files/63e28ee8c6b2f7c2a220cc04"
+
 struct ViewControllerData {
     let title: String
     let iconNormal: String
@@ -26,7 +28,7 @@ struct ViewControllerData {
             $0.viewController.topViewController?.title = $0.title
             $0.viewController.tabBarItem.image = UIImage(systemName: $0.iconNormal)
             $0.viewController.tabBarItem.selectedImage = UIImage(systemName: $0.selectedIcon)
-            $0.viewController.navigationBar.prefersLargeTitles = true
+//            $0.viewController.navigationBar.prefersLargeTitles = true
             $0.viewController.navigationBar.sizeToFit()
             $0.viewController.navigationItem.largeTitleDisplayMode = .always
             dataList.append($0)

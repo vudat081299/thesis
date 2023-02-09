@@ -41,13 +41,13 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
         contentImageContainerScrollView.zoomScale = 1.0
         contentImageView.image = nil
         heightContentImageCS.constant = 0
-        contentTextLabel.text = ""
+//        contentTextLabel.text = ""
     }
     
     override var isHighlighted: Bool {
         didSet {
             if self.isHighlighted {
-                backGroundView.backgroundColor = .systemBackground
+                backGroundView.backgroundColor = .systemGray2
                 // Your customized animation or add a overlay view
             } else {
                 backGroundView.backgroundColor = .clear

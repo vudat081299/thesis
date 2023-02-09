@@ -7,9 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		843CEE27296B991C00A09695 /* ChattingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843CEE25296B991C00A09695 /* ChattingViewController.swift */; };
-		843CEE28296B991C00A09695 /* ChattingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 843CEE26296B991C00A09695 /* ChattingViewController.xib */; };
 		843CEE38296BAD7300A09695 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 843CEE37296BAD7300A09695 /* Starscream */; };
+		84A2C41829929D8800EE8CD8 /* MessagingViewController--comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2C41629929D8700EE8CD8 /* MessagingViewController--comment.swift */; };
+		84A2C41929929D8800EE8CD8 /* MessagingViewController--comment.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A2C41729929D8800EE8CD8 /* MessagingViewController--comment.xib */; };
+		84A2C41C2992A79400EE8CD8 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 84A2C41B2992A79400EE8CD8 /* Nuke */; };
+		84A2C41E2992E1A700EE8CD8 /* UserDefaults+Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2C41D2992E1A700EE8CD8 /* UserDefaults+Keys.swift */; };
+		84A2C4212994FB5D00EE8CD8 /* FooterMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2C41F2994FB5D00EE8CD8 /* FooterMessage.swift */; };
+		84A2C4222994FB5D00EE8CD8 /* FooterMessage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A2C4202994FB5D00EE8CD8 /* FooterMessage.xib */; };
+		84A2C4262995054800EE8CD8 /* MessagingViewController-.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A2C4252995054800EE8CD8 /* MessagingViewController-.xib */; };
+		84A2C4292995617B00EE8CD8 /* MessagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2C4272995617A00EE8CD8 /* MessagingViewController.swift */; };
+		84A2C42A2995617B00EE8CD8 /* MessagingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A2C4282995617B00EE8CD8 /* MessagingViewController.xib */; };
 		84A4F6A8298C340900E5FEC4 /* Storing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A4F6A7298C340900E5FEC4 /* Storing.swift */; };
 		84A82766298FA1C700753846 /* DataInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A82765298FA1C700753846 /* DataInteraction.swift */; };
 		84A82768298FA3AE00753846 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A82767298FA3AE00753846 /* ApplicationState.swift */; };
@@ -102,7 +109,6 @@
 		84B950C129916F7F009EBBB8 /* ChatBoxAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B950C029916F7F009EBBB8 /* ChatBoxAvatarView.swift */; };
 		84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84B950C229916F88009EBBB8 /* ChatBoxAvatarView.xib */; };
 		84B950C529918820009EBBB8 /* ReusableUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B950C429918820009EBBB8 /* ReusableUIView.swift */; };
-		84B950C829919492009EBBB8 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 84B950C729919492009EBBB8 /* Nuke */; };
 		84CDE8DB298985360067C512 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CDE8DA298985360067C512 /* Messages.swift */; };
 /* End PBXBuildFile section */
 
@@ -124,8 +130,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		843CEE25296B991C00A09695 /* ChattingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChattingViewController.swift; sourceTree = "<group>"; };
-		843CEE26296B991C00A09695 /* ChattingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChattingViewController.xib; sourceTree = "<group>"; };
+		84A2C41629929D8700EE8CD8 /* MessagingViewController--comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MessagingViewController--comment.swift"; sourceTree = "<group>"; };
+		84A2C41729929D8800EE8CD8 /* MessagingViewController--comment.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MessagingViewController--comment.xib"; sourceTree = "<group>"; };
+		84A2C41D2992E1A700EE8CD8 /* UserDefaults+Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Keys.swift"; sourceTree = "<group>"; };
+		84A2C41F2994FB5D00EE8CD8 /* FooterMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterMessage.swift; sourceTree = "<group>"; };
+		84A2C4202994FB5D00EE8CD8 /* FooterMessage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FooterMessage.xib; sourceTree = "<group>"; };
+		84A2C4252995054800EE8CD8 /* MessagingViewController-.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "MessagingViewController-.xib"; sourceTree = "<group>"; };
+		84A2C4272995617A00EE8CD8 /* MessagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingViewController.swift; sourceTree = "<group>"; };
+		84A2C4282995617B00EE8CD8 /* MessagingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessagingViewController.xib; sourceTree = "<group>"; };
 		84A4F6A7298C340900E5FEC4 /* Storing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storing.swift; sourceTree = "<group>"; };
 		84A82765298FA1C700753846 /* DataInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataInteraction.swift; sourceTree = "<group>"; };
 		84A82767298FA3AE00753846 /* ApplicationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationState.swift; sourceTree = "<group>"; };
@@ -229,7 +241,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84B950C829919492009EBBB8 /* Nuke in Frameworks */,
+				84A2C41C2992A79400EE8CD8 /* Nuke in Frameworks */,
 				84A93910296AD3F8008ED0DC /* Alamofire in Frameworks */,
 				843CEE38296BAD7300A09695 /* Starscream in Frameworks */,
 			);
@@ -258,10 +270,20 @@
 				84B950BF29916EB7009EBBB8 /* Components */,
 				84A8276B298FACB700753846 /* ChatBoxViewController.swift */,
 				84A8276C298FACB800753846 /* ChatBoxViewController.xib */,
-				843CEE25296B991C00A09695 /* ChattingViewController.swift */,
-				843CEE26296B991C00A09695 /* ChattingViewController.xib */,
 			);
 			path = ChatBox;
+			sourceTree = "<group>";
+		};
+		84A2C41529929D4E00EE8CD8 /* Messaging */ = {
+			isa = PBXGroup;
+			children = (
+				84A2C4272995617A00EE8CD8 /* MessagingViewController.swift */,
+				84A2C4282995617B00EE8CD8 /* MessagingViewController.xib */,
+				84A2C41629929D8700EE8CD8 /* MessagingViewController--comment.swift */,
+				84A2C4252995054800EE8CD8 /* MessagingViewController-.xib */,
+				84A2C41729929D8800EE8CD8 /* MessagingViewController--comment.xib */,
+			);
+			path = Messaging;
 			sourceTree = "<group>";
 		};
 		84A93834296AAA0C008ED0DC = {
@@ -293,10 +315,11 @@
 				84A93842296AAA0C008ED0DC /* SceneDelegate.swift */,
 				84A93844296AAA0C008ED0DC /* ViewController.swift */,
 				84A9384C296AAA0F008ED0DC /* Assets.xcassets */,
+				84A2C41529929D4E00EE8CD8 /* Messaging */,
+				843CEE35296B998C00A09695 /* ChatBox */,
 				84A93873296AAABD008ED0DC /* Core */,
 				84A9384E296AAA0F008ED0DC /* LaunchScreen.storyboard */,
 				84A93846296AAA0C008ED0DC /* Main.storyboard */,
-				843CEE35296B998C00A09695 /* ChatBox */,
 				84A93905296AAAFC008ED0DC /* UserAccess */,
 				84A93849296AAA0C008ED0DC /* VegaPunk.xcdatamodeld */,
 			);
@@ -431,6 +454,7 @@
 				84A93893296AAABD008ED0DC /* Data+Extensions.swift */,
 				84A9391D296B3C36008ED0DC /* Array+Extensions.swift */,
 				84A827732990188D00753846 /* UUID+Extensions.swift */,
+				84A2C41D2992E1A700EE8CD8 /* UserDefaults+Keys.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -494,6 +518,8 @@
 				84A938A9296AAABD008ED0DC /* MessContentCell.xib */,
 				84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */,
 				84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */,
+				84A2C41F2994FB5D00EE8CD8 /* FooterMessage.swift */,
+				84A2C4202994FB5D00EE8CD8 /* FooterMessage.xib */,
 			);
 			path = MessagingFunction;
 			sourceTree = "<group>";
@@ -648,7 +674,7 @@
 			packageProductDependencies = (
 				84A9390F296AD3F8008ED0DC /* Alamofire */,
 				843CEE37296BAD7300A09695 /* Starscream */,
-				84B950C729919492009EBBB8 /* Nuke */,
+				84A2C41B2992A79400EE8CD8 /* Nuke */,
 			);
 			productName = VegaPunk;
 			productReference = 84A9383D296AAA0C008ED0DC /* VegaPunk.app */;
@@ -726,7 +752,7 @@
 				84A9390E296AD3F8008ED0DC /* XCRemoteSwiftPackageReference "Alamofire" */,
 				843CEE36296BAD7300A09695 /* XCRemoteSwiftPackageReference "Starscream" */,
 				843CEE39296BD4F900A09695 /* XCRemoteSwiftPackageReference "WebRTC" */,
-				84B950C629919491009EBBB8 /* XCRemoteSwiftPackageReference "Nuke" */,
+				84A2C41A2992A79400EE8CD8 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			productRefGroup = 84A9383E296AAA0C008ED0DC /* Products */;
 			projectDirPath = "";
@@ -748,16 +774,19 @@
 				84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */,
 				84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */,
 				84A827852990412100753846 /* ChatBoxAvatarView-Deprecated.xib in Resources */,
+				84A2C42A2995617B00EE8CD8 /* MessagingViewController.xib in Resources */,
 				84A938ED296AAABD008ED0DC /* CustomListCell.xib in Resources */,
 				84A938F0296AAABE008ED0DC /* MessContentCell.xib in Resources */,
 				84A938F2296AAABE008ED0DC /* FirstMessContentCellForSection.xib in Resources */,
+				84A2C4262995054800EE8CD8 /* MessagingViewController-.xib in Resources */,
 				84A93900296AAABE008ED0DC /* SuccessRequestServerView.xib in Resources */,
 				84A93850296AAA0F008ED0DC /* LaunchScreen.storyboard in Resources */,
-				843CEE28296B991C00A09695 /* ChattingViewController.xib in Resources */,
+				84A2C4222994FB5D00EE8CD8 /* FooterMessage.xib in Resources */,
 				84A9384D296AAA0F008ED0DC /* Assets.xcassets in Resources */,
 				84A9390A296AAB63008ED0DC /* UserAccess.storyboard in Resources */,
 				84A93903296AAABE008ED0DC /* Cities.json in Resources */,
 				84A8276E298FACB800753846 /* ChatBoxViewController.xib in Resources */,
+				84A2C41929929D8800EE8CD8 /* MessagingViewController--comment.xib in Resources */,
 				84A938E6296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib in Resources */,
 				84A93848296AAA0C008ED0DC /* Main.storyboard in Resources */,
 				84A938EC296AAABD008ED0DC /* UserView.xib in Resources */,
@@ -790,7 +819,9 @@
 			files = (
 				84A938D2296AAABD008ED0DC /* Upload.swift in Sources */,
 				84A8276D298FACB800753846 /* ChatBoxViewController.swift in Sources */,
+				84A2C4212994FB5D00EE8CD8 /* FooterMessage.swift in Sources */,
 				84A827862990412100753846 /* ChatBoxAvatarView-Deprecated.swift in Sources */,
+				84A2C4292995617B00EE8CD8 /* MessagingViewController.swift in Sources */,
 				84CDE8DB298985360067C512 /* Messages.swift in Sources */,
 				84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */,
 				84A938D8296AAABD008ED0DC /* UICollectionViewCell.swift in Sources */,
@@ -799,6 +830,7 @@
 				84A9391E296B3C36008ED0DC /* Array+Extensions.swift in Sources */,
 				84A9390D296ABDB1008ED0DC /* MainTapBarController.swift in Sources */,
 				84A938CD296AAABD008ED0DC /* ErrorControl.swift in Sources */,
+				84A2C41E2992E1A700EE8CD8 /* UserDefaults+Keys.swift in Sources */,
 				84A93918296B219C008ED0DC /* User+Friends.swift in Sources */,
 				84A938CA296AAABD008ED0DC /* WebSocketPackage.swift in Sources */,
 				84A938D4296AAABD008ED0DC /* UIColor.swift in Sources */,
@@ -812,6 +844,7 @@
 				84A938FC296AAABE008ED0DC /* NVActivityIndicatorAnimationBallPulseSync.swift in Sources */,
 				84A938EB296AAABD008ED0DC /* UserView.swift in Sources */,
 				84A93921296B65C0008ED0DC /* UserCollectionViewCell.swift in Sources */,
+				84A2C41829929D8800EE8CD8 /* MessagingViewController--comment.swift in Sources */,
 				84A9384B296AAA0C008ED0DC /* VegaPunk.xcdatamodeld in Sources */,
 				84A82766298FA1C700753846 /* DataInteraction.swift in Sources */,
 				84A938EA296AAABD008ED0DC /* SignupInputTableViewCell.swift in Sources */,
@@ -833,7 +866,6 @@
 				84A938E1296AAABD008ED0DC /* Time.swift in Sources */,
 				84A938D3296AAABD008ED0DC /* UIView.swift in Sources */,
 				84A82768298FA3AE00753846 /* ApplicationState.swift in Sources */,
-				843CEE27296B991C00A09695 /* ChattingViewController.swift in Sources */,
 				84A938D7296AAABD008ED0DC /* CGColor.swift in Sources */,
 				84A938FA296AAABE008ED0DC /* NVActivityIndicatorShape.swift in Sources */,
 				84A938D5296AAABD008ED0DC /* TableView.swift in Sources */,
@@ -1220,20 +1252,20 @@
 				minimumVersion = 96.0.0;
 			};
 		};
+		84A2C41A2992A79400EE8CD8 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 9.6.0;
+			};
+		};
 		84A9390E296AD3F8008ED0DC /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
 				branch = master;
 				kind = branch;
-			};
-		};
-		84B950C629919491009EBBB8 /* XCRemoteSwiftPackageReference "Nuke" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/vudat081299/Nuke.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1244,15 +1276,15 @@
 			package = 843CEE36296BAD7300A09695 /* XCRemoteSwiftPackageReference "Starscream" */;
 			productName = Starscream;
 		};
+		84A2C41B2992A79400EE8CD8 /* Nuke */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84A2C41A2992A79400EE8CD8 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = Nuke;
+		};
 		84A9390F296AD3F8008ED0DC /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 84A9390E296AD3F8008ED0DC /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		84B950C729919492009EBBB8 /* Nuke */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 84B950C629919491009EBBB8 /* XCRemoteSwiftPackageReference "Nuke" */;
-			productName = Nuke;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -9,7 +9,7 @@ import Vapor
 import Fluent
 
 enum MediaType: String, Codable {
-    case text, file
+    case text, file, notify
 }
 
 final class Message: Model {
@@ -37,13 +37,13 @@ final class Message: Model {
     //
     init() {}
     
-    init(id: UUID? = nil, sender: UUID, mediaType: String?, content: String, chatBoxID: ChatBox.IDValue) {
+    init(id: UUID? = nil, sender: UUID, mediaType: String?, content: String, chatBoxId: ChatBox.IDValue) {
         self.id = id
         self.createdAt = Date().milliStampString
         self.sender = sender
         self.mediaType = mediaType ?? MediaType.text.rawValue
         self.content = content
-        self.$chatBox.id = chatBoxID
+        self.$chatBox.id = chatBoxId
     }
     
     init?(id: UUID? = nil, _ package: WebSocketPackage) {

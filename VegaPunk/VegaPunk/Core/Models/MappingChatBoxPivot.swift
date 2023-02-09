@@ -14,24 +14,25 @@ struct MappingChatBoxPivot: Codable {
     let id: UUID
     let mappingId: UUID
     let chatBoxId: UUID
-}
-
-struct ResolvePivot: Codable {
-    let id: UUID
-    let mapping: ResolveUUID
-    let chatBox: ResolveUUID
     
-    func flatten() -> MappingChatBoxPivot {
-        MappingChatBoxPivot(id: id, mappingId: mapping.id, chatBoxId: chatBox.id)
+    struct Resolve: Codable {
+        let id: UUID
+        let mapping: ResolveUUID
+        let chatBox: ResolveUUID
+        
+        func flatten() -> MappingChatBoxPivot {
+            MappingChatBoxPivot(id: id, mappingId: mapping.id, chatBoxId: chatBox.id)
+        }
     }
 }
+
 
 struct MappingChatBoxPivots {
     var pivots: [MappingChatBoxPivot] = []
     init(_ pivots: [MappingChatBoxPivot] = []) {
         self.pivots = pivots
     }
-    init(resolvePivots: [ResolvePivot]) {
+    init(resolvePivots: [MappingChatBoxPivot.Resolve]) {
         self.pivots = resolvePivots.map { $0.flatten() }
     }
 }
@@ -87,52 +88,42 @@ extension MappingChatBoxPivots: Codable {
 
 
 // MARK: - Data handler
-extension MappingChatBoxPivots: Storing {
-    static var key: String {
-        get {
-            return "MappingChatBoxPivots"
-        }
-    }
+extension MappingChatBoxPivots {
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(MappingChatBoxPivots.key)
-            print("MappingChatBoxPivots storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
                 try encoder.encode(self).write(to: storageFilePath)
             }
             catch {
-                print("Store mappingChatBoxPivots failed! \(error)")
+                print("Store mappingChatBoxPivots to file failed! \(error)")
             }
         }
     }
     static func retrieve() -> MappingChatBoxPivots {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(key)
-            print("Retrieve data from mappingChatBoxPivots storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
             do {
                 let jsonData = try Data(contentsOf: storageFilePath)
                 let chatBoxes = try JSONDecoder().decode(MappingChatBoxPivots.self, from: jsonData)
                 return chatBoxes
             }
             catch {
-                print("Retrieve mappingChatBoxPivots failed! \(error)")
+                print("Retrieve mappingChatBoxPivots from file failed! \(error)")
             }
         }
         return MappingChatBoxPivots()
     }
-    mutating func update() {
+    static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(MappingChatBoxPivots.key)
-            print("Retrieve data from mappingChatBoxPivots storage filepath: \(storageFilePath)")
+            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
-                let pivots = try JSONDecoder().decode(MappingChatBoxPivots.self, from: jsonData)
-                self.pivots = pivots.pivots
+                try FileManager.default.removeItem(at: storageFilePath)
             }
             catch {
-                print("Retrieve mappingChatBoxPivots failed! \(error)")
+                print("Remove mappingChatBoxPivots file failed! \(error)")
             }
         }
     }

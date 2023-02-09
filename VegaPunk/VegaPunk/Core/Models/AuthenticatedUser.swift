@@ -130,29 +130,27 @@ extension AuthenticatedUser: Storing {
     }
     
     
-    // MARK: - Comform to Storing
-    static var key: String {
-        get {
-            return .KeyAuthenticatedUser
+    func store() {
+        do {
+            let userData = try PropertyListEncoder().encode(self)
+            UserDefaults.standard.set(userData, forKey: UserDefaults.Keys.authenticatedUser.rawValue)
+        } catch {
+            print("Error when saving AuthenticatedUser object!")
         }
     }
     static func retrieve() -> AuthenticatedUser? {
-        if let data = UserDefaults.standard.data(forKey: .KeyAuthenticatedUser) {
+        if let data = UserDefaults.standard.data(forKey: UserDefaults.Keys.authenticatedUser.rawValue) {
             do {
-                return try PropertyListDecoder().decode(AuthenticatedUser?.self, from: data)
+                let user = try PropertyListDecoder().decode(AuthenticatedUser?.self, from: data)
+                return user
             } catch {
-                print("Retrieve UserData object failed!")
+                print("Retrieve AuthenticatedUser object failed!")
             }
         }
         return nil
     }
-    func store() {
-        do {
-            let userData = try PropertyListEncoder().encode(self)
-            UserDefaults.standard.set(userData, forKey: .KeyAuthenticatedUser)
-        } catch {
-            print("Error when saving UserData object!")
-        }
+    static func remove() {
+        UserDefaults.standard.removeObject(forKey: UserDefaults.Keys.authenticatedUser.rawValue)
     }
 }
 

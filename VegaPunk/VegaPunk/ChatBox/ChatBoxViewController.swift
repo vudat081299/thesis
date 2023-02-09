@@ -41,6 +41,14 @@ class ChatBoxViewController: UIViewController {
         prepareData()
 
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        //
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.tabBarController?.tabBar.isHidden = false
+    }
 
 
     /*
@@ -62,14 +70,7 @@ class ChatBoxViewController: UIViewController {
         guard let authenticatedUser = AuthenticatedUser.retrieve(),
               let mappingId = authenticatedUser.data?.mappingId else { return }
         self.authenticatedUser = authenticatedUser
-        var chatBoxes = ChatBoxes.retrieve().chatBoxes
-        let pivots = MappingChatBoxPivots.retrieve().pivots
-        let userChatBoxIds = pivots[mappingId]
-        chatBoxes = chatBoxes.filter { userChatBoxIds.contains($0.id) }
-        chatBoxes.forEach {
-            let members = pivots[mappingId, $0.id]
-            chatBoxExtractedDataList.append(ChatBoxExtractedData(chatBox: $0, members: members))
-        }
+        chatBoxExtractedDataList.retrieve(with: mappingId)
         friends = Friend.retrieve().friends
         
         tableView.reloadData()
@@ -78,6 +79,10 @@ class ChatBoxViewController: UIViewController {
         chatBoxExtractedDataList = []
         friends = []
         authenticatedUser = nil
+    }
+    
+    func getMembersInChatBox(with mappingIds: [UUID]) -> [User] {
+        return friends.filter { mappingIds.contains($0.mappingId!) }
     }
     
 }
@@ -92,17 +97,22 @@ extension ChatBoxViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.dataSource = self
         tableView.register(UINib(nibName: ChatBoxTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: ChatBoxTableViewCell.reuseIdentifier)
     }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return chatBoxExtractedDataList.count;
     }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: ChatBoxTableViewCell.reuseIdentifier, for: indexPath) as! ChatBoxTableViewCell
+        cell.delegate = self
         let data = chatBoxExtractedDataList[indexPath.row]
         cell.prepare(with: data)
+        
         return cell
     }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let messagingViewController = MessagingViewController()
+        messagingViewController.extractedChatBox = chatBoxExtractedDataList[indexPath.row]
+        navigationController?.pushViewController(messagingViewController, animated: true)
+//        navigationController?.navigationBar.prefersLargeTitles = true
+    }
 }

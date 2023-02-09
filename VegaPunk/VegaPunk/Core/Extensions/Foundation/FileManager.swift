@@ -25,4 +25,18 @@ extension FileManager {
             return nil
         }
     }
+    
+    
+    func confirmFileExists(atPath: URL, isDirectory: ObjCBool = false)  {
+        print(atPath.absoluteString)
+        do {
+            var isDirectory = isDirectory
+            if !FileManager.default.fileExists(atPath: atPath.absoluteString, isDirectory: &isDirectory) {
+                try FileManager.default.createDirectory(at: atPath, withIntermediateDirectories: true, attributes: nil)
+            }
+        }
+        catch {
+            print("FileManager fail when createDirectory - \(error)")
+        }
+    }
 }
