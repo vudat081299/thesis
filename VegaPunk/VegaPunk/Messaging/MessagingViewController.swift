@@ -37,7 +37,7 @@ class MessagingViewController: UIViewController, UIImagePickerControllerDelegate
     // Constraints.
     @IBOutlet weak var bottomAlignCollectionViewCS: NSLayoutConstraint!
     @IBOutlet weak var leadingPickedImage: NSLayoutConstraint!
-    @IBOutlet weak var leadingOfTextFieldCS: NSLayoutConstraint!
+    @IBOutlet weak var widthTextField: NSLayoutConstraint!
     
     
     // MARK: - Gesture.
@@ -428,7 +428,7 @@ extension MessagingViewController: UITextFieldDelegate {
     @objc func keyboardWillShow(_ notification: NSNotification) {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             DispatchQueue.main.async { [self] in
-                leadingOfTextFieldCS.constant = 8
+                widthTextField.constant = 240
                 keyboardHeight = keyboardRect.height
                 bottomAlignCollectionViewCS.constant = keyboardHeight
                 view.layoutIfNeeded()
@@ -439,7 +439,7 @@ extension MessagingViewController: UITextFieldDelegate {
     @objc func keyboardWillHide(notification: NSNotification) {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             DispatchQueue.main.async { [self] in
-                leadingOfTextFieldCS.constant = 120
+                widthTextField.constant = 160
                 keyboardHeight = keyboardRect.height
                 bottomAlignCollectionViewCS.constant = 0
                 view.layoutIfNeeded()
