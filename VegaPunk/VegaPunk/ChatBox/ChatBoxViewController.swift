@@ -9,6 +9,8 @@ import UIKit
 
 class ChatBoxViewController: UIViewController {
     
+    let notificationCenter = NotificationCenter.default
+    
     @IBOutlet weak var tableView: UITableView!
     var chatBoxExtractedDataList = [ChatBoxExtractedData]()
     var friends = [User]()
@@ -31,23 +33,30 @@ class ChatBoxViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
+        view.backgroundColor = .systemBackground
         configureHierarchy()
+        
+        // Observer
+        notificationCenter.addObserver(self, selector: #selector(websocketReceivedPackage(_:)), name: .WebsocketReceivedPackage, object: nil)
     }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.navigationBar.prefersLargeTitles = true
         // Prepare data
         prepareData()
-
     }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        tabBarController?.tabBar.isHidden = false
         //
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.tabBarController?.tabBar.isHidden = false
+        
+//        navigationController?.navigationBar.prefersLargeTitles = true
+//        navigationItem.largeTitleDisplayMode = .always
+    }
+    deinit {
+        notificationCenter.removeObserver(self, name: .WebsocketReceivedPackage, object: nil)
     }
 
 
@@ -62,7 +71,12 @@ class ChatBoxViewController: UIViewController {
     */
     
     
-    // MARK: - Mini tasks
+    // MARK: - Tasks
+    @objc func websocketReceivedPackage(_ notification: Notification) {
+        if navigationController?.topViewController == self {
+            prepareData()
+        }
+    }
     func prepareData() {
         resetData()
         
@@ -75,6 +89,9 @@ class ChatBoxViewController: UIViewController {
         
         tableView.reloadData()
     }
+    
+    
+    // MARK: - Mini tasks
     func resetData() {
         chatBoxExtractedDataList = []
         friends = []
@@ -112,7 +129,9 @@ extension ChatBoxViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         let messagingViewController = MessagingViewController()
         messagingViewController.extractedChatBox = chatBoxExtractedDataList[indexPath.row]
+        
+        messagingViewController.tabBarController?.tabBar.isHidden = true
+        messagingViewController.navigationController?.modalPresentationStyle = .fullScreen
         navigationController?.pushViewController(messagingViewController, animated: true)
-//        navigationController?.navigationBar.prefersLargeTitles = true
     }
 }

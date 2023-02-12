@@ -62,6 +62,10 @@ class ChatBoxTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        username.textColor = .systemGray2
+        username.font = UIFont.systemFont(ofSize: 10, weight: .regular)
+        lastestMesssage.textColor = .secondaryLabel
+        lastestMesssage.font = UIFont.systemFont(ofSize: 12, weight: .regular)
     }
     
     
@@ -85,17 +89,24 @@ class ChatBoxTableViewCell: UITableViewCell {
     func prepareTextIBOutlets() {
         guard let delegate = delegate else { return }
         let members = delegate.getMembersInChatBox(with: data.members)
+        
         if members.count == 0 {
             let user = AuthenticatedUser.retrieve()?.data
-            name.text = data.chatBox.name
+            name.text = "Me"
             username.text = "@" + (user?.username ?? "")
+            username.font = UIFont.systemFont(ofSize: 10, weight: .medium)
+            username.textColor = .systemGreen
             firstAvatar.prepare(with: user?.avatar, type: .single)
         } else if members.count == 1 {
-            name.text = members[0].name
-            username.text = "@" + (members[0].username ?? "")
-            firstAvatar.prepare(with: members[0].avatar, type: .single)
+            let friend = members[0]
+            name.text = friend.name
+            username.text = "@" + (friend.username ?? "")
+            firstAvatar.prepare(with: friend.avatar, type: .single)
         } else if members.count > 1 {
-            name.text = data.chatBox.name
+            let chatBoxName = data.chatBox.name
+            var listMemberName = [members[0].name!, members[1].name!].sorted(by: >)
+            
+            name.text = (chatBoxName != nil && chatBoxName?.count != 0) ? chatBoxName : "\(listMemberName[0]), \(listMemberName[1])"
             username.text = ""
             secondAvatar.prepare(with: members[0].avatar, type: .multiple)
             thirdAvatar.prepare(with: members[1].avatar, type: .multiple)
@@ -104,12 +115,18 @@ class ChatBoxTableViewCell: UITableViewCell {
     
     func prepareLastestMessage() {
         guard let lastestMessage = data.lastestMessage else { return }
+        let chatBoxId = data.chatBox.id
         switch lastestMessage.mediaType {
-        case .text:
-            lastestMesssage.text = lastestMessage.content
-        case .notify:
-            lastestMesssage.text = lastestMessage.content
+        case .file:
+            break
         default:
+            lastestMesssage.text = lastestMessage.content
+            let lastestSeenMessage = Message.retrieve(.lastestSeenMessage, with: chatBoxId)
+            if lastestSeenMessage == nil ||
+                lastestMessage > lastestSeenMessage! {
+                lastestMesssage.textColor = .darkGray
+                lastestMesssage.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+            }
             break
         }
         let date = lastestMessage.createdAt.toDate()

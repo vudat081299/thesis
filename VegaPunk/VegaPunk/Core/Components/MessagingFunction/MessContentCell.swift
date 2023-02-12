@@ -36,5 +36,11 @@ class MessContentCell: UICollectionViewCell {
             }
         }
     }
-
+    
+    
+    // MARK: - Tasks
+    func prepare(_ message: Message) {
+        timeLabel.text = message.createdAt.toDate().dayTime
+        contentTextLabel.text = message.content
+    }
 }

@@ -81,13 +81,28 @@ extension Array where Element == ChatBox {
 
 
 // MARK: - Message
+extension Array where Element == [Message] {
+    mutating func receive(_ messages: [Message]) {
+        messages.forEach { message in
+            if count > 0 {
+                if (message.sender == self.last?.last?.sender) {
+                    self[count - 1].append(message)
+                } else {
+                    self.append([message])
+                }
+            } else {
+                self[0] = [message]
+            }
+        }
+    }
+}
 extension Array where Element == Message {
     func groupByChatBox() -> Dictionary<UUID, [Message]> {
         let groupedMessagesByChatBox = Dictionary(grouping: self, by: { $0.chatBoxId })
         return groupedMessagesByChatBox
     }
     mutating func transformStructure() -> [[Message]] {
-        self.sort(by: >)
+        self.sort(by: <)
         var customStructure = [[Message]]()
         var element = [Message]()
         var currentMappingId: UUID?
@@ -116,6 +131,9 @@ extension Array where Element == Message {
         } else if count == 1 {
             self[0].store()
         }
+    }
+    mutating func receive(_ messages: [Message]) {
+        self += messages
     }
 }
 

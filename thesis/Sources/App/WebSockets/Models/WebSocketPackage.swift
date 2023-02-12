@@ -13,6 +13,7 @@ enum WebSocketPackageType: Int, Codable {
 
 struct WebSocketPackageMessage: Codable {
     // message
+    let id: UUID?
     let createdAt: String?
     let sender: UUID? // mappingId
     let chatBoxId: UUID?

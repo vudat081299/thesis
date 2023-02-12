@@ -55,11 +55,11 @@ extension Date {
 //            dateFormatter.locale = enUSPosixLocale
 //            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss SSSZ"
 //            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-        dateFormatter.dateFormat = "MM dd"
+//        dateFormatter.dateFormat = "MM dd"
         dateFormatter.dateFormat = "MMMM dd, h:mm a"
         dateFormatter.amSymbol = "AM"
         dateFormatter.pmSymbol = "PM"
-        dateFormatter.calendar = Calendar(identifier: .gregorian)
+//        dateFormatter.calendar = Calendar(identifier: .gregorian)
         let iso8601String = dateFormatter.string(from: self)
         return iso8601String
     }

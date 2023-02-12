@@ -30,11 +30,11 @@ struct Message: Hashable {
         let createdAt: String
         let sender: UUID?
         let chatBox: ResolveUUID
-        let mediaType: String
+        let mediaType: MediaType
         let content: String?
         
         func flatten() -> Message {
-            Message(id: id, createdAt: createdAt, sender: sender, chatBoxId: chatBox.id, mediaType: MediaType.init(rawValue: mediaType) ?? .text, content: content)
+            Message(id: id, createdAt: createdAt, sender: sender, chatBoxId: chatBox.id, mediaType: mediaType, content: content)
         }
     }
     
@@ -84,16 +84,16 @@ extension Message: Codable {
     }
 
     // MARK: - Data handler
-    func store() {
+    func store(_ domain: UserDefaults.Keys = .lastestMessage) {
         do {
             let userData = try PropertyListEncoder().encode(self)
-            UserDefaults.standard.set(userData, forKey: UserDefaults.Keys.lastestMessage.genKey(self.chatBoxId.uuidString))
+            UserDefaults.standard.set(userData, forKey: domain.genKey(self.chatBoxId.uuidString))
         } catch {
             print("Error when saving AuthenticatedUser object!")
         }
     }
-    static func retrieve(with chatBoxId: UUID) -> Message? {
-        if let data = UserDefaults.standard.data(forKey: UserDefaults.Keys.lastestMessage.genKey(chatBoxId.uuidString)) {
+    static func retrieve(_ domain: UserDefaults.Keys = .lastestMessage, with chatBoxId: UUID) -> Message? {
+        if let data = UserDefaults.standard.data(forKey: domain.genKey(chatBoxId.uuidString)) {
             do {
                 let message = try PropertyListDecoder().decode(Message?.self, from: data)
                 return message
@@ -103,8 +103,8 @@ extension Message: Codable {
         }
         return nil
     }
-    static func remove(with chatBoxId: UUID) {
-        UserDefaults.standard.removeObject(forKey: UserDefaults.Keys.lastestMessage.genKey(chatBoxId.uuidString))
+    static func remove(_ domain: UserDefaults.Keys = .lastestMessage, with chatBoxId: UUID) {
+        UserDefaults.standard.removeObject(forKey: domain.genKey(chatBoxId.uuidString))
     }
 }
 
@@ -193,7 +193,7 @@ extension Messages {
         let groupedMessagesByChatBox = messages.groupByChatBox()
         for (chatBoxId, messages) in groupedMessagesByChatBox {
             let messages = Messages(messages.sorted(by: <))
-            messages.messages.last?.store()
+            messages.messages.cacheLastest()
             if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                 let storageDirectoryPath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue)
                 let storageFilePath = storageDirectoryPath.appendingPathComponent(chatBoxId.uuidString)

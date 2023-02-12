@@ -18,25 +18,40 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ujj-UE-xqP">
-                        <rect key="frame" x="0.0" y="-45" width="421" height="320"/>
+                        <rect key="frame" x="0.0" y="-50" width="421" height="325"/>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="voV-Ho-Jdq">
                         <rect key="frame" x="0.0" y="0.0" width="421" height="275"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fSz-KO-0ba">
-                                <rect key="frame" x="65" y="0.0" width="336" height="275"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fSz-KO-0ba">
+                                <rect key="frame" x="65" y="4" width="336" height="269"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="10" id="tTt-3e-wrO"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <nil key="textColor"/>
+                                <attributedString key="attributedText">
+                                    <fragment>
+                                        <string key="content">This view hierarchy is useful for learning how HomeKit structures device data, which is slightly different than the way the Apple Home app refers to related concepts. It’s also useful for device developers who want to understand how HomeKit sees custom hardware.
+
+</string>
+                                        <attributes>
+                                            <font key="NSFont" metaFont="system"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment>
+                                        <string key="content">In a real app that you publish on the App Store, you would provide a user experience more like the one found in Configuring a Home Automation Device. For example, you would focus on the actions a user can take and hide the underlying technical details. For more tips about presenting HomeKit data to users, see the “Adjust the Interface for a Published App” section at the end of this article.</string>
+                                        <attributes>
+                                            <font key="NSFont" metaFont="system"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" lineSpacing="2" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PV0-b7-Zaj">
-                                <rect key="frame" x="454" y="-2" width="42" height="21"/>
+                                <rect key="frame" x="451" y="2" width="50" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="TY0-dG-9Sk"/>
-                                    <constraint firstAttribute="width" constant="42" id="pnJ-cL-DrR"/>
+                                    <constraint firstAttribute="width" constant="50" id="pnJ-cL-DrR" userLabel="width = 50"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <color key="textColor" systemColor="systemGrayColor"/>
@@ -68,24 +83,24 @@
                             <constraint firstAttribute="trailing" secondItem="fSz-KO-0ba" secondAttribute="trailing" constant="20" id="EoZ-lw-DHi"/>
                             <constraint firstItem="PV0-b7-Zaj" firstAttribute="top" secondItem="fSz-KO-0ba" secondAttribute="top" constant="-2" id="N5Q-0r-JIC"/>
                             <constraint firstAttribute="bottom" secondItem="nRq-9P-0wr" secondAttribute="bottom" id="RrC-eH-gPS"/>
-                            <constraint firstAttribute="trailing" secondItem="PV0-b7-Zaj" secondAttribute="trailing" constant="-75" id="U5c-Dg-Dyp"/>
+                            <constraint firstAttribute="trailing" secondItem="PV0-b7-Zaj" secondAttribute="leading" constant="-30" id="X4F-vZ-OvA"/>
                             <constraint firstItem="nRq-9P-0wr" firstAttribute="trailing" secondItem="fSz-KO-0ba" secondAttribute="trailing" id="bho-fR-5EE"/>
                             <constraint firstItem="nRq-9P-0wr" firstAttribute="leading" secondItem="fSz-KO-0ba" secondAttribute="leading" id="cUu-Zj-Z4c"/>
-                            <constraint firstItem="nRq-9P-0wr" firstAttribute="top" secondItem="fSz-KO-0ba" secondAttribute="bottom" id="pQG-zA-RgZ"/>
-                            <constraint firstItem="fSz-KO-0ba" firstAttribute="top" secondItem="voV-Ho-Jdq" secondAttribute="top" id="xEq-0V-gXI"/>
+                            <constraint firstItem="nRq-9P-0wr" firstAttribute="top" secondItem="fSz-KO-0ba" secondAttribute="bottom" constant="2" id="pQG-zA-RgZ"/>
+                            <constraint firstItem="fSz-KO-0ba" firstAttribute="top" secondItem="voV-Ho-Jdq" secondAttribute="top" constant="4" id="xEq-0V-gXI"/>
                         </constraints>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S4Q-u5-R8K">
-                        <rect key="frame" x="0.0" y="-45" width="421" height="45"/>
+                        <rect key="frame" x="0.0" y="-50" width="421" height="50"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Datvu" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gsJ-15-L8l">
-                                <rect key="frame" x="65" y="10" width="40" height="17"/>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                <rect key="frame" x="65" y="10" width="45" height="19.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                                 <color key="textColor" systemColor="systemOrangeColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="koq-8q-juk">
-                                <rect key="frame" x="454" y="27" width="42" height="0.0"/>
+                                <rect key="frame" x="454" y="29.5" width="42" height="0.0"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="42" id="PVz-Sz-fRN"/>
                                 </constraints>
@@ -94,18 +109,18 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This view hierarchy is useful" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hAA-qD-cTu">
-                                <rect key="frame" x="65" y="24" width="148" height="21"/>
+                                <rect key="frame" x="65" y="29" width="159.5" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="9Ew-Ls-pTC"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" systemColor="systemGray2Color"/>
                                 <nil key="highlightedColor"/>
                                 <string key="userLabel">This view hierarchy is useful for learning how HomeKit structures device data, which is slightly different than the way the Apple Home app refers to related concepts. It’s also useful for device developers who want to understand how HomeKit sees custom hardware.  In a real app that you publish on the App Store, you would provide a user experience more like the one found in Configuring a Home Automation Device. For example, you would focus on the actions a user can take and hide the underlying technical details. For more tips about presenting HomeKit data to users, see the “Adjust the Interface for a Published App” section at the end of this article.</string>
                             </label>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="height" constant="45" id="9zt-Pq-aS1"/>
+                            <constraint firstAttribute="height" constant="50" id="9zt-Pq-aS1"/>
                             <constraint firstItem="gsJ-15-L8l" firstAttribute="top" secondItem="S4Q-u5-R8K" secondAttribute="top" constant="10" id="CH5-Gl-HZA"/>
                             <constraint firstItem="koq-8q-juk" firstAttribute="bottom" secondItem="gsJ-15-L8l" secondAttribute="bottom" id="I6P-em-gol"/>
                             <constraint firstAttribute="bottom" secondItem="hAA-qD-cTu" secondAttribute="bottom" id="aOE-JP-TCM"/>
@@ -119,7 +134,7 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="Ujj-UE-xqP" firstAttribute="top" secondItem="S4Q-u5-R8K" secondAttribute="top" id="0D0-tq-pgC"/>
-                <constraint firstItem="S4Q-u5-R8K" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="-45" id="GYu-Tx-EgG"/>
+                <constraint firstItem="S4Q-u5-R8K" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="-50" id="GYu-Tx-EgG"/>
                 <constraint firstAttribute="trailing" secondItem="Ujj-UE-xqP" secondAttribute="trailing" id="Lmg-ll-3CL"/>
                 <constraint firstAttribute="trailing" secondItem="voV-Ho-Jdq" secondAttribute="trailing" id="OyS-mr-fAI"/>
                 <constraint firstItem="S4Q-u5-R8K" firstAttribute="trailing" secondItem="voV-Ho-Jdq" secondAttribute="trailing" id="ZKf-fU-Zth"/>

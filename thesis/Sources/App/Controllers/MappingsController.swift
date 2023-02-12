@@ -133,7 +133,7 @@ struct MappingsController: RouteCollection {
         }
         let user = try req.auth.require(User.self)
         let resolvedModel = try req.content.decode(ResolveCreateMappingChatBox.self)
-        let chatBox = ChatBox(name: "Friend")
+        let chatBox = ChatBox()
         try await chatBox.save(on: req.db)
         let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
         user.mappingId = mappings[user.id!]

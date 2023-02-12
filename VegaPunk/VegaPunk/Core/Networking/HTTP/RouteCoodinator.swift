@@ -15,9 +15,15 @@ enum RouteCoordinator: String {
     case message = "api/messages/"
     case pivot = "api/mapping/pivot/"
     case file = "api/files/"
+    case websocket = "api/messages/listen/"
     case none = ""
     
     func url() -> String? {
+        if self == .websocket {
+            let networkConfig = AuthenticatedUser.retrieve()?.networkConfig
+            let domain = "ws://\(networkConfig!.ip):\(networkConfig!.port)/"
+            return domain + self.rawValue
+        }
         if let domain = AuthenticatedUser.retrieve()?.networkConfig?.domain {
             return domain + self.rawValue
         }
@@ -42,9 +48,7 @@ enum Route: CaseIterable {
     case removeChatBox
     
     case createMessage
-    
     case getAllMappingPivots
-    
     case uploadFile
 }
 
@@ -57,6 +61,7 @@ struct QueryBuilder {
     static let fileRoute = RouteCoordinator.file.url()
     
     static func queryInfomation(_ route: Route, _ parammeters: [String: UUID] = [:]) -> QueryInformation? {
+        let userMappingId = (AuthenticatedUser.retrieve()?.data?.mappingId?.uuidString) ?? ""
         switch route {
         case .signUp: return QueryInformation(httpMethod: .post, url: userRoute!, encodableType: User.self, decodableType: User.self)
         case .signIn: return QueryInformation(httpMethod: .post, url: userRoute! + "login", decodableType: Token.self)
@@ -65,8 +70,7 @@ struct QueryBuilder {
         case .updateUser: return QueryInformation(httpMethod: .put, url: userRoute!, encodableType: User.self, decodableType: User.self)
             
         case .getAllMappings: return QueryInformation(url: mappingRoute!, decodableType: [Mapping.Resolve].self)
-        case .getMyChatBoxes: return QueryInformation(url: mappingRoute! + ((AuthenticatedUser.retrieve()?.data?
-            .mappingId?.uuidString) ?? "") + "/chatBoxes", decodableType: [ChatBox].self)
+        case .getMyChatBoxes: return QueryInformation(url: mappingRoute! + userMappingId + "/chatBoxes", decodableType: [ChatBox].self)
         case .createChatBox: return QueryInformation(httpMethod: .post, url: mappingRoute! + "chatBox/create")
             
         case .getMemberInChatBox:
@@ -81,9 +85,7 @@ struct QueryBuilder {
             return QueryInformation(httpMethod: .delete, url: chatBoxRoute! + chatBoxId.uuidString)
             
         case .createMessage: return QueryInformation(httpMethod: .post, url: messageRoute!)
-            
         case .getAllMappingPivots: return QueryInformation(url: pivotRoute!, decodableType: [MappingChatBoxPivot.Resolve].self)
-            
         case .uploadFile: return QueryInformation(httpMethod: .post, url: fileRoute!, decodableType: String.self)
         }
     }
@@ -95,12 +97,6 @@ struct QueryInformation {
     let encodableType: Codable.Type?
     let decodableType: Codable.Type?
     
-//    init(httpMethod: HTTPMethod = .get, url: String, decodableType: T.Type? = T.self, codableType: T.Type? = T.self) {
-//        self.httpMethod = httpMethod
-//        self.url = url
-//        self.decodableType = decodableType.self!
-//        self.codableType = codableType.self!
-//    }
     init(httpMethod: HTTPMethod = .get, url: String, encodableType: Codable.Type? = nil, decodableType: Codable.Type? = nil) {
         self.httpMethod = httpMethod
         self.url = url

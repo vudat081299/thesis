@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Image references" minToolsVersion="12.0"/>
@@ -11,14 +10,14 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MessagingViewController" customModule="VegaPunk" customModuleProvider="target">
             <connections>
-                <outlet property="bottomAlignCollectionViewCS" destination="5To-Sb-QbA" id="tfS-YF-3D8"/>
+                <outlet property="bottomSpaceCollectionView" destination="5To-Sb-QbA" id="tfS-YF-3D8"/>
                 <outlet property="chatTextField" destination="ZsU-pF-wsg" id="m3V-56-9pJ"/>
                 <outlet property="chatView" destination="orl-LS-sm8" id="8Rb-p3-7iG"/>
                 <outlet property="containChattingView" destination="0M1-D9-qUS" id="uFD-sh-Rze"/>
                 <outlet property="leadingOfTextFieldCS" destination="obo-Qd-f2q" id="mzq-9p-AlL"/>
+                <outlet property="pickedImageViewContainer" destination="Ppt-uq-Ng3" id="nL2-QH-pms"/>
                 <outlet property="removeSendingImageButton" destination="d9o-JR-dIf" id="cRx-oa-V5Y"/>
                 <outlet property="sendingImage" destination="rSq-X4-QhG" id="NIY-kR-zOA"/>
-                <outlet property="sendingImageViewContainer" destination="Ppt-uq-Ng3" id="nL2-QH-pms"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>

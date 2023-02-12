@@ -10,6 +10,9 @@ import Foundation
 extension UserDefaults {
     enum Keys: String, CaseIterable {
         case authenticatedUser
+        
+        // For message feature
+        case lastestSeenMessage
         case lastestMessage
         
         func genKey(_ suffix: String? = nil) -> String {

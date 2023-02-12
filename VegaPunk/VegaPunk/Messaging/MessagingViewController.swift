@@ -7,13 +7,15 @@
 
 import UIKit
 
-class MessagingViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+class MessagingViewController: UIViewController {
+    
     
     // MARK: - Properties
     // Collection view config data.
     static let sectionHeaderElementKind = "section-header-element-kind"
     static let sectionFooterElementKind = "section-footer-element-kind"
-
+    
+    let notificationCenter = NotificationCenter.default
     var dataSource: UICollectionViewDiffableDataSource<Int, Message>! = nil
     let imagePicker = UIImagePickerController()
     var user: User!
@@ -25,36 +27,80 @@ class MessagingViewController: UIViewController, UIImagePickerControllerDelegate
     var touchPosition: CGPoint = CGPoint(x: 0, y: 0)
     
     
-    // MARK: - IBOutlet.
-    // Views.
-    @IBOutlet weak var containChattingView: UIVisualEffectView!
-    @IBOutlet weak var sendingImageViewContainer: UIView!
-    
+    // MARK: - IBOutlet
+    // Views
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var inputFieldViewContainer: UIVisualEffectView!
+    
+    @IBOutlet weak var pickedImageContainer: UIView!
     @IBOutlet weak var chatTextField: UITextField!
-    @IBOutlet weak var sendingImage: UIImageView!
+    @IBOutlet weak var pickedImage: UIImageView!
     @IBOutlet weak var removeSendingImageButton: UIButton!
-    // Constraints.
-    @IBOutlet weak var bottomAlignCollectionViewCS: NSLayoutConstraint!
-    @IBOutlet weak var leadingPickedImage: NSLayoutConstraint!
+    
+    // Constraints
+    @IBOutlet weak var bottomSpaceCollectionView: NSLayoutConstraint!
+    @IBOutlet weak var leadingAlignPickedImage: NSLayoutConstraint!
     @IBOutlet weak var widthTextField: NSLayoutConstraint!
     
-    
-    // MARK: - Gesture.
+    // Gesture
     private lazy var panGesture: UIPanGestureRecognizer = {
-        let gesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureOnTable(_:)))
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureOnCollectionView(_:)))
         gesture.delegate = self
         gesture.cancelsTouchesInView = true
         return gesture
     }()
     
+    // App default configuration
+//    override var prefersStatusBarHidden: Bool {
+//        return true
+//    }
     
-    // MARK: - Set up methods.
+    
+    // MARK: - Life cycles
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Do any additional setup after loading the view.
+        setUpNavigationBar()
+        prepareView()
+        
+        // Configure collection view
+        configureHierarchy()
+        configureDataSource()
+        
+        // Preapre data
+        fetch()
+        
+        // Observer
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(websocketReceivedPackage(_:)), name: .WebsocketReceivedPackage, object: nil)
+
+        
+        // Delegate
+        imagePicker.delegate = self
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        tabBarController?.tabBar.isHidden = true
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+    deinit {
+        notificationCenter.removeObserver(self, name: .WebsocketReceivedPackage, object: nil)
+    }
+    
+    
+    // MARK: - Set up methods
     func setUpNavigationBar() {
-        self.tabBarController?.tabBar.isHidden = true
-        self.title = extractedChatBox.chatBox.name
-        self.navigationController?.navigationBar.prefersLargeTitles = false
-        self.navigationController?.modalPresentationStyle = .fullScreen
+        navigationItem.largeTitleDisplayMode = .never
+        title = extractedChatBox.chatBox.name
+//        navigationItem.largeTitleDisplayMode = .never
+//        self.title = extractedChatBox.chatBox.name
+//        navigationController?.navigationBar.prefersLargeTitles = false
+//        self.navigationController?.modalPresentationStyle = .fullScreen
         
         /// Call video BarButtonItem.
         let rightBarItem: UIBarButtonItem = {
@@ -64,160 +110,107 @@ class MessagingViewController: UIViewController, UIImagePickerControllerDelegate
         navigationItem.rightBarButtonItem = rightBarItem
     }
     @objc func rightBarItemAction() {
-    }
-
-    
-    // MARK: - Life cycle.
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        configureHierarchy()
-        configureDataSource()
-        fetch()
-        
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        imagePicker.delegate = self
-        
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setUpNavigationBar()
-    }
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        FeedBackTapEngine.tapped(style: .medium)
     }
     
     
     // MARK: - Tasks
-    func hideSendingImageViewContainer() {
-        sendingImage.image = nil
-        leadingPickedImage.constant = -320
+    func fetch() {
+        user = AuthenticatedUser.retrieve()?.data
+        let chatBox = extractedChatBox.chatBox
+        members = extractedChatBox.members.retrieveUsers()
+        var storedMessaged = Messages.retrieve(with: chatBox.id).messages
+        messages = storedMessaged.transformStructure()
+        markLastestSeenMessage()
+        setUpDataSource()
+    }
+    func hidePickedImageContainer() {
+        leadingAlignPickedImage.constant = -160
+        UIView.animate(withDuration: 0.3,
+                       animations: { [self] in
+            view.layoutIfNeeded()
+        }, completion: { [self] isCompleted in
+            if isCompleted {
+                pickedImage.image = nil
+            }
+        })
+    }
+    func prepareView() {
+        view.clipsToBounds = true
+        view.backgroundColor = .systemBackground
+        leadingAlignPickedImage.constant = -160
+        pickedImage.contentMode = .scaleAspectFit
+        pickedImageContainer.border(4)
+        pickedImageContainer.dropShadow()
+    }
+    @objc func websocketReceivedPackage(_ notification: Notification) {
+//        guard let package = notification.userInfo?["package"] as? WebSocketPackage
+//        else {
+//            return
+//        }
+//        if (navigationController?.topViewController != self ||
+//            package.message.chatBoxId != extractedChatBox.chatBox.id) {
+//            return
+//        }
+//        messages.receive([package.convertToMessage()])
+//        updateDataSource()
+        
+        if navigationController?.topViewController == self {
+            let chatBoxId = extractedChatBox.chatBox.id
+            var storedMessaged = Messages.retrieve(with: chatBoxId).messages
+            self.messages = storedMessaged.transformStructure()
+            markLastestSeenMessage()
+            updateDataSource()
+        }
     }
     
     
     // MARK: - Mini tasks
-    func fetch() {
-        DispatchQueue.main.async { [self] in
-            self.user = AuthenticatedUser.retrieve()?.data
-            self.extractedChatBox = extractedChatBox
-            let chatBox = extractedChatBox.chatBox
-            //        self.messages = Messages.retrieve(with: chatBox.id).messages
-            self.members = extractedChatBox.members.retrieveUsers()
-            let contentSample = """
-        This view hierarchy is useful for learning how HomeKit structures device data, which is slightly different than the way the Apple Home app refers to related concepts. It’s also useful for device developers who want to understand how HomeKit sees custom hardware.
-        
-        In a real app that you publish on the App Store, you would provide a user experience more like the one found in Configuring a Home Automation Device. For example, you would focus on the actions a user can take and hide the underlying technical details. For more tips about presenting HomeKit data to users, see the “Adjust the Interface for a Published App” section at the end of this article.
-"""
-            var sampleData = [
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "Hello essage from debugger: failed to send the k packet"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Hello i'm datvu"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: contentSample),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Load message cell"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: contentSample),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: contentSample),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: contentSample),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: user!.mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-                Message(id: UUID(), createdAt: Date().dayTime, sender: self.members[0].mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!")
-            ]
-            self.messages = sampleData.transformStructure()
-            setUpDataSource()
+    func markLastestSeenMessage() {
+        if navigationController?.topViewController == self {
+            messages.last?.last?.store(.lastestSeenMessage)
+        }
+    }
+    func user(_ id: UUID) -> User? {
+        members.first {
+            $0.mappingId == id
         }
     }
     
     
     // MARK: - IBAction
     @IBAction func sendMessage(_ sender: UIButton) {
-
+        FeedBackTapEngine.tapped(style: .medium)
+        let webSocketPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
+        NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": webSocketPackage])
     }
     @IBAction func pickImage(_ sender: UIButton) {
-//        FeedBackTapEngine.tapped(style: .medium)
+        FeedBackTapEngine.tapped(style: .medium)
         imagePicker.allowsEditing = true
         imagePicker.sourceType = .photoLibrary
         self.present(imagePicker, animated: true, completion: nil)
     }
     @IBAction func removeSendingImageAction(_ sender: UIButton) {
-//        FeedBackTapEngine.tapped(style: .medium)
-        hideSendingImageViewContainer()
+        FeedBackTapEngine.tapped(style: .medium)
+        hidePickedImageContainer()
     }
+}
+
     
-    
-    // MARK: - Delegate methods.
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            sendingImage.contentMode = .scaleAspectFit
-            sendingImage.image = pickedImage
-            self.view.bringSubviewToFront(sendingImageViewContainer)
+// MARK: - Pan esture.
+extension MessagingViewController: UIGestureRecognizerDelegate {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return [gestureRecognizer, otherGestureRecognizer].contains(panGesture)
+    }
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let gesture = gestureRecognizer as? UIPanGestureRecognizer, gesture == panGesture {
+            let translation = gesture.translation(in: gesture.view)
+            return (abs(translation.x) > abs(translation.y)) && (gesture == panGesture)
         }
-
-        dismiss(animated: true, completion: nil)
+        return true
     }
-    
-
-    // MARK: - Gesture.
     /// Pan Gesture on collection chat view. Using for swipe showing time stamp.
-    @objc func panGestureOnTable(_ sender: UIPanGestureRecognizer) {
+    @objc func panGestureOnCollectionView(_ sender: UIPanGestureRecognizer) {
         let touchPoint = sender.location(in: collectionView)
         if sender.state == .ended {
             collectionView.visibleCells.forEach {
@@ -253,15 +246,15 @@ class MessagingViewController: UIViewController, UIImagePickerControllerDelegate
         } else if sender.state == .changed {
             collectionView.visibleCells.forEach {
                 if let cell = $0 as? FirstMessContentCellForSection {
-                    cell.constraint.constant = (touchPosition.x - touchPoint.x) < 75 ? ((touchPosition.x - touchPoint.x) > 0 ? (touchPosition.x - touchPoint.x) : 0) : 75
+                    cell.constraint.constant = (touchPosition.x - touchPoint.x) < 120 ? ((touchPosition.x - touchPoint.x) > 0 ? (touchPosition.x - touchPoint.x) : 0) : 120
                 }
                 if let cell = $0 as? MessContentCell {
-                    cell.constraint.constant = (touchPosition.x - touchPoint.x) < 75 ? ((touchPosition.x - touchPoint.x) > 0 ? (touchPosition.x - touchPoint.x) : 0) : 75
+                    cell.constraint.constant = (touchPosition.x - touchPoint.x) < 120 ? ((touchPosition.x - touchPoint.x) > 0 ? (touchPosition.x - touchPoint.x) : 0) : 120
                 }
             }
             collectionView.visibleSupplementaryViews(ofKind: MessagingViewController.sectionHeaderElementKind).forEach {
                 if let cell = $0 as? HeaderSessionChat {
-                    cell.constraint.constant = (touchPosition.x - touchPoint.x) < 75 ? ((touchPosition.x - touchPoint.x) > 0 ? (touchPosition.x - touchPoint.x) : 0) : 75
+                    cell.constraint.constant = (touchPosition.x - touchPoint.x) < 120 ? ((touchPosition.x - touchPoint.x) > 0 ? (touchPosition.x - touchPoint.x) : 0) : 120
                 }
             }
         }
@@ -269,9 +262,24 @@ class MessagingViewController: UIViewController, UIImagePickerControllerDelegate
 }
 
 
-// MARK: - Extensions.
+// MARK: - Image picker
+extension MessagingViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        dismiss(animated: true, completion: nil)
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            pickedImage.image = image
+            leadingAlignPickedImage.constant = 8
+            UIView.animate(withDuration: 0.1) { [self] in
+                view.layoutIfNeeded()
+            }
+        }
+    }
+}
+
+
+// MARK: - Configure collection view
 extension MessagingViewController {
-    // MARK: - Layout for collection view.
+    // MARK: - Layout for collection view
     /// - Tag: PinnedHeader
     func createLayout() -> UICollectionViewLayout {
         let config = UICollectionViewCompositionalLayoutConfiguration()
@@ -305,7 +313,7 @@ extension MessagingViewController {
     }
     
     
-    // MARK: - Config collection view.
+    // MARK: - Config collection view
     func configureHierarchy() {
         collectionView.collectionViewLayout = createLayout()
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -321,7 +329,7 @@ extension MessagingViewController {
     }
     
     
-    // MARK: - Config datasource.
+    // MARK: - Config datasource
     /// - Tag: PinnedHeaderRegistration
     func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Int, Message>(collectionView: collectionView) {
@@ -330,18 +338,14 @@ extension MessagingViewController {
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: FirstMessContentCellForSection.reuseIdentifier,
                     for: indexPath) as? FirstMessContentCellForSection else { fatalError("Cannot create new cell") }
-                
-                
-                cell.creationDate.text = message.createdAt.toDate().iso8601StringShortDateTime
-                cell.timeLabel.text = ""
-                cell.contentTextLabel.text = message.content
+                cell.prepare(message)
+//                cell.delegate = self
                 return cell
             } else {
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: MessContentCell.reuseIdentifier,
                     for: indexPath) as? MessContentCell else { fatalError("Cannot create new cell") }
-                cell.timeLabel.text = ""
-                cell.contentTextLabel.text = message.content
+                cell.prepare(message)
                 return cell
             }
         }
@@ -361,7 +365,6 @@ extension MessagingViewController {
                 return supplementaryView
             }
         }
-        setUpDataSource()
     }
     func setUpDataSource() {
         var sections = Array(0..<0)
@@ -376,28 +379,38 @@ extension MessagingViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
         scrollToBottom(of: collectionView)
     }
+    func updateDataSource() {
+        var sections = Array(0..<0)
+        if (messages.count > 0) {
+            sections = Array(0..<messages.count)
+        }
+        var snapshot = NSDiffableDataSourceSnapshot<Int, Message>()
+        sections.forEach {
+            snapshot.appendSections([$0])
+            snapshot.appendItems(messages[$0])
+        }
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
     
     
     // MARK: - Tasks.
     func scrollToBottom(of collectionView: UICollectionView) {
-        DispatchQueue.main.async {
-            // method 1
-//            if messages.count > 0 && messages.last!.count > 0 {
-//                chatView.scrollToItem(at: IndexPath(item: messages.last!.count - 1, section: messages.count - 1), at: .bottom, animated: true)
-//                self.view.layoutIfNeeded()
-//            }
-            
-            // method 2
-            let point = CGPoint(x: 0, y: collectionView.contentSize.height + collectionView.contentInset.bottom - collectionView.frame.height)
-            if point.y >= 0 {
-                collectionView.setContentOffset(point, animated: true)
-            }
+        // method 1
+//        if messages.count > 0 && messages.last!.count > 0 {
+//            collectionView.scrollToItem(at: IndexPath(item: messages.last!.count - 1, section: messages.count - 1), at: .bottom, animated: true)
+//            self.view.layoutIfNeeded()
+//        }
+        
+        // method 2
+        let point = CGPoint(x: 0, y: collectionView.contentSize.height + collectionView.contentInset.bottom - collectionView.frame.height)
+        if point.y >= 0 {
+            collectionView.setContentOffset(point, animated: true)
         }
     }
 }
 
 
-// MARK: - Select cells.
+// MARK: - Collection view delegate
 extension MessagingViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 //        collectionView.deselectItem(at: indexPath, animated: true)
@@ -405,45 +418,26 @@ extension MessagingViewController: UICollectionViewDelegate {
 }
 
 
-// MARK: - Config gesture recognizer.
-extension MessagingViewController: UIGestureRecognizerDelegate {
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return [gestureRecognizer, otherGestureRecognizer].contains(panGesture)
-    }
-    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if let gesture = gestureRecognizer as? UIPanGestureRecognizer, gesture == panGesture {
-            let translation = gesture.translation(in: gesture.view)
-            return (abs(translation.x) > abs(translation.y)) && (gesture == panGesture)
-        }
-        return true
-    }
-    @IBAction func hideKeyBoardTap(_ sender: UITapGestureRecognizer) {
-        view.endEditing(true)
-    }
-}
-
-
 // MARK: - Keyboard.
-extension MessagingViewController: UITextFieldDelegate {
+extension MessagingViewController {
     @objc func keyboardWillShow(_ notification: NSNotification) {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            DispatchQueue.main.async { [self] in
+            UIView.animate(withDuration: 0.1) { [self] in
                 widthTextField.constant = 240
                 keyboardHeight = keyboardRect.height
-                bottomAlignCollectionViewCS.constant = keyboardHeight
-                view.layoutIfNeeded()
+                bottomSpaceCollectionView.constant = keyboardHeight
+                self.view.layoutIfNeeded()
                 scrollToBottom(of: collectionView)
             }
         }
     }
     @objc func keyboardWillHide(notification: NSNotification) {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            DispatchQueue.main.async { [self] in
+            UIView.animate(withDuration: 0.1) { [self] in
                 widthTextField.constant = 160
                 keyboardHeight = keyboardRect.height
-                bottomAlignCollectionViewCS.constant = 0
-                view.layoutIfNeeded()
-                scrollToBottom(of: collectionView)
+                bottomSpaceCollectionView.constant = 0
+                self.view.layoutIfNeeded()
             }
         }
     }

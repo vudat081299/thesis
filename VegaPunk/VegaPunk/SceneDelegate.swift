@@ -37,6 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func configureWindow(on appState: ApplicationState) {
+        self.window?.backgroundColor = .systemBackground
         self.window?.rootViewController = appState.handleHierarchyOnState()
         self.window?.makeKeyAndVisible()
     }

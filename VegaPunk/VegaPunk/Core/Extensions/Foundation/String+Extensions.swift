@@ -49,7 +49,7 @@ extension String {
     // MARK: - Remake
     func toDate() -> Date {
         guard let epochTime = Int(self) else { return Date() }
-        return Date(timeIntervalSince1970: TimeInterval(epochTime))
+        return Date(timeIntervalSince1970: TimeInterval(epochTime > 10_000_000_000 ? epochTime / 1_000 : epochTime))
     }
 }
 

@@ -21,6 +21,8 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
     @IBOutlet weak var senderName: UILabel!
     @IBOutlet weak var creationDate: UILabel!
     
+    var delegate: MessagingViewController?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -58,5 +60,16 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return contentImageView
+    }
+    
+    
+    // MARK: - Tasks
+    func prepare(_ message: Message) {
+        creationDate.text = message.createdAt.toDate().iso8601StringShortDateTime
+        timeLabel.text = message.createdAt.toDate().dayTime
+        contentTextLabel.text = message.content
+        if let user = delegate?.user(message.sender!) {
+            senderName.text = user.name
+        }
     }
 }

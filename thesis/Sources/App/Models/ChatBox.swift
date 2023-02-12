@@ -15,7 +15,7 @@ final class ChatBox: Model, Content {
     var id: UUID?
     
     @Field(key: "name")
-    var name: String
+    var name: String?
     
     @OptionalField(key: "avatar")
     var avatar: String?
@@ -29,7 +29,7 @@ final class ChatBox: Model, Content {
     init() {}
     
     init(id: UUID? = nil,
-         name: String = "",
+         name: String? = nil,
          avatar: String? = nil) {
         self.id = id
         self.name = name
