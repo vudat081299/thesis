@@ -18,9 +18,9 @@ final class WebSocketManager {
         print("Add new WebSocket connection user ID: \(mappingId)!")
     }
     
-    func removeSession(of userID: String) {
-        if dictionary[userID] != nil {
-            dictionary.removeValue(forKey: userID)
+    func removeSession(of mappingId: String) {
+        if dictionary[mappingId] != nil {
+            dictionary.removeValue(forKey: mappingId)
         }
     }
     

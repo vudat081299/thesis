@@ -44,15 +44,16 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
         contentImageView.image = nil
         heightContentImageCS.constant = 0
 //        contentTextLabel.text = ""
+        senderName.textColor = .systemOrange
     }
     
     override var isHighlighted: Bool {
         didSet {
             if self.isHighlighted {
-                backGroundView.backgroundColor = .systemGray2
+                backgroundColor = .systemBackground
                 // Your customized animation or add a overlay view
             } else {
-                backGroundView.backgroundColor = .clear
+                backgroundColor = .clear
                 // Your customized animation or remove overlay view
             }
         }
@@ -68,8 +69,12 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
         creationDate.text = message.createdAt.toDate().iso8601StringShortDateTime
         timeLabel.text = message.createdAt.toDate().dayTime
         contentTextLabel.text = message.content
-        if let user = delegate?.user(message.sender!) {
+        guard let delegate = delegate else { return }
+        if let user = delegate.user(message.sender!) {
             senderName.text = user.name
+        }
+        if delegate.checkIsSender(message.sender!) {
+            senderName.textColor = .systemGreen
         }
     }
 }

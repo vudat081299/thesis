@@ -91,11 +91,11 @@ extension MappingChatBoxPivots: Codable {
 extension MappingChatBoxPivots {
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self).write(to: storageFilePath)
+                try encoder.encode(self).write(to: filePath)
             }
             catch {
                 print("Store mappingChatBoxPivots to file failed! \(error)")
@@ -104,11 +104,11 @@ extension MappingChatBoxPivots {
     }
     static func retrieve() -> MappingChatBoxPivots {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
-                let chatBoxes = try JSONDecoder().decode(MappingChatBoxPivots.self, from: jsonData)
-                return chatBoxes
+                let jsonData = try Data(contentsOf: filePath)
+                let pivots = try JSONDecoder().decode(MappingChatBoxPivots.self, from: jsonData)
+                return pivots
             }
             catch {
                 print("Retrieve mappingChatBoxPivots from file failed! \(error)")
@@ -118,9 +118,9 @@ extension MappingChatBoxPivots {
     }
     static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappingChatBoxPivots.rawValue)
             do {
-                try FileManager.default.removeItem(at: storageFilePath)
+                try FileManager.default.removeItem(at: filePath)
             }
             catch {
                 print("Remove mappingChatBoxPivots file failed! \(error)")

@@ -5,6 +5,8 @@
 //  Created by Vũ Quý Đạt  on 21/04/2021.
 //
 
+
+// postgresql://vapor_username:vapor_password@localhost
 import UIKit
 
 class MessagingViewController: UIViewController {
@@ -15,13 +17,17 @@ class MessagingViewController: UIViewController {
     static let sectionHeaderElementKind = "section-header-element-kind"
     static let sectionFooterElementKind = "section-footer-element-kind"
     
+    //
     let notificationCenter = NotificationCenter.default
-    var dataSource: UICollectionViewDiffableDataSource<Int, Message>! = nil
     let imagePicker = UIImagePickerController()
+    
+    //
+    var dataSource: UICollectionViewDiffableDataSource<Int, Message>! = nil
     var user: User!
     var extractedChatBox: ChatBoxExtractedData!
     var messages = [[Message]]()
     var members = [User]()
+    var previousSendingPackage: WebSocketPackage!
     
     var keyboardHeight: CGFloat = 0.0
     var touchPosition: CGPoint = CGPoint(x: 0, y: 0)
@@ -68,22 +74,24 @@ class MessagingViewController: UIViewController {
         configureHierarchy()
         configureDataSource()
         
-        // Preapre data
-        fetch()
-        
         // Observer
         notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(websocketReceivedPackage(_:)), name: .WebsocketReceivedPackage, object: nil)
-
         
         // Delegate
         imagePicker.delegate = self
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         tabBarController?.tabBar.isHidden = true
+        
+        // Preapre data
+        fetch()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        scrollToBottom(of: collectionView)
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -93,36 +101,30 @@ class MessagingViewController: UIViewController {
     }
     
     
-    // MARK: - Set up methods
-    func setUpNavigationBar() {
-        navigationItem.largeTitleDisplayMode = .never
-        title = extractedChatBox.chatBox.name
-//        navigationItem.largeTitleDisplayMode = .never
-//        self.title = extractedChatBox.chatBox.name
-//        navigationController?.navigationBar.prefersLargeTitles = false
-//        self.navigationController?.modalPresentationStyle = .fullScreen
-        
-        /// Call video BarButtonItem.
-        let rightBarItem: UIBarButtonItem = {
-            let bt = UIBarButtonItem(image: UIImage(systemName: "video.circle.fill"), style: .plain, target: self, action: #selector(rightBarItemAction))
-            return bt
-        }()
-        navigationItem.rightBarButtonItem = rightBarItem
-    }
-    @objc func rightBarItemAction() {
-        FeedBackTapEngine.tapped(style: .medium)
-    }
-    
-    
     // MARK: - Tasks
     func fetch() {
-        user = AuthenticatedUser.retrieve()?.data
-        let chatBox = extractedChatBox.chatBox
-        members = extractedChatBox.members.retrieveUsers()
-        var storedMessaged = Messages.retrieve(with: chatBox.id).messages
-        messages = storedMessaged.transformStructure()
-        markLastestSeenMessage()
-        setUpDataSource()
+//        let group = DispatchGroup()
+//        let queue = DispatchQueue.global(qos: .userInitiated)
+//        queue.async { [self] in
+            self.user = AuthenticatedUser.retrieve()?.data
+            let chatBox = self.extractedChatBox.chatBox
+            self.members = self.extractedChatBox.members.retrieveUsers()
+            var storedMessaged = Messages.retrieve(with: chatBox.id).messages
+//            var sampleData = sampleData(mappingId: (self?.user.mappingId!)!)
+            self.messages = storedMessaged.transformStructure()
+//            DispatchQueue.main.async { [self] in
+                self.markLastestSeenMessage()
+                self.setUpDataSource()
+//            }
+//        }
+    }
+    func prepareView() {
+        view.clipsToBounds = true
+        view.backgroundColor = .systemBackground
+        hidePickedImageContainer()
+        pickedImage.contentMode = .scaleAspectFit
+        pickedImageContainer.border(4)
+        pickedImageContainer.dropShadow()
     }
     func hidePickedImageContainer() {
         leadingAlignPickedImage.constant = -160
@@ -134,14 +136,6 @@ class MessagingViewController: UIViewController {
                 pickedImage.image = nil
             }
         })
-    }
-    func prepareView() {
-        view.clipsToBounds = true
-        view.backgroundColor = .systemBackground
-        leadingAlignPickedImage.constant = -160
-        pickedImage.contentMode = .scaleAspectFit
-        pickedImageContainer.border(4)
-        pickedImageContainer.dropShadow()
     }
     @objc func websocketReceivedPackage(_ notification: Notification) {
 //        guard let package = notification.userInfo?["package"] as? WebSocketPackage
@@ -171,18 +165,25 @@ class MessagingViewController: UIViewController {
             messages.last?.last?.store(.lastestSeenMessage)
         }
     }
-    func user(_ id: UUID) -> User? {
-        members.first {
-            $0.mappingId == id
+    func user(_ mappingId: UUID) -> User? {
+        if mappingId == user.mappingId { return user }
+        return members.first {
+            $0.mappingId == mappingId
         }
+    }
+    func checkIsSender(_ mappingId: UUID) -> Bool {
+        if mappingId == user.mappingId { return true }
+        return false
     }
     
     
     // MARK: - IBAction
     @IBAction func sendMessage(_ sender: UIButton) {
         FeedBackTapEngine.tapped(style: .medium)
-        let webSocketPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
-        NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": webSocketPackage])
+        if (chatTextField.text == nil || chatTextField.text?.count == 0) { return }
+        previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
+        chatTextField.text = ""
+        NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": previousSendingPackage!])
     }
     @IBAction func pickImage(_ sender: UIButton) {
         FeedBackTapEngine.tapped(style: .medium)
@@ -196,8 +197,31 @@ class MessagingViewController: UIViewController {
     }
 }
 
+
+// MARK: - NavigationBar
+extension MessagingViewController {
+    func setUpNavigationBar() {
+        navigationItem.largeTitleDisplayMode = .never
+        title = extractedChatBox.chatBox.name
+//        navigationItem.largeTitleDisplayMode = .never
+//        self.title = extractedChatBox.chatBox.name
+//        navigationController?.navigationBar.prefersLargeTitles = false
+//        self.navigationController?.modalPresentationStyle = .fullScreen
+        
+        /// Call video BarButtonItem.
+        let rightBarItem: UIBarButtonItem = {
+            let bt = UIBarButtonItem(image: UIImage(systemName: "video.circle.fill"), style: .plain, target: self, action: #selector(rightBarItemAction))
+            return bt
+        }()
+        navigationItem.rightBarButtonItem = rightBarItem
+    }
+    @objc func rightBarItemAction() {
+        FeedBackTapEngine.tapped(style: .medium)
+    }
+}
+
     
-// MARK: - Pan esture.
+// MARK: - Pan gesture.
 extension MessagingViewController: UIGestureRecognizerDelegate {
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return [gestureRecognizer, otherGestureRecognizer].contains(panGesture)
@@ -295,7 +319,7 @@ extension MessagingViewController {
 
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                              heightDimension: .estimated(45)),
+                                              heightDimension: .estimated(50)),
             elementKind: MessagingViewController.sectionHeaderElementKind,
             alignment: .top)
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(
@@ -339,7 +363,7 @@ extension MessagingViewController {
                     withReuseIdentifier: FirstMessContentCellForSection.reuseIdentifier,
                     for: indexPath) as? FirstMessContentCellForSection else { fatalError("Cannot create new cell") }
                 cell.prepare(message)
-//                cell.delegate = self
+                cell.delegate = self
                 return cell
             } else {
                 guard let cell = collectionView.dequeueReusableCell(
@@ -357,7 +381,6 @@ extension MessagingViewController {
             } else {
                 guard let supplementaryView = view.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FooterMessage.reuseIdentifier, for: index) as? FooterMessage else { fatalError("Cannot create FooterMessage!") }
                 if (index.section == self.messages.count - 1) {
-//                    supplementaryView.frame.size.height = self.containChattingView.frame.size.height + 16
                     supplementaryView.frame.size.height = 50 + 16
                 } else {
                     supplementaryView.frame.size.height = 0
@@ -377,7 +400,7 @@ extension MessagingViewController {
             snapshot.appendItems(messages[$0])
         }
         dataSource.apply(snapshot, animatingDifferences: true)
-        scrollToBottom(of: collectionView)
+        collectionView.layoutIfNeeded()
     }
     func updateDataSource() {
         var sections = Array(0..<0)
@@ -390,6 +413,7 @@ extension MessagingViewController {
             snapshot.appendItems(messages[$0])
         }
         dataSource.apply(snapshot, animatingDifferences: true)
+        collectionView.layoutIfNeeded()
     }
     
     
@@ -402,15 +426,15 @@ extension MessagingViewController {
 //        }
         
         // method 2
-        let point = CGPoint(x: 0, y: collectionView.contentSize.height + collectionView.contentInset.bottom - collectionView.frame.height)
+//        print(collectionView.contentSize.height)
+//        print(collectionView.contentInset.bottom)
+//        print(collectionView.frame.height)
+        let point = CGPoint(x: 0, y: collectionView.contentSize.height - collectionView.bounds.height)
         if point.y >= 0 {
             collectionView.setContentOffset(point, animated: true)
         }
     }
 }
-
-
-// MARK: - Collection view delegate
 extension MessagingViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 //        collectionView.deselectItem(at: indexPath, animated: true)

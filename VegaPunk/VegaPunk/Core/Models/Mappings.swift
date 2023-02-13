@@ -92,11 +92,11 @@ extension Mappings: Codable {
 extension Mappings: Storing {
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self).write(to: storageFilePath)
+                try encoder.encode(self).write(to: filePath)
             }
             catch {
                 print("Store mappings to file failed! \(error)")
@@ -105,9 +105,9 @@ extension Mappings: Storing {
     }
     static func retrieve() -> Mappings {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
+                let jsonData = try Data(contentsOf: filePath)
                 let mappings = try JSONDecoder().decode(Mappings.self, from: jsonData)
                 return mappings
             }
@@ -119,9 +119,9 @@ extension Mappings: Storing {
     }
     static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.mappings.rawValue)
             do {
-                try FileManager.default.removeItem(at: storageFilePath)
+                try FileManager.default.removeItem(at: filePath)
             }
             catch {
                 print("Remove mappings file failed! \(error)")

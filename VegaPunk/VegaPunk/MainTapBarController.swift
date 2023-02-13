@@ -39,8 +39,14 @@ struct ViewControllerData {
 
 
 class MainTabBarController: UITabBarController {
+    
+    //
+    let notificationCenter = NotificationCenter.default
     var socket: WebSocket!
+    
+    //
     var isConnected = false
+    
     
     // MARK: - Life cycle.
     override func viewDidLoad() {
@@ -50,8 +56,8 @@ class MainTabBarController: UITabBarController {
         ViewControllerData.viewControllerDatas.forEach {
             viewControllers?.append($0.viewController)
         }
-        
         connectWebSocket()
+        notificationCenter.addObserver(self, selector: #selector(send(_:)), name: .WebsocketSendPackage, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -115,7 +121,6 @@ extension MainTabBarController: WebSocketDelegate {
                 Messages(storedMessages).store()
 //                NotificationCenter.default.post(name: .WebsocketReceivedPackage, object: nil, userInfo: ["package": webSocketPackage])
                 NotificationCenter.default.post(name: .WebsocketReceivedPackage, object: nil)
-                
             case .chatBox:
                 break
             case .user:
@@ -153,5 +158,26 @@ extension MainTabBarController: WebSocketDelegate {
         } else {
             print("websocket encountered an error")
         }
+    }
+    @objc func send(_ notification: Notification) {
+        guard let package = notification.userInfo?["package"] as? WebSocketPackage else {
+            return
+        }
+        do {
+            try socket.write(string: package.json())
+        } catch {
+            
+        }
+//        socket.write(string: """
+//{
+//                     "type": 0,
+//                     "message": {
+//                       "sender":"B0A9FBBE-6350-43FE-A3E6-C11CBC974B2D",
+//                       "chatBoxId":"7F7A0D37-956B-49F8-8735-45B8141B10B6",
+//                       "mediaType":"text",
+//                       "content":"This function get’s called when we press the button. The‘.goingAway’ is the close code where as the reason is that you provide to user.Where are we going to call all these three functions ???The closeSession is already added as the target for the button we created earlier. Where as the send & receive will be called under the didOpenWithProtocol protocol.Download the full source code HERE. I hope I was able to explain well. If I did then please do follow me and share my article with your friends. This really motivates me to kee"
+//                     }
+//                  }
+//""")
     }
 }

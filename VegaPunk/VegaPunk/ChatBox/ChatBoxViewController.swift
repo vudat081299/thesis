@@ -15,6 +15,7 @@ class ChatBoxViewController: UIViewController {
     var chatBoxExtractedDataList = [ChatBoxExtractedData]()
     var friends = [User]()
     var authenticatedUser: AuthenticatedUser!
+    let messagingViewController = MessagingViewController()
     
     
     // MARK: - Navbar components.
@@ -127,9 +128,7 @@ extension ChatBoxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let messagingViewController = MessagingViewController()
         messagingViewController.extractedChatBox = chatBoxExtractedDataList[indexPath.row]
-        
         messagingViewController.tabBarController?.tabBar.isHidden = true
         messagingViewController.navigationController?.modalPresentationStyle = .fullScreen
         navigationController?.pushViewController(messagingViewController, animated: true)

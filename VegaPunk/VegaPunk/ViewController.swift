@@ -23,11 +23,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        fetchData()
         prepareNavigationViewController()
         configureHierarchy()
         configureDataSource()
         setUpNavigationBar()
+        fetchData()
+        fetchStoredData()
     }
     
 
@@ -51,21 +52,34 @@ class ViewController: UIViewController {
     
     
     // MARK: - Tasks
+    func fetchStoredData() {
+        let mappings = Mappings.retrieve()
+        let friends = Friend.retrieve().friends
+        friends.forEach {
+            if let friendId = $0.id,
+               let friendMappingId = mappings.mappingId(friendId) {
+                userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
+            }
+        }
+        applySnapshot()
+    }
     func fetchData() {
         DataInteraction.fetchData { [self] in
-            let mappings = Mappings.retrieve()
-            let friends = Friend.retrieve().friends
-            friends.forEach {
-                if let friendId = $0.id,
-                   let friendMappingId = mappings.mappingId(friendId) {
-                    userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
+            DispatchQueue.main.async { [self] in
+                let mappings = Mappings.retrieve()
+                let friends = Friend.retrieve().friends
+                friends.forEach {
+                    if let friendId = $0.id,
+                       let friendMappingId = mappings.mappingId(friendId) {
+                        userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
+                    }
                 }
-            }
-            applySnapshot()
-            if let mappingId = AuthenticatedUser.retrieve()?.data?.mappingId {
-                MappingChatBoxPivots.retrieve().pivots[mappingId].forEach {
-                    RequestEngine.getMessagesOfChatBox($0) { messages in
-                        Messages(resolveMessages: messages).store()
+                applySnapshot()
+                if let mappingId = AuthenticatedUser.retrieve()?.data?.mappingId {
+                    MappingChatBoxPivots.retrieve().pivots[mappingId].forEach {
+                        RequestEngine.getMessagesOfChatBox($0) { messages in
+                            Messages(resolveMessages: messages).store()
+                        }
                     }
                 }
             }
@@ -76,6 +90,7 @@ class ViewController: UIViewController {
         let vc = UIStoryboard(name: "UserAccess", bundle: nil).instantiateInitialViewController()!
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated:true, completion:nil)
+        configureApplication()
     }
     
     func resetApplicationMetadata() {
@@ -84,6 +99,12 @@ class ViewController: UIViewController {
         Mappings.remove()
         Messages.remove()
         Friend.remove()
+    }
+    
+    /// Configure default specification for application.
+    /// - ex: domain, ip, port,..
+    func configureApplication() {
+        AuthenticatedUser.store(networkConfig: NetworkConfig(domain: "http://192.168.1.24:8080/", ip: "192.168.1.24", port: "8080"))
     }
     
 }

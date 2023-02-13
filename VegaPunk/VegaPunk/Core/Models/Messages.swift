@@ -196,12 +196,12 @@ extension Messages {
             messages.messages.cacheLastest()
             if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                 let storageDirectoryPath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue)
-                let storageFilePath = storageDirectoryPath.appendingPathComponent(chatBoxId.uuidString)
+                let filePath = storageDirectoryPath.appendingPathComponent(chatBoxId.uuidString)
                 do {
                     FileManager.default.confirmFileExists(atPath: storageDirectoryPath, isDirectory: true)
                     let encoder = JSONEncoder()
     //                encoder.outputFormatting = .prettyPrinted
-                    try encoder.encode(messages).write(to: storageFilePath, options: .atomic)
+                    try encoder.encode(messages).write(to: filePath, options: .atomic)
                 }
                 catch {
                     print("Store messages to file failed! \(error)")
@@ -211,9 +211,9 @@ extension Messages {
     }
     static func retrieve(with chatBoxId: UUID) -> Messages {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue).appendingPathComponent(chatBoxId.uuidString)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue).appendingPathComponent(chatBoxId.uuidString)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
+                let jsonData = try Data(contentsOf: filePath)
                 let messages = try JSONDecoder().decode(Messages.self, from: jsonData)
                 return Messages(messages.messages.sorted(by: <))
             }
@@ -225,9 +225,9 @@ extension Messages {
     }
     static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue)
             do {
-                try FileManager.default.removeItem(at: storageFilePath)
+                try FileManager.default.removeItem(at: filePath)
             }
             catch {
                 print("Remove messages file failed! \(error)")

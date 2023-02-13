@@ -124,11 +124,11 @@ extension Friend: Codable {
 extension Friend {
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let friendsStorageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self.friends.clean()).write(to: friendsStorageFilePath)
+                try encoder.encode(self.friends.clean()).write(to: filePath)
             }
             catch {
                 print("Store friends to file failed! \(error)")
@@ -137,9 +137,9 @@ extension Friend {
     }
     static func retrieve() -> Friend {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
+                let jsonData = try Data(contentsOf: filePath)
                 let friend = try JSONDecoder().decode(Friend.self, from: jsonData)
                 return friend
             }
@@ -151,9 +151,9 @@ extension Friend {
     }
     static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.friends.rawValue)
             do {
-                try FileManager.default.removeItem(at: storageFilePath)
+                try FileManager.default.removeItem(at: filePath)
             }
             catch {
                 print("Remove friends file failed! \(error)")

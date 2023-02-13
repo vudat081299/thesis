@@ -79,11 +79,11 @@ extension ChatBoxes: Codable {
 extension ChatBoxes: Storing {
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self).write(to: storageFilePath)
+                try encoder.encode(self).write(to: filePath)
             }
             catch {
                 print("Store chatBoxes to file failed! \(error)")
@@ -92,9 +92,9 @@ extension ChatBoxes: Storing {
     }
     static func retrieve() -> ChatBoxes {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let storageFilePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
+            let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
             do {
-                let jsonData = try Data(contentsOf: storageFilePath)
+                let jsonData = try Data(contentsOf: filePath)
                 let chatBoxes = try JSONDecoder().decode(ChatBoxes.self, from: jsonData)
                 return chatBoxes
             }

@@ -85,7 +85,7 @@
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NXM-Ua-IM0">
                         <rect key="frame" x="76" y="47" width="257" height="34"/>
                         <constraints>
-                            <constraint firstAttribute="height" relation="lessThanOrEqual" constant="160" id="JZK-S6-KvG"/>
+                            <constraint firstAttribute="height" relation="lessThanOrEqual" constant="80" id="JZK-S6-KvG"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="secondaryLabelColor"/>
