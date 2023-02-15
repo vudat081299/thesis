@@ -8,6 +8,7 @@
 
 // postgresql://vapor_username:vapor_password@localhost
 import UIKit
+import LocalAuthentication
 
 class MessagingViewController: UIViewController {
     
@@ -31,6 +32,7 @@ class MessagingViewController: UIViewController {
     
     var keyboardHeight: CGFloat = 0.0
     var touchPosition: CGPoint = CGPoint(x: 0, y: 0)
+    var heightInputContainerOnDeviceType: CGFloat = 50
     
     
     // MARK: - IBOutlet
@@ -38,7 +40,7 @@ class MessagingViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var inputFieldViewContainer: UIVisualEffectView!
     
-    @IBOutlet weak var pickedImageContainer: UIView!
+    @IBOutlet weak var pickedImageContainer: UIVisualEffectView!
     @IBOutlet weak var chatTextField: UITextField!
     @IBOutlet weak var pickedImage: UIImageView!
     @IBOutlet weak var removeSendingImageButton: UIButton!
@@ -47,6 +49,7 @@ class MessagingViewController: UIViewController {
     @IBOutlet weak var bottomSpaceCollectionView: NSLayoutConstraint!
     @IBOutlet weak var leadingAlignPickedImage: NSLayoutConstraint!
     @IBOutlet weak var widthTextField: NSLayoutConstraint!
+    @IBOutlet weak var heightInputContainer: NSLayoutConstraint!
     
     // Gesture
     private lazy var panGesture: UIPanGestureRecognizer = {
@@ -67,8 +70,8 @@ class MessagingViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        setUpNavigationBar()
         prepareView()
+        hidePickedImageContainer()
         
         // Configure collection view
         configureHierarchy()
@@ -77,54 +80,87 @@ class MessagingViewController: UIViewController {
         // Observer
         notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(websocketReceivedPackage(_:)), name: .WebsocketReceivedPackage, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(websocketReceivedMessagePackage(_:)), name: .WebsocketReceivedMessagePackage, object: nil)
         
         // Delegate
         imagePicker.delegate = self
+        
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tabBarController?.tabBar.isHidden = true
         
-        // Preapre data
+        // Prepare data
         fetch()
+        user = AuthenticatedUser.retrieve()?.data
+        
+        // Prepare view
+        tabBarController?.tabBar.isHidden = true
+        setUpNavigationBar()
+        setTitle()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         scrollToBottom(of: collectionView)
     }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        hidePickedImageContainer()
+        self.chatTextField.resignFirstResponder()
+    }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        scrollToTop(of: collectionView)
     }
     deinit {
-        notificationCenter.removeObserver(self, name: .WebsocketReceivedPackage, object: nil)
+        notificationCenter.removeObserver(self, name: .WebsocketReceivedMessagePackage, object: nil)
     }
     
     
     // MARK: - Tasks
+    /// This method fetch data from local and then fetch data from server.
+    /// - Note: This method must call after collection view is set up because the reload collection view method is called in this function.
+    /// - Usage: Fetch data for messaging view controller. It's destination is transform fetched data to `[[Message]]`.
     func fetch() {
-//        let group = DispatchGroup()
-//        let queue = DispatchQueue.global(qos: .userInitiated)
-//        queue.async { [self] in
-            self.user = AuthenticatedUser.retrieve()?.data
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            // fetch from local
             let chatBox = self.extractedChatBox.chatBox
             self.members = self.extractedChatBox.members.retrieveUsers()
             var storedMessaged = Messages.retrieve(with: chatBox.id).messages
 //            var sampleData = sampleData(mappingId: (self?.user.mappingId!)!)
             self.messages = storedMessaged.transformStructure()
-//            DispatchQueue.main.async { [self] in
-                self.markLastestSeenMessage()
+            self.markLastestSeenMessage()
+            self.setUpDataSource()
+            
+            // fetch from server
+            var time: String!
+            if self.messages.count > 0 {
+                time = self.messages.last?.last?.createdAt
+            }
+            if time == nil {
+                time = "0"
+            }
+            RequestEngine.getMessageFromTime(chatBox.id, time) { resolveMessages in
+                if (resolveMessages.count == 0) { return }
+                Messages(resolveMessages).store()
+                storedMessaged = Messages.retrieve(with: chatBox.id).messages
+                self.messages = storedMessaged.transformStructure()
                 self.setUpDataSource()
-//            }
-//        }
+            }
+        }
     }
     func prepareView() {
         view.clipsToBounds = true
         view.backgroundColor = .systemBackground
-        hidePickedImageContainer()
         pickedImage.contentMode = .scaleAspectFit
-        pickedImageContainer.border(4)
+        pickedImageContainer.border(8)
         pickedImageContainer.dropShadow()
+        if LAContext().biometryType == .touchID {
+            heightInputContainerOnDeviceType = 50
+        } else {
+            heightInputContainerOnDeviceType = 84
+        }
+        heightInputContainer.constant = heightInputContainerOnDeviceType
     }
     func hidePickedImageContainer() {
         leadingAlignPickedImage.constant = -160
@@ -134,10 +170,11 @@ class MessagingViewController: UIViewController {
         }, completion: { [self] isCompleted in
             if isCompleted {
                 pickedImage.image = nil
+                pickedImageContainer.isHidden = true
             }
         })
     }
-    @objc func websocketReceivedPackage(_ notification: Notification) {
+    @objc func websocketReceivedMessagePackage(_ notification: Notification) {
 //        guard let package = notification.userInfo?["package"] as? WebSocketPackage
 //        else {
 //            return
@@ -154,15 +191,22 @@ class MessagingViewController: UIViewController {
             var storedMessaged = Messages.retrieve(with: chatBoxId).messages
             self.messages = storedMessaged.transformStructure()
             markLastestSeenMessage()
-            updateDataSource()
+            setUpDataSource()
         }
     }
     
     
     // MARK: - Mini tasks
+    func resetData() {
+        members = []
+        messages = []
+        user = nil
+    }
     func markLastestSeenMessage() {
-        if navigationController?.topViewController == self {
-            messages.last?.last?.store(.lastestSeenMessage)
+        DispatchQueue.main.async {
+            if self.navigationController?.topViewController == self {
+                self.messages.last?.last?.store(.lastestSeenMessage)
+            }
         }
     }
     func user(_ mappingId: UUID) -> User? {
@@ -183,7 +227,7 @@ class MessagingViewController: UIViewController {
         if (chatTextField.text == nil || chatTextField.text?.count == 0) { return }
         previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
         chatTextField.text = ""
-        NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": previousSendingPackage!])
+        NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
     }
     @IBAction func pickImage(_ sender: UIButton) {
         FeedBackTapEngine.tapped(style: .medium)
@@ -200,9 +244,11 @@ class MessagingViewController: UIViewController {
 
 // MARK: - NavigationBar
 extension MessagingViewController {
+    @objc func rightBarItemAction() {
+        FeedBackTapEngine.tapped(style: .medium)
+    }
     func setUpNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
-        title = extractedChatBox.chatBox.name
 //        navigationItem.largeTitleDisplayMode = .never
 //        self.title = extractedChatBox.chatBox.name
 //        navigationController?.navigationBar.prefersLargeTitles = false
@@ -215,8 +261,14 @@ extension MessagingViewController {
         }()
         navigationItem.rightBarButtonItem = rightBarItem
     }
-    @objc func rightBarItemAction() {
-        FeedBackTapEngine.tapped(style: .medium)
+    func setTitle() {
+        if members.count == 0 {
+            title = user.name
+        } else if members.count == 1 {
+            title = members.first?.name
+        } else {
+            title = extractedChatBox.chatBox.name
+        }
     }
 }
 
@@ -293,6 +345,7 @@ extension MessagingViewController: UIImagePickerControllerDelegate & UINavigatio
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             pickedImage.image = image
             leadingAlignPickedImage.constant = 8
+            pickedImageContainer.isHidden = false
             UIView.animate(withDuration: 0.1) { [self] in
                 view.layoutIfNeeded()
             }
@@ -324,7 +377,7 @@ extension MessagingViewController {
             alignment: .top)
         let sectionFooter = NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                              heightDimension: .estimated(66)),
+                                              heightDimension: .estimated(8)),
             elementKind: MessagingViewController.sectionFooterElementKind,
             alignment: .bottom)
         
@@ -358,18 +411,35 @@ extension MessagingViewController {
     func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Int, Message>(collectionView: collectionView) {
             (collectionView: UICollectionView, indexPath: IndexPath, message: Message) -> UICollectionViewCell? in
-            if indexPath.row == 0 {
+            let row = indexPath.row
+            if row == 0 {
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: FirstMessContentCellForSection.reuseIdentifier,
                     for: indexPath) as? FirstMessContentCellForSection else { fatalError("Cannot create new cell") }
-                cell.prepare(message)
-                cell.delegate = self
+                
+//                cell.prepare(message)
+//                cell.delegate = self
+                
+                cell.creationDate.text = message.createdAt.toDate().iso8601StringShortDateTime
+                cell.timeLabel.text = message.createdAt.toDate().dayTime
+                cell.contentTextLabel.text = message.content
+                if let user = self.user(message.sender!) {
+                    cell.senderName.text = user.name
+                }
+                if self.checkIsSender(message.sender!) {
+                    cell.senderName.textColor = .systemGreen
+                }
+                
                 return cell
             } else {
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: MessContentCell.reuseIdentifier,
                     for: indexPath) as? MessContentCell else { fatalError("Cannot create new cell") }
-                cell.prepare(message)
+//                cell.prepare(message)
+                
+                cell.timeLabel.text = message.createdAt.toDate().dayTime
+                cell.contentTextLabel.text = message.content
+                
                 return cell
             }
         }
@@ -381,9 +451,9 @@ extension MessagingViewController {
             } else {
                 guard let supplementaryView = view.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FooterMessage.reuseIdentifier, for: index) as? FooterMessage else { fatalError("Cannot create FooterMessage!") }
                 if (index.section == self.messages.count - 1) {
-                    supplementaryView.frame.size.height = 50 + 16
-                } else {
-                    supplementaryView.frame.size.height = 0
+                    
+                    supplementaryView.frame.size.height = 8
+//                    supplementaryView.frame.size.height = 50 + 16
                 }
                 return supplementaryView
             }
@@ -399,40 +469,45 @@ extension MessagingViewController {
             snapshot.appendSections([$0])
             snapshot.appendItems(messages[$0])
         }
-        dataSource.apply(snapshot, animatingDifferences: true)
-        collectionView.layoutIfNeeded()
-    }
-    func updateDataSource() {
-        var sections = Array(0..<0)
-        if (messages.count > 0) {
-            sections = Array(0..<messages.count)
+        DispatchQueue.main.async {
+            self.dataSource.apply(snapshot, animatingDifferences: true)
+            self.collectionView.layoutIfNeeded()
         }
-        var snapshot = NSDiffableDataSourceSnapshot<Int, Message>()
-        sections.forEach {
-            snapshot.appendSections([$0])
-            snapshot.appendItems(messages[$0])
-        }
-        dataSource.apply(snapshot, animatingDifferences: true)
-        collectionView.layoutIfNeeded()
     }
     
     
     // MARK: - Tasks.
     func scrollToBottom(of collectionView: UICollectionView) {
         // method 1
-//        if messages.count > 0 && messages.last!.count > 0 {
-//            collectionView.scrollToItem(at: IndexPath(item: messages.last!.count - 1, section: messages.count - 1), at: .bottom, animated: true)
-//            self.view.layoutIfNeeded()
-//        }
+        if messages.count > 0 && messages.last!.count > 0 {
+            collectionView.scrollToItem(at: IndexPath(item: messages.last!.count - 1, section: messages.count - 1), at: .bottom, animated: true)
+            self.view.layoutIfNeeded()
+        }
         
         // method 2
 //        print(collectionView.contentSize.height)
 //        print(collectionView.contentInset.bottom)
 //        print(collectionView.frame.height)
-        let point = CGPoint(x: 0, y: collectionView.contentSize.height - collectionView.bounds.height)
-        if point.y >= 0 {
-            collectionView.setContentOffset(point, animated: true)
+//        let point = CGPoint(x: 0, y: collectionView.contentSize.height - collectionView.bounds.height)
+//        if point.y >= 0 {
+//            collectionView.setContentOffset(point, animated: true)
+//        }
+    }
+    func scrollToTop(of collectionView: UICollectionView) {
+        // method 1
+        if messages.count > 0 && messages.last!.count > 0 {
+            collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+            self.view.layoutIfNeeded()
         }
+        
+        // method 2
+//        print(collectionView.contentSize.height)
+//        print(collectionView.contentInset.bottom)
+//        print(collectionView.frame.height)
+//        let point = CGPoint(x: 0, y: collectionView.contentSize.height - collectionView.bounds.height)
+//        if point.y >= 0 {
+//            collectionView.setContentOffset(point, animated: true)
+//        }
     }
 }
 extension MessagingViewController: UICollectionViewDelegate {
@@ -448,10 +523,11 @@ extension MessagingViewController {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             UIView.animate(withDuration: 0.1) { [self] in
                 widthTextField.constant = 240
+                heightInputContainer.constant = 50
                 keyboardHeight = keyboardRect.height
                 bottomSpaceCollectionView.constant = keyboardHeight
                 self.view.layoutIfNeeded()
-                scrollToBottom(of: collectionView)
+//                scrollToBottom(of: collectionView)
             }
         }
     }
@@ -459,6 +535,7 @@ extension MessagingViewController {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             UIView.animate(withDuration: 0.1) { [self] in
                 widthTextField.constant = 160
+                heightInputContainer.constant = heightInputContainerOnDeviceType
                 keyboardHeight = keyboardRect.height
                 bottomSpaceCollectionView.constant = 0
                 self.view.layoutIfNeeded()

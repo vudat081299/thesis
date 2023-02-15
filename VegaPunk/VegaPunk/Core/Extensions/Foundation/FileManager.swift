@@ -26,9 +26,7 @@ extension FileManager {
         }
     }
     
-    
     func confirmFileExists(atPath: URL, isDirectory: ObjCBool = false)  {
-        print(atPath.absoluteString)
         do {
             var isDirectory = isDirectory
             if !FileManager.default.fileExists(atPath: atPath.absoluteString, isDirectory: &isDirectory) {

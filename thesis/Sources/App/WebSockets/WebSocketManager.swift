@@ -34,5 +34,12 @@ final class WebSocketManager {
             }
         }
     }
+    func send(to mappingIds: [UUID], package: WebSocketPackage) {
+        mappingIds.forEach { mappingId in
+            if let ws = dictionary[mappingId.uuidString] {
+                ws.send(package)
+            }
+        }
+    }
 }
 

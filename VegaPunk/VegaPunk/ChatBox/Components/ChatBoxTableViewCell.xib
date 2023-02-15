@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -108,6 +109,14 @@
                             <constraint firstAttribute="width" constant="65" id="zWT-Ht-RCg"/>
                         </constraints>
                     </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wzj-NT-LMK">
+                        <rect key="frame" x="341" y="71" width="8" height="8"/>
+                        <color key="backgroundColor" systemColor="linkColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="8" id="Ue9-b8-o77"/>
+                            <constraint firstAttribute="width" constant="8" id="YyK-he-lAT"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstItem="TCI-pJ-7jD" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="5As-m4-dpl"/>
@@ -118,6 +127,7 @@
                     <constraint firstItem="TCI-pJ-7jD" firstAttribute="top" secondItem="ouy-Mb-vlr" secondAttribute="top" id="HdV-Pv-HkB"/>
                     <constraint firstItem="xRu-5A-aeQ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="JXS-Ef-FIf"/>
                     <constraint firstItem="xRu-5A-aeQ" firstAttribute="leading" secondItem="NXM-Ua-IM0" secondAttribute="trailing" constant="16" id="ML5-GC-ctz"/>
+                    <constraint firstItem="wzj-NT-LMK" firstAttribute="top" secondItem="27j-D6-KEX" secondAttribute="top" constant="2" id="NQu-dt-aCZ"/>
                     <constraint firstItem="1BE-aG-gS0" firstAttribute="leading" secondItem="TCI-pJ-7jD" secondAttribute="leading" id="ObJ-U0-0Vt"/>
                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="TCI-pJ-7jD" secondAttribute="bottom" constant="5" id="SvI-2T-r00"/>
                     <constraint firstItem="AgI-Sp-PKC" firstAttribute="leading" secondItem="ouy-Mb-vlr" secondAttribute="leading" id="UHM-zN-8OQ"/>
@@ -128,6 +138,7 @@
                     <constraint firstItem="NXM-Ua-IM0" firstAttribute="leading" secondItem="TCI-pJ-7jD" secondAttribute="trailing" constant="16" id="kia-nX-bbe"/>
                     <constraint firstItem="xRu-5A-aeQ" firstAttribute="leading" secondItem="ouy-Mb-vlr" secondAttribute="trailing" constant="16" id="prg-cp-vPY"/>
                     <constraint firstAttribute="bottom" secondItem="xRu-5A-aeQ" secondAttribute="bottom" id="qNI-ck-y5u"/>
+                    <constraint firstItem="wzj-NT-LMK" firstAttribute="leading" secondItem="NXM-Ua-IM0" secondAttribute="trailing" constant="8" id="sYN-Nw-fhe"/>
                     <constraint firstItem="1BE-aG-gS0" firstAttribute="top" secondItem="TCI-pJ-7jD" secondAttribute="top" id="vD0-tG-nE9"/>
                 </constraints>
             </tableViewCellContentView>
@@ -138,6 +149,7 @@
                 <outlet property="lastestMesssage" destination="NXM-Ua-IM0" id="ah9-Ql-iNQ"/>
                 <outlet property="multipleChatBoxAvatarContainer" destination="1BE-aG-gS0" id="rsD-Un-gkE"/>
                 <outlet property="name" destination="ouy-Mb-vlr" id="tWI-oJ-KdE"/>
+                <outlet property="newMessageFlag" destination="wzj-NT-LMK" id="qoO-rx-dXQ"/>
                 <outlet property="secondAvatar" destination="d6D-cy-Svl" id="yr2-ML-nRw"/>
                 <outlet property="singleChatBoxAvatarContainer" destination="TCI-pJ-7jD" id="ZBe-vC-5f7"/>
                 <outlet property="thirdAvatar" destination="e95-TP-3gj" id="oIC-Ru-N1r"/>
@@ -147,6 +159,9 @@
         </tableViewCell>
     </objects>
     <resources>
+        <systemColor name="linkColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="secondaryLabelColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

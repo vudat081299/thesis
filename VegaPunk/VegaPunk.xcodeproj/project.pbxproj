@@ -25,6 +25,9 @@
 		84A827742990188D00753846 /* UUID+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A827732990188D00753846 /* UUID+Extensions.swift */; };
 		84A8AFE82998CC1E00D9A6D3 /* NSNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */; };
 		84A8AFEA299980D000D9A6D3 /* MessContentCell--.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFE9299980D000D9A6D3 /* MessContentCell--.xib */; };
+		84A8AFEC299BE63000D9A6D3 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */; };
+		84A8AFF0299BF73700D9A6D3 /* payment_success.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */; };
+		84A8AFF1299BF73700D9A6D3 /* payment_failure.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFEF299BF73700D9A6D3 /* payment_failure.m4a */; };
 		84A93841296AAA0C008ED0DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93840296AAA0C008ED0DC /* AppDelegate.swift */; };
 		84A93843296AAA0C008ED0DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93842296AAA0C008ED0DC /* SceneDelegate.swift */; };
 		84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93844296AAA0C008ED0DC /* ViewController.swift */; };
@@ -62,8 +65,8 @@
 		84A938E6296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */; };
 		84A938E7296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */; };
 		84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */; };
-		84A938E9296AAABD008ED0DC /* SignupInputTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A938A0296AAABD008ED0DC /* SignupInputTableViewCell.xib */; };
-		84A938EA296AAABD008ED0DC /* SignupInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A938A1296AAABD008ED0DC /* SignupInputTableViewCell.swift */; };
+		84A938E9296AAABD008ED0DC /* TextInputCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A938A0296AAABD008ED0DC /* TextInputCell.xib */; };
+		84A938EA296AAABD008ED0DC /* TextInputCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A938A1296AAABD008ED0DC /* TextInputCell.swift */; };
 		84A938EB296AAABD008ED0DC /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A938A3296AAABD008ED0DC /* UserView.swift */; };
 		84A938EC296AAABD008ED0DC /* UserView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A938A4296AAABD008ED0DC /* UserView.xib */; };
 		84A938ED296AAABD008ED0DC /* CustomListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A938A6296AAABD008ED0DC /* CustomListCell.xib */; };
@@ -88,7 +91,6 @@
 		84A93900296AAABE008ED0DC /* SuccessRequestServerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A938C0296AAABD008ED0DC /* SuccessRequestServerView.xib */; };
 		84A93901296AAABE008ED0DC /* SuccessRequestServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A938C1296AAABD008ED0DC /* SuccessRequestServerView.swift */; };
 		84A93902296AAABE008ED0DC /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A938C4296AAABD008ED0DC /* File.swift */; };
-		84A93903296AAABE008ED0DC /* Cities.json in Resources */ = {isa = PBXBuildFile; fileRef = 84A938C6296AAABD008ED0DC /* Cities.json */; };
 		84A93904296AAABE008ED0DC /* CitiesDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A938C8296AAABD008ED0DC /* CitiesDataSource.swift */; };
 		84A93909296AAB63008ED0DC /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93906296AAB63008ED0DC /* SignInViewController.swift */; };
 		84A9390A296AAB63008ED0DC /* UserAccess.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84A93907296AAB63008ED0DC /* UserAccess.storyboard */; };
@@ -144,6 +146,9 @@
 		84A827732990188D00753846 /* UUID+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UUID+Extensions.swift"; sourceTree = "<group>"; };
 		84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSNotification.swift; sourceTree = "<group>"; };
 		84A8AFE9299980D000D9A6D3 /* MessContentCell--.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MessContentCell--.xib"; sourceTree = "<group>"; };
+		84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
+		84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_success.m4a; sourceTree = "<group>"; };
+		84A8AFEF299BF73700D9A6D3 /* payment_failure.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_failure.m4a; sourceTree = "<group>"; };
 		84A9383D296AAA0C008ED0DC /* VegaPunk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VegaPunk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84A93840296AAA0C008ED0DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84A93842296AAA0C008ED0DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -185,8 +190,8 @@
 		84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignupPickerInputTableViewCell.xib; sourceTree = "<group>"; };
 		84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupPickerInputTableViewCell.swift; sourceTree = "<group>"; };
 		84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignupDatePickerInputTableViewCell.xib; sourceTree = "<group>"; };
-		84A938A0296AAABD008ED0DC /* SignupInputTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignupInputTableViewCell.xib; sourceTree = "<group>"; };
-		84A938A1296AAABD008ED0DC /* SignupInputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupInputTableViewCell.swift; sourceTree = "<group>"; };
+		84A938A0296AAABD008ED0DC /* TextInputCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextInputCell.xib; sourceTree = "<group>"; };
+		84A938A1296AAABD008ED0DC /* TextInputCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputCell.swift; sourceTree = "<group>"; };
 		84A938A3296AAABD008ED0DC /* UserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserView.swift; sourceTree = "<group>"; };
 		84A938A4296AAABD008ED0DC /* UserView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UserView.xib; sourceTree = "<group>"; };
 		84A938A6296AAABD008ED0DC /* CustomListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomListCell.xib; sourceTree = "<group>"; };
@@ -211,7 +216,6 @@
 		84A938C0296AAABD008ED0DC /* SuccessRequestServerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SuccessRequestServerView.xib; sourceTree = "<group>"; };
 		84A938C1296AAABD008ED0DC /* SuccessRequestServerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuccessRequestServerView.swift; sourceTree = "<group>"; };
 		84A938C4296AAABD008ED0DC /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
-		84A938C6296AAABD008ED0DC /* Cities.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Cities.json; sourceTree = "<group>"; };
 		84A938C8296AAABD008ED0DC /* CitiesDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CitiesDataSource.swift; sourceTree = "<group>"; };
 		84A93906296AAB63008ED0DC /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		84A93907296AAB63008ED0DC /* UserAccess.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = UserAccess.storyboard; sourceTree = "<group>"; };
@@ -280,6 +284,16 @@
 			path = Messaging;
 			sourceTree = "<group>";
 		};
+		84A8AFED299BF73700D9A6D3 /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */,
+				84A8AFEF299BF73700D9A6D3 /* payment_failure.m4a */,
+			);
+			name = Sound;
+			path = "../../References/Message App/Message App/Sound";
+			sourceTree = "<group>";
+		};
 		84A93834296AAA0C008ED0DC = {
 			isa = PBXGroup;
 			children = (
@@ -303,6 +317,7 @@
 		84A9383F296AAA0C008ED0DC /* VegaPunk */ = {
 			isa = PBXGroup;
 			children = (
+				84A8AFED299BF73700D9A6D3 /* Sound */,
 				84A93851296AAA0F008ED0DC /* Info.plist */,
 				84A93840296AAA0C008ED0DC /* AppDelegate.swift */,
 				84A9390C296ABDB1008ED0DC /* MainTapBarController.swift */,
@@ -342,7 +357,6 @@
 			children = (
 				84A938C7296AAABD008ED0DC /* Archived */,
 				84A9389A296AAABD008ED0DC /* Components */,
-				84A938C5296AAABD008ED0DC /* Data */,
 				84A938C2296AAABD008ED0DC /* Definitions */,
 				84A93884296AAABD008ED0DC /* Extensions */,
 				84A9387D296AAABD008ED0DC /* Models */,
@@ -450,6 +464,7 @@
 				84A827732990188D00753846 /* UUID+Extensions.swift */,
 				84A2C41D2992E1A700EE8CD8 /* UserDefaults+Keys.swift */,
 				84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */,
+				84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -470,25 +485,11 @@
 		84A9389A296AAABD008ED0DC /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				84A9389B296AAABD008ED0DC /* Signup */,
 				84A938A2296AAABD008ED0DC /* HomeFunction */,
 				84A938A5296AAABD008ED0DC /* MessagingFunction */,
 				84A938B0296AAABD008ED0DC /* Definitions */,
 			);
 			path = Components;
-			sourceTree = "<group>";
-		};
-		84A9389B296AAABD008ED0DC /* Signup */ = {
-			isa = PBXGroup;
-			children = (
-				84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */,
-				84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */,
-				84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */,
-				84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */,
-				84A938A0296AAABD008ED0DC /* SignupInputTableViewCell.xib */,
-				84A938A1296AAABD008ED0DC /* SignupInputTableViewCell.swift */,
-			);
-			path = Signup;
 			sourceTree = "<group>";
 		};
 		84A938A2296AAABD008ED0DC /* HomeFunction */ = {
@@ -604,14 +605,6 @@
 			path = DataStructure;
 			sourceTree = "<group>";
 		};
-		84A938C5296AAABD008ED0DC /* Data */ = {
-			isa = PBXGroup;
-			children = (
-				84A938C6296AAABD008ED0DC /* Cities.json */,
-			);
-			path = Data;
-			sourceTree = "<group>";
-		};
 		84A938C7296AAABD008ED0DC /* Archived */ = {
 			isa = PBXGroup;
 			children = (
@@ -623,6 +616,12 @@
 		84A93905296AAAFC008ED0DC /* UserAccess */ = {
 			isa = PBXGroup;
 			children = (
+				84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */,
+				84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */,
+				84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */,
+				84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */,
+				84A938A0296AAABD008ED0DC /* TextInputCell.xib */,
+				84A938A1296AAABD008ED0DC /* TextInputCell.swift */,
 				84A93906296AAB63008ED0DC /* SignInViewController.swift */,
 				84A93908296AAB63008ED0DC /* SignUpViewController.swift */,
 				84A93907296AAB63008ED0DC /* UserAccess.storyboard */,
@@ -764,12 +763,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84A938E9296AAABD008ED0DC /* SignupInputTableViewCell.xib in Resources */,
+				84A938E9296AAABD008ED0DC /* TextInputCell.xib in Resources */,
 				84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */,
 				84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */,
 				84A2C42A2995617B00EE8CD8 /* MessagingViewController.xib in Resources */,
 				84A8AFEA299980D000D9A6D3 /* MessContentCell--.xib in Resources */,
 				84A938ED296AAABD008ED0DC /* CustomListCell.xib in Resources */,
+				84A8AFF0299BF73700D9A6D3 /* payment_success.m4a in Resources */,
 				84A938F0296AAABE008ED0DC /* MessContentCell.xib in Resources */,
 				84A938F2296AAABE008ED0DC /* FirstMessContentCellForSection.xib in Resources */,
 				84A93900296AAABE008ED0DC /* SuccessRequestServerView.xib in Resources */,
@@ -777,7 +777,7 @@
 				84A2C4222994FB5D00EE8CD8 /* FooterMessage.xib in Resources */,
 				84A9384D296AAA0F008ED0DC /* Assets.xcassets in Resources */,
 				84A9390A296AAB63008ED0DC /* UserAccess.storyboard in Resources */,
-				84A93903296AAABE008ED0DC /* Cities.json in Resources */,
+				84A8AFF1299BF73700D9A6D3 /* payment_failure.m4a in Resources */,
 				84A8276E298FACB800753846 /* ChatBoxViewController.xib in Resources */,
 				84A938E6296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib in Resources */,
 				84A93848296AAA0C008ED0DC /* Main.storyboard in Resources */,
@@ -838,7 +838,7 @@
 				84A2C41829929D8800EE8CD8 /* Archived.swift in Sources */,
 				84A9384B296AAA0C008ED0DC /* VegaPunk.xcdatamodeld in Sources */,
 				84A82766298FA1C700753846 /* DataInteraction.swift in Sources */,
-				84A938EA296AAABD008ED0DC /* SignupInputTableViewCell.swift in Sources */,
+				84A938EA296AAABD008ED0DC /* TextInputCell.swift in Sources */,
 				84A938F8296AAABE008ED0DC /* NVActivityIndicatorViewable.swift in Sources */,
 				84A938DB296AAABD008ED0DC /* FileManager.swift in Sources */,
 				84A93904296AAABE008ED0DC /* CitiesDataSource.swift in Sources */,
@@ -880,6 +880,7 @@
 				84A938F6296AAABE008ED0DC /* FirstMessContentCellForSection.swift in Sources */,
 				84A8276A298FA81600753846 /* ConcurrencyInteraction.swift in Sources */,
 				84A9391C296B2E7B008ED0DC /* ChatBoxes.swift in Sources */,
+				84A8AFEC299BE63000D9A6D3 /* Dictionary.swift in Sources */,
 				84A938E3296AAABD008ED0DC /* Key.swift in Sources */,
 				84A93902296AAABE008ED0DC /* File.swift in Sources */,
 				84A938F9296AAABE008ED0DC /* NVActivityIndicatorAnimationDelegate.swift in Sources */,
@@ -1067,7 +1068,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1096,7 +1097,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

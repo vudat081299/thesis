@@ -83,7 +83,7 @@ extension ChatBoxes: Storing {
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self).write(to: filePath)
+                try encoder.encode(self).write(to: filePath, options: .atomic)
             }
             catch {
                 print("Store chatBoxes to file failed! \(error)")

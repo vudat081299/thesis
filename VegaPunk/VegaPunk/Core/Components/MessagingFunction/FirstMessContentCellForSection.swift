@@ -28,6 +28,9 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
         // Initialization code
         contentImageView.image = nil
         contentTextLabel.text = ""
+        senderName.text = ""
+        creationDate.text = ""
+        timeLabel.text = ""
         
         contentImageContainerScrollView.contentOffset = CGPoint(x: 100, y: 100)
         contentImageContainerScrollView.delegate = self
@@ -40,11 +43,15 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
         super.prepareForReuse()
         
         constraint.constant = 0
-        contentImageContainerScrollView.zoomScale = 1.0
-        contentImageView.image = nil
         heightContentImageCS.constant = 0
-//        contentTextLabel.text = ""
+        contentImageContainerScrollView.zoomScale = 1.0
         senderName.textColor = .systemOrange
+        
+        contentImageView.image = nil
+        contentTextLabel.text = ""
+        senderName.text = ""
+        creationDate.text = ""
+        timeLabel.text = ""
     }
     
     override var isHighlighted: Bool {

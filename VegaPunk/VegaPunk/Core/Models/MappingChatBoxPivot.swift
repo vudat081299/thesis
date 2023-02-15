@@ -95,7 +95,7 @@ extension MappingChatBoxPivots {
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self).write(to: filePath)
+                try encoder.encode(self).write(to: filePath, options: .atomic)
             }
             catch {
                 print("Store mappingChatBoxPivots to file failed! \(error)")

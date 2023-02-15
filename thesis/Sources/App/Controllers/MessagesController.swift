@@ -15,8 +15,8 @@ struct MessagesController: RouteCollection {
         
         messagesRoutes.get(use: index)
         messagesRoutes.delete("remove", "all", use: deleteAllHandler)
-        messagesRoutes.get("lastestUpdate", use: lastestUpdateTime)
-        messagesRoutes.get("from", ":time", use: getMessagesFromTime)
+        messagesRoutes.get(":chatBoxId", "time", use: getLastestUpdateTime)
+        messagesRoutes.get("messages", ":chatBoxId", ":time", use: getMessagesFromTime)
         
         /// WebSocket
         messagesRoutes.webSocket("listen", ":mappingId", onUpgrade: webSocketHandler)
@@ -50,17 +50,31 @@ struct MessagesController: RouteCollection {
     func index(req: Request) async throws -> [Message] {
         try await Message.query(on: req.db).all()
     }
-    func lastestUpdateTime(req: Request) async throws -> String {
-        guard let lastestUpdateTime = try await Message.query(on: req.db).max(\.$createdAt) else {
+    func getLastestUpdateTime(req: Request) async throws -> String {
+        guard let chatBoxId = req.parameters.get("chatBoxId"),
+              let chatBoxUUID = UUID(chatBoxId) else {
+            throw Abort(.notFound)
+        }
+        guard let lastestUpdateTime = try await Message
+            .query(on: req.db)
+            .filter(\.$chatBox.$id == chatBoxUUID)
+            .max(\.$createdAt) else {
             throw Abort(.notFound)
         }
         return lastestUpdateTime
     }
     func getMessagesFromTime(req: Request) async throws -> [Message] {
-        guard let timestamp = req.parameters.get("time") else {
-            throw Abort(.badRequest)
+        guard let chatBoxId = req.parameters.get("chatBoxId"),
+              let chatBoxUUID = UUID(chatBoxId) else {
+            throw Abort(.notFound)
         }
-        return try await Message.query(on: req.db).filter(\.$createdAt > timestamp).all()
+        guard let timestamp = req.parameters.get("time") else {
+            throw Abort(.notFound)
+        }
+        return try await Message.query(on: req.db)
+            .filter(\.$chatBox.$id == chatBoxUUID)
+            .filter(\.$createdAt > timestamp)
+            .all()
     }
     
     

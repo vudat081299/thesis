@@ -7,128 +7,71 @@
 
 import UIKit
 
-enum GenderPicker: String, CaseIterable, Codable {
+enum Gender: Int, CaseIterable, Codable {
     case male, female, other
-    
-    static var listRawValueString: [String] {
+    static var listRawValue: [String] {
         var list = [String]()
         for item in self.allCases {
             list.append("\(item.rawValue)")
         }
         return list
+    }
+    var description: String {
+        switch self {
+        case .male:
+            return "male"
+        case .female:
+            return "female"
+        case .other:
+            return "other"
+        }
     }
 }
-
-enum JobOrMajorPicker: String, CaseIterable, Codable {
-    case None, Engineer, Pianist, Student, Teacher, Saler
-    
-    static var listRawValueString: [String] {
-        var list = [String]()
-        for item in self.allCases {
-            list.append("\(item.rawValue)")
-        }
-        return list
-    }
+enum InputType: Int {
+    case text, username, password, confirmPassword, gender, datePicker
 }
 
 protocol PassInputDataFromCell {
     func pass(_ string: String, at field: IndexPath)
 }
 
-class SignUpViewController: UIViewController, UIScrollViewDelegate, PassInputDataFromCell {
-    func pass(_ string: String, at field: IndexPath) {
-        signUpUserListVar[keyOnPostAPI[field.section][field.row]] = string
-        inputData[field.section][field.row] = string
-    }
-    
+class SignUpViewController: UIViewController, UIScrollViewDelegate {
     
     
     // MARK: - IBOutlet.
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewBottomCS: NSLayoutConstraint!
     
+    
     // MARK: - Variables.
     var keyboardHeight: CGFloat = 0.0
-    var signUpUserListVar: [String: String] = [:]
+    var inputDataKeyValue: [String: String] = [:]
+    var birthString = ""
     
+    let notificationCenter = NotificationCenter.default
     
-    enum InputType: Int {
-        case text, number, pickerGender, datePicker, pickerJobOrMajor
-    }
-    
+        
     // MARK: - Data tableView.
-    let rowData = [
-        ["Name",
-         "Last name",
-         "Username",
-         "Password"],
-        ["Gender",
-         "Phone",
-         "Email",
-         "Dob",
-         "City",
-         "Country",
-         "Job or Major",
-         "Bio"]
+    let sectionHeaders = ["Create your account"]
+    let rowLabels = [
+        "Name", "Username", "Password", "Confirm password",
+        "Gender", "Phone", "Email", "Birth", "Bio", "Country"
     ]
-    let placeHoldersRow = [
-        ["Required",
-         "Optional",
-         "Required",
-         "Required"],
-        ["",
-         "Optional",
-         "Optional",
-         "",
-         "Optional",
-         "Optional",
-         "",
-         "Optional"]
+    let placeHolders = [
+        "Required", "Required", "Required", "Required",
+        "Optional", "Optional", "Optional", "dd/mm/yyyy", "Optional", "Optional"
     ]
-    let typeInputOfRow: [[InputType]] = [
-        [.text,
-         .text,
-         .text,
-         .text],
-        [.pickerGender,
-         .number,
-         .text,
-         .datePicker,
-         .text,
-         .text,
-         .pickerJobOrMajor,
-         .text]
-    ]
-    let header = [
-        "Create your account", "About you"
+    let inputTypes: [InputType] = [
+        .text, .username, .password, .confirmPassword,
+        .gender, .text, .text, .datePicker, .text, .text
     ]
     var inputData = [
-        ["",
-         "",
-         "",
-         ""],
-        ["",
-         "",
-         "",
-         "",
-         "",
-         "",
-         "",
-         ""]
+        "", "", "", "",
+        "", "", "", "", "", ""
     ]
-    let keyOnPostAPI = [
-        ["name",
-         "lastName",
-         "username",
-         "password"],
-        ["gender",
-         "phone",
-         "email",
-         "dob",
-         "city",
-         "country",
-         "defaultAvartar",
-         "bio"]
+    let fieldKey = [
+        "name", "username", "password", "confirmPassword",
+        "gender", "phone", "email", "birth", "bio", "country"
     ]
     
     override func viewDidLoad() {
@@ -141,95 +84,76 @@ class SignUpViewController: UIViewController, UIScrollViewDelegate, PassInputDat
         
         // Do any additional setup after loading the view.
         configureHierarchy()
-        let notificationCenter = NotificationCenter.default
-//        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-//        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         setUpNavigationBar()
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
     
-    @objc func rightBarItemAction() {
-        var gender = 0
-        if (signUpUserListVar["gender"] == "female") {
-            gender = 1
-        } else if (signUpUserListVar["gender"] == "other") {
-            gender = 2
+    // MARK: - Mini tasks
+    func validateInput() -> Bool {
+        if (inputData[inputTypes.firstIndex(where: { $0 == .password})!].count < 8) {
+            AlertNotification.notify(message: "Your password to short!", on: self)
+            return false
         }
-        Auth.signUp(User(name: signUpUserListVar["name"], username: signUpUserListVar["username"], email: signUpUserListVar["email"], join: Date().iso8601String, phone: signUpUserListVar["phone"], avatar: signUpUserListVar["defaultAvartar"], password: signUpUserListVar["password"], country: signUpUserListVar["country"], gender: gender)) {
+        if (inputData[inputTypes.firstIndex(where: { $0 == .password})!] !=
+            inputData[inputTypes.firstIndex(where: { $0 == .confirmPassword})!]) {
+            AlertNotification.notify(message: "Confirm password not match!", on: self)
+            return false
+        }
+        for (index, value) in inputData.enumerated() {
+            if index < 4 && value == "" {
+                AlertNotification.notify(message: "Please fill in required field!", on: self)
+                return false
+            }
+            if index == inputTypes.firstIndex(where: { $0 == .confirmPassword})! ||
+                index == inputTypes.firstIndex(where: { $0 == .gender})!{
+                continue
+            }
+            if (value != "") {
+                inputDataKeyValue[fieldKey[index]] = value
+            }
+        }
+        return true
+    }
+    
+}
+
+
+// MARK: - APIs
+extension SignUpViewController {
+    func signUp(_ user: User) {
+        Auth.signUp(user) {
             SoundFeedBack.success()
             DispatchQueue.main.async {
                 self.navigationItem.rightBarButtonItem?.tintColor = .systemGreen
                 self.navigationItem.rightBarButtonItem?.image = UIImage(systemName: "checkmark.circle.fill")
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.navigationItem.rightBarButtonItem?.tintColor = .link
                 self.navigationItem.rightBarButtonItem?.image = nil
                 self.navigationItem.rightBarButtonItem?.title = "Regist"
                 self.navigationController?.popViewController(animated: true)
             }
         }
-//        let request = ResourceRequest<SignUpUserPost, SignUpUserPost>(resourcePath: "users/signup")
-//        if (signUpUserListVar["name"] == nil ||
-//                signUpUserListVar["username"] == nil ||
-//                signUpUserListVar["password"] == nil
-//        ) {
-//            return
-//        } else {
-//        }
-//        let data = SignUpUserPost(name: signUpUserListVar["name"]!,
-//                                        lastName: signUpUserListVar["lastName"],
-//                                        username: signUpUserListVar["username"]!,
-//                                        password: signUpUserListVar["password"]!,
-//                                        gender: Gender(rawValue: Int(signUpUserListVar["gender"] ?? "\(Gender.other.rawValue)")!),
-//                                        phoneNumber: signUpUserListVar["phoneNumber"],
-//                                        email: signUpUserListVar["email"],
-//                                        dob: signUpUserListVar["dob"],
-//                                        city: signUpUserListVar["city"],
-//                                        country: signUpUserListVar["country"],
-//                                        defaultAvartar: DefaultAvartar(rawValue: Int(signUpUserListVar["defaultAvartar"] ?? "\(DefaultAvartar.other.rawValue)")!),
-//                                        bio: signUpUserListVar["bio"],
-//                                        idDevice: signUpUserListVar["idDevice"]
-//        )
-//        request.post(data) { result in
-//            switch result {
-//            case .success:
-//                SoundFeedBack.success()
-//                DispatchQueue.main.async {
-//                    self.navigationItem.rightBarButtonItem?.tintColor = .systemGreen
-//                    self.navigationItem.rightBarButtonItem?.image = UIImage(systemName: "checkmark.circle.fill")
-//                }
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                    self.navigationItem.rightBarButtonItem?.tintColor = .link
-//                    self.navigationItem.rightBarButtonItem?.image = nil
-//                    self.navigationItem.rightBarButtonItem?.title = "Regist"
-//                    self.navigationController?.popViewController(animated: true)
-//                }
-//                break
-//            case .failure:
-//                SoundFeedBack.fail()
-//                DispatchQueue.main.async {
-//                    self.navigationItem.rightBarButtonItem?.tintColor = .systemPink
-//                    self.navigationItem.rightBarButtonItem?.image = UIImage(systemName: "xmark.circle.fill")
-//                }
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                    self.navigationItem.rightBarButtonItem?.tintColor = .link
-//                    self.navigationItem.rightBarButtonItem?.image = nil
-//                    self.navigationItem.rightBarButtonItem?.title = "Regist"
-//                }
-//                break
-//            }
-//        }
     }
-    
+}
+
+
+// MARK: - Navigation
+extension SignUpViewController {
+    @objc func rightBarItemAction() {
+        self.view.endEditing(true)
+        if validateInput() {
+            do {
+                var user = try inputDataKeyValue.convert(to: User.self)
+                if let gender = inputDataKeyValue["gender"] {
+                    user.gender = Gender(rawValue: Int(gender)!)
+                }
+                signUp(user)
+            } catch {
+                AlertNotification.notify(message: "Some thing wrong when sign up!", on: self)
+            }
+        }
+    }
     func setUpNavigationBar() {
         navigationItem.title = "Regist Account"
         // BarButtonItem.
@@ -239,115 +163,138 @@ class SignUpViewController: UIViewController, UIScrollViewDelegate, PassInputDat
         }()
         navigationItem.rightBarButtonItem = rightBarItem
     }
-    
 }
-
 
 
 // MARK: - TableView.
 extension SignUpViewController: UITableViewDataSource, UITableViewDelegate {
-    
     private func configureHierarchy() {
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UINib(nibName: SignupInputTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: SignupInputTableViewCell.reuseIdentifier)
+        tableView.register(UINib(nibName: TextInputCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: TextInputCell.reuseIdentifier)
         tableView.register(UINib(nibName: SignupPickerInputTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: SignupPickerInputTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: SignupDatePickerInputTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: SignupDatePickerInputTableViewCell.reuseIdentifier)
     }
-    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return header.count
+        return 1
     }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return rowData[section].count
-    }
-    
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return header[section]
+        return sectionHeaders[section]
     }
-    
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if section == 1 {
-            return 350
-        } else {
-            return 30
-        }
+        return 350
     }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch typeInputOfRow[indexPath.section][indexPath.row] {
-        case .text:
-            let cell = tableView.dequeueReusableCell(withIdentifier: SignupInputTableViewCell.reuseIdentifier, for: indexPath) as! SignupInputTableViewCell
-            cell.contentLabel.text = rowData[indexPath.section][indexPath.row]
-            if indexPath == IndexPath(row: 3, section: 0) {
-                cell.content.isSecureTextEntry = true
-            } else {
-                cell.content.isSecureTextEntry = false
-            }
-            if indexPath == IndexPath(row: 0, section: 0) {
-                cell.content.becomeFirstResponder()
-            } else {
-                
-            }
-            cell.delegate = self
-            cell.indexPath = indexPath
-            cell.content.text = inputData[indexPath.section][indexPath.row]
-            cell.content.placeholder = placeHoldersRow[indexPath.section][indexPath.row]
-            return cell
-        case .number:
-            let cell = tableView.dequeueReusableCell(withIdentifier: SignupInputTableViewCell.reuseIdentifier, for: indexPath) as! SignupInputTableViewCell
-            cell.contentLabel.text = rowData[indexPath.section][indexPath.row]
-            cell.content.placeholder = placeHoldersRow[indexPath.section][indexPath.row]
-            cell.content.text = inputData[indexPath.section][indexPath.row]
-            cell.delegate = self
-            cell.indexPath = indexPath
-            return cell
-        case .pickerGender:
-            let cell = tableView.dequeueReusableCell(withIdentifier: SignupPickerInputTableViewCell.reuseIdentifier, for: indexPath) as! SignupPickerInputTableViewCell
-            cell.itemsOfPickerView = GenderPicker.listRawValueString
-            cell.contentLabel.text = rowData[indexPath.section][indexPath.row]
-            cell.delegate = self
-            cell.indexPath = indexPath
-            return cell
-        case .pickerJobOrMajor:
-            let cell = tableView.dequeueReusableCell(withIdentifier: SignupPickerInputTableViewCell.reuseIdentifier, for: indexPath) as! SignupPickerInputTableViewCell
-            cell.itemsOfPickerView = JobOrMajorPicker.listRawValueString
-            cell.contentLabel.text = rowData[indexPath.section][indexPath.row]
-            cell.delegate = self
-            cell.indexPath = indexPath
-            return cell
-        case .datePicker:
-            let cell = tableView.dequeueReusableCell(withIdentifier: SignupDatePickerInputTableViewCell.reuseIdentifier, for: indexPath) as! SignupDatePickerInputTableViewCell
-            cell.contentLabel.text = rowData[indexPath.section][indexPath.row]
-            cell.delegate = self
-            cell.indexPath = indexPath
-//            cell.itemsOfPickerView = GenderPicker
-            return cell
-        }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return rowLabels.count
     }
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch typeInputOfRow[indexPath.section][indexPath.row] {
-        case .text, .number:
-            return 44
-        default:
-            return 60
-        }
+        return 44
     }
-    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let row = indexPath.row
+        let inputType = inputTypes[row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: TextInputCell.reuseIdentifier, for: indexPath) as! TextInputCell
+        cell.contentLabel.text = rowLabels[row]
+        cell.inputTextField.isEnabled = true
+        cell.inputTextField.isSecureTextEntry = false
+        cell.inputTextField.delegate = self
+        cell.inputTextField.tag = row
+        cell.inputTextField.text = inputData[row]
+        cell.inputTextField.placeholder = placeHolders[row]
+        
+        switch inputType {
+        case .password, .confirmPassword:
+            cell.inputTextField.isSecureTextEntry = true
+            break
+        case .gender:
+            if let gender = Int(inputData[row]) {
+                cell.inputTextField.text = Gender(rawValue: gender)?.description
+            }
+            cell.inputTextField.isEnabled = false
+            break
+        default:
+            break
+        }
+        return cell
+    }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let row = indexPath.row
+        if row == inputTypes.firstIndex(where: { $0 == .gender}) {
+            let alert = UIAlertController(title: "Pick your gender", message: "", preferredStyle: .actionSheet)
+            let maleAction = UIAlertAction(title: "Male", style: .default) { _ in
+                self.reloadGenderRow(indexPath, value: "0")
+                
+            }
+            let femaleAction = UIAlertAction(title: "Female", style: .default) { _ in
+                self.reloadGenderRow(indexPath, value: "1")
+                
+            }
+            let otherAction = UIAlertAction(title: "Other", style: .default) { _ in
+                self.reloadGenderRow(indexPath, value: "2")
+            }
+            alert.addAction(maleAction)
+            alert.addAction(femaleAction)
+            alert.addAction(otherAction)
+            self.present(alert, animated: true, completion: nil)
+        }
     }
-    
-    
+    func reloadGenderRow(_ indexPath: IndexPath, value: String) {
+        let row = indexPath.row
+        inputData[row] = value
+        tableView.reloadRows(at: [indexPath], with: .fade)
+    }
 }
-
-
 
 
 //MARK: Keyboard.
 extension SignUpViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        tableView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
+    }
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        var text = textField.text ?? ""
+        
+        if (textField.tag == inputTypes.firstIndex(where: { $0 == .username}) ||
+            textField.tag == inputTypes.firstIndex(where: { $0 == .password}) ||
+            textField.tag == inputTypes.firstIndex(where: { $0 == .confirmPassword})) &&
+            string.contains(" ")
+            {
+            return false
+        }
+        
+        if textField.tag == inputTypes.firstIndex(where: { $0 == .datePicker}) {
+//            let birthPureString = (textField.text ?? "").replacingOccurrences(of: "/", with: "")
+//            guard let _ = Int(string) else { return false }
+//            if birthPureString.count == 8 { return false }
+//            var firstIndex = text.index(text.startIndex, offsetBy: 2)
+//            var secondIndex = text.index(text.startIndex, offsetBy: 5)
+//            if text.count > 2 {
+//                text.insert(Character("/"), at: firstIndex)
+//            } else if text.count > 5 {
+//                text.insert(Character("/"), at: secondIndex)
+//            }
+//            let placeHolder = ""
+            if string.count == 0 {
+                return true
+            } else if text.count == 10 {
+                return false
+            } else {
+                guard let _ = Int(string) else { return false }
+                if text.count == 2 || text.count == 5 {
+                    text += "/"
+                }
+                textField.text = text
+            }
+        } else {
+            text += string
+            inputData[textField.tag] = text
+        }
+        return true
+    }
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        inputData[textField.tag] = textField.text ?? ""
+    }
     @objc func keyboardWillShow(_ notification: NSNotification) {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             keyboardHeight = keyboardRect.height
@@ -355,7 +302,6 @@ extension SignUpViewController: UITextFieldDelegate {
             self.view.layoutIfNeeded()
         }
     }
-    
     @objc func keyboardWillHide(notification: NSNotification) {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             keyboardHeight = keyboardRect.height
@@ -364,114 +310,3 @@ extension SignUpViewController: UITextFieldDelegate {
         }
     }
 }
-
-////
-////  SignUpViewController.swift
-////  Social Messaging
-////
-////  Created by Vũ Quý Đạt  on 18/05/2021.
-////
-//
-//import UIKit
-//
-//class SignUpViewController: UIViewController {
-//    
-//    // MARK: - IBOutlet.
-//    @IBOutlet weak var tableView: UITableView!
-//
-//    
-//    
-//    // MARK: - Data structure.
-//    enum SectionType: Int, CaseIterable {
-//        case list, collection
-//    }
-//    
-//    class CellItem: Hashable {
-//        let image: UIImage?
-//        let data: (String?, String?) // (label, detaiLabel)
-//        let select: (() -> Void)? // select cell
-//        let cellClass: UITableViewCell // class of cell
-//        let viewControllerType: UIViewController.Type? // view show when select cell
-//        
-//        init(image: UIImage? = nil,
-//             data: (String?, String?) = (nil, nil),
-//             select: (() -> ())? = nil,
-//             cellClass: UITableViewCell = UITableViewCell(),
-//             viewControllerType: UIViewController.Type? = nil
-//        ) {
-//            self.image = image
-//            self.data = data
-//            self.select = select
-//            self.cellClass = cellClass
-//            self.viewControllerType = viewControllerType
-//        }
-//        
-//        func hash(into hasher: inout Hasher) {
-//            hasher.combine(identifier)
-//        }
-//        static func == (lhs: CellItem, rhs: CellItem) -> Bool {
-//            return lhs.identifier == rhs.identifier
-//        }
-//        private let identifier = UUID()
-//    }
-//    
-//    class SectionItem {
-//        let cell: [CellItem]
-//        let sectionType: SectionType?
-//        let supplementaryData: (String?, String?)
-//        let header: UICollectionReusableView?
-//        let footer: UICollectionReusableView?
-//        
-//        init(cell: [CellItem],
-//             sectionType: SectionType? = .list,
-//             supplementaryData: (String?, String?) = (nil, nil),
-//             header: UICollectionReusableView? = nil,
-//             footer: UICollectionReusableView? = nil
-//        ) {
-//            self.cell = cell
-//            self.sectionType = sectionType
-//            self.behavior = behavior
-//            self.supplementaryData = supplementaryData
-//            self.header = header
-//            self.footer = footer
-//        }
-//    }
-//    
-//    
-//    // MARK: - TableView Data.
-//    let data = [[""]]
-//
-//    
-//    
-//    // MARK: - Life cycle.
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        // Do any additional setup after loading the view.
-//    }
-//    
-//    /*
-//    // MARK: - Navigation
-//
-//    // In a storyboard-based application, you will often want to do a little preparation before navigation
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        // Get the new view controller using segue.destination.
-//        // Pass the selected object to the new view controller.
-//    }
-//    */
-//    
-//}
-//
-//// MARK: - TableView.
-//extension SignUpViewController: UITableViewDataSource, UITableViewDelegate {
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        <#code#>
-//    }
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        <#code#>
-//    }
-//}
-//
-//
-//
-//

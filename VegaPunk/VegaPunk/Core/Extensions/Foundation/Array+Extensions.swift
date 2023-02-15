@@ -106,7 +106,6 @@ extension Array where Element == Message {
         var customStructure = [[Message]]()
         var element = [Message]()
         var currentMappingId: UUID?
-        let countMessages = self.count
         self.enumerated().forEach { (index, message) in
             if (currentMappingId != nil && message.sender! == currentMappingId) {
                 element.append(message)

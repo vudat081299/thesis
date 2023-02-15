@@ -25,7 +25,7 @@ struct User: Codable {
     var avatar: String?
     var password: String?
     var country: String?
-    var gender: Int?
+    var gender: Gender?
 }
 
 struct Friend {
@@ -109,7 +109,7 @@ extension Friend: Codable {
             let avatar = try productContainer.decodeIfPresent(String.self, forKey: .avatar)
             let password = try productContainer.decodeIfPresent(String.self, forKey: .password)
             let country = try productContainer.decodeIfPresent(String.self, forKey: .country)
-            let gender = try productContainer.decodeIfPresent(Int.self, forKey: .gender)
+            let gender = try productContainer.decodeIfPresent(Gender.self, forKey: .gender)
 
             // The key is used again here and completes the collapse of the nesting that existed in the JSON representation.
             let friend = User(id: UUID(uuidString: key.stringValue)!, mappingId: mappingId, name: name!, username: username!, email: email, join: join, bio: bio, phone: phone, birth: birth, siwaIdentifier: siwaIdentifier, avatar: avatar, password: password, country: country, gender: gender)
@@ -128,7 +128,7 @@ extension Friend {
             do {
                 let encoder = JSONEncoder()
 //                encoder.outputFormatting = .prettyPrinted
-                try encoder.encode(self.friends.clean()).write(to: filePath)
+                try encoder.encode(self.friends.clean()).write(to: filePath, options: .atomic)
             }
             catch {
                 print("Store friends to file failed! \(error)")

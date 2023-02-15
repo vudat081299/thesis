@@ -133,7 +133,7 @@ struct MappingsController: RouteCollection {
         }
         let user = try req.auth.require(User.self)
         let resolvedModel = try req.content.decode(ResolveCreateMappingChatBox.self)
-        let chatBox = ChatBox()
+        let chatBox = ChatBox(name: "New group!")
         try await chatBox.save(on: req.db)
         let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
         user.mappingId = mappings[user.id!]
@@ -146,6 +146,8 @@ struct MappingsController: RouteCollection {
             }
             try await mapping.$chatBoxes.attach(chatBox, on: req.db)
         }
+        let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: message.createdAt, sender: user.mappingId, chatBoxId: chatBox.id, mediaType: .text, content: message.content))
+        webSocketManager.send(to: resolvedModel.mappingIds, package: package)
         return .created
         
         

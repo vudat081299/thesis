@@ -51,17 +51,17 @@ class ChatBoxAvatarView: ReusableUIView {
         } else {
             label.text = validateText.first?.description
         }
-        containerView.roundedBorder()
-        image.roundedBorder()
-//        switch type {
-//        case .single:
-//            containerView.border(22)
-//            image.border(20)
-//            break
-//        case .multiple:
-//            containerView.border(16)
-//            image.border(14)
-//            break
-//        }
+//        containerView.roundedBorder()
+//        image.roundedBorder()
+        switch type {
+        case .single:
+            containerView.border(20)
+            image.border(18)
+            break
+        case .multiple:
+            containerView.border(16)
+            image.border(14)
+            break
+        }
     }
 }

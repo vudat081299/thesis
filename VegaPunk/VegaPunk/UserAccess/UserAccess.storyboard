@@ -221,10 +221,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o86-aq-qmU">
-                                <rect key="frame" x="92.5" y="826" width="229.5" height="21"/>
+                                <rect key="frame" x="92.5" y="826" width="229" height="21"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don't have an account yet?" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R0G-Ze-hVi">
-                                        <rect key="frame" x="0.0" y="0.0" width="175.5" height="21"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="175" height="21"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="21" id="jMb-AY-htT"/>
                                         </constraints>
@@ -233,7 +233,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G1u-Ix-tte">
-                                        <rect key="frame" x="180.5" y="0.0" width="49" height="21"/>
+                                        <rect key="frame" x="180" y="0.0" width="49" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <state key="normal" title="Sign up"/>
                                         <connections>
@@ -241,7 +241,7 @@
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hof-xu-nYS">
-                                        <rect key="frame" x="180.5" y="18" width="49" height="1"/>
+                                        <rect key="frame" x="180" y="18" width="49" height="1"/>
                                         <color key="backgroundColor" systemColor="linkColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="erj-nC-wBL"/>

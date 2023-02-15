@@ -1,5 +1,5 @@
 //
-//  SignupDatePickerInputTableViewCell.swift
+//  SignupInputCell.swift
 //  Social Messaging
 //
 //  Created by Vũ Quý Đạt  on 19/05/2021.
@@ -7,11 +7,11 @@
 
 import UIKit
 
-class SignupDatePickerInputTableViewCell: UITableViewCell {
-    static let reuseIdentifier = "SignupDatePickerInputTableViewCell"
-    
+class TextInputCell: UITableViewCell {
+    static let reuseIdentifier = "TextInputCell"
     @IBOutlet weak var contentLabel: UILabel!
-    @IBOutlet weak var datePickerView: UIDatePicker!
+    @IBOutlet weak var inputTextField: UITextField!
+    
     var delegate: PassInputDataFromCell?
     var indexPath: IndexPath?
     
@@ -24,9 +24,6 @@ class SignupDatePickerInputTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
-    }
-    @IBAction func didPickDate(_ sender: UIDatePicker) {
-        delegate!.pass(sender.date.iso8601String, at: indexPath!)
     }
     
 }

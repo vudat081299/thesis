@@ -150,13 +150,12 @@ class RequestEngine {
             parameters: parameters,
             headers: bearerTokenHeaders)
             .responseData { response in
-                switch response.result {
-                case .success:
+                switch response.response?.statusCode {
+                case 201:
                     print("Create chat box successful!")
                     if let completion = completion { completion() }
                     break
-                case let .failure(error):
-                    print(error)
+                default:
                     break
                 }
             }
@@ -166,7 +165,7 @@ class RequestEngine {
     
     // MARK: - Chat box
     static func getMemberInChatBox(_ chatBoxId: UUID, _ completion: (() -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(.getMemberInChatBox, ["chatBoxId": chatBoxId]) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getMemberInChatBox, ["chatBoxId": chatBoxId.uuidString]) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [Mapping.Resolve].self) { response in
                 switch response.result {
@@ -202,22 +201,50 @@ class RequestEngine {
             }
     }
     static func getMessagesOfChatBox(_ chatBoxId: UUID, _ completion: (([Message.Resolve]) -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(.getMessagesOfChatBox, ["chatBoxId": chatBoxId]) else { return }
+        guard let query = QueryBuilder.queryInfomation(.getMessagesOfChatBox, ["chatBoxId": chatBoxId.uuidString]) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [Message.Resolve].self) { response in
                 switch response.result {
                 case .success(let messages):
-                    do {
-                        let encoder = JSONEncoder()
-                        let data = try encoder.encode(messages)
-                        UserDefaults.standard.set(data, forKey: chatBoxId.uuidString + "_Messages_SAVE_KEY")
-                    } catch {
-                        print("Unable to Encode Array of Mappings (\(error))")
-                    }
                     if let completion = completion { completion(messages) }
                     break
                 case .failure:
                     print("getMessagesOfChatBox fail!")
+                    break
+                }
+            }
+    }
+    static func getLastestUpdatedTimeStampChatBox(_ chatBoxId: UUID, _ completion: ((String) -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(
+            .getLastestUpdatedTimeStampChatBox,
+            ["chatBoxId": chatBoxId.uuidString]
+        ) else { return }
+        AF.request(query.genUrl(), method: query.httpMethod)
+            .responseDecodable(of: String.self) { response in
+                switch response.result {
+                case .success(let timeStamp):
+                    if let completion = completion { completion(timeStamp) }
+                    break
+                case .failure:
+                    print("getMessagesOfChatBox fail!")
+                    break
+                }
+            }
+    }
+    static func getMessageFromTime(_ chatBoxId: UUID, _ time: String, _ completion: (([Message.Resolve]) -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(
+            .getMessagesFromTimeChatBox,
+            ["chatBoxId": chatBoxId.uuidString,
+             "time": time]
+        ) else { return }
+        AF.request(query.genUrl(), method: query.httpMethod)
+            .responseDecodable(of: [Message.Resolve].self) { response in
+                switch response.result {
+                case .success(let resolveMessages):
+                    if let completion = completion { completion(resolveMessages) }
+                    break
+                case .failure:
+                    print("\(#function) fail!")
                     break
                 }
             }

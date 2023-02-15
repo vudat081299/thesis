@@ -13,15 +13,17 @@ func wait(on viewController: UIViewController?, time: Double,_ handler: @escapin
     }
 }
 
-class MessagePresenter {
-    static func showMessage(message: String, on viewController: UIViewController?, dismissAction: ((UIAlertAction) -> Void)? = nil) {
+class AlertNotification {
+    static func notify(message: String, on viewController: UIViewController?, dismissAction: ((UIAlertAction) -> Void)? = nil) {
         weak var vc = viewController
         DispatchQueue.main.async {
-          let alertController = UIAlertController(title: "Notice",
-                                                  message: message,
-                                                  preferredStyle: .alert)
-          alertController.addAction(UIAlertAction(title: "Done", style: .default, handler: dismissAction))
-          vc?.present(alertController, animated: true)
+            let alertController = UIAlertController(title: "Notice",
+                                                    message: message,
+                                                    preferredStyle: .alert)
+            let action = UIAlertAction(title: "Done", style: .default, handler: dismissAction)
+            alertController.addAction(action)
+            alertController.preferredAction = action
+            vc?.present(alertController, animated: true)
         }
     }
 }

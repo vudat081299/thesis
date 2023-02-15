@@ -43,6 +43,7 @@ class ChatBoxTableViewCell: UITableViewCell {
     
     @IBOutlet weak var name: UILabel! //
     @IBOutlet weak var username: UILabel! //
+    @IBOutlet weak var newMessageFlag: UIView!
     @IBOutlet weak var lastestMesssage: UILabel!
     @IBOutlet weak var dayTime: UILabel!
     
@@ -52,6 +53,8 @@ class ChatBoxTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        newMessageFlag.roundedBorder()
+        newMessageFlag.isHidden = true
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -66,6 +69,7 @@ class ChatBoxTableViewCell: UITableViewCell {
         username.font = UIFont.systemFont(ofSize: 10, weight: .regular)
         lastestMesssage.textColor = .secondaryLabel
         lastestMesssage.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        newMessageFlag.isHidden = true
     }
     
     
@@ -104,7 +108,7 @@ class ChatBoxTableViewCell: UITableViewCell {
             firstAvatar.prepare(with: friend.avatar, type: .single)
         } else if members.count > 1 {
             let chatBoxName = data.chatBox.name
-            var listMemberName = [members[0].name!, members[1].name!].sorted(by: >)
+            let listMemberName = [members[0].name!, members[1].name!].sorted(by: >)
             
             name.text = (chatBoxName != nil && chatBoxName?.count != 0) ? chatBoxName : "\(listMemberName[0]), \(listMemberName[1])"
             username.text = ""
@@ -124,8 +128,9 @@ class ChatBoxTableViewCell: UITableViewCell {
             let lastestSeenMessage = Message.retrieve(.lastestSeenMessage, with: chatBoxId)
             if lastestSeenMessage == nil ||
                 lastestMessage > lastestSeenMessage! {
-                lastestMesssage.textColor = .darkGray
+                lastestMesssage.textColor = .black
                 lastestMesssage.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+                newMessageFlag.isHidden = false
             }
             break
         }

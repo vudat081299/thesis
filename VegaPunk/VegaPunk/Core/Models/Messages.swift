@@ -42,9 +42,15 @@ struct Message: Hashable {
         return lhs.id == rhs.id
     }
     static func < (lhs: Message, rhs: Message) -> Bool {
+        if lhs.createdAt == rhs.createdAt {
+            return lhs.id.uuidString < rhs.id.uuidString
+        }
         return lhs.createdAt < rhs.createdAt
     }
     static func > (lhs: Message, rhs: Message) -> Bool {
+        if lhs.createdAt == rhs.createdAt {
+            return lhs.id.uuidString > rhs.id.uuidString
+        }
         return lhs.createdAt > rhs.createdAt
     }
 }
@@ -115,7 +121,7 @@ struct Messages {
         self.messages = messages
     }
     
-    init(resolveMessages: [Message.Resolve]) {
+    init(_ resolveMessages: [Message.Resolve]) {
         self.messages = resolveMessages.map { $0.flatten() }
     }
 }
@@ -192,7 +198,9 @@ extension Messages {
     func store() {
         let groupedMessagesByChatBox = messages.groupByChatBox()
         for (chatBoxId, messages) in groupedMessagesByChatBox {
-            let messages = Messages(messages.sorted(by: <))
+            let storedMessages = Messages.retrieve(with: chatBoxId).messages
+            let allMessages = storedMessages + messages
+            let messages = Messages(Array(Set(allMessages)).sorted(by: <))
             messages.messages.cacheLastest()
             if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                 let storageDirectoryPath = dir.appendingPathComponent(UserDefaults.FilePaths.messages.rawValue)

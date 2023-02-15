@@ -9,12 +9,16 @@ import UIKit
 
 class ChatBoxViewController: UIViewController {
     
+    // MARK: - IBOutlet
+    @IBOutlet weak var tableView: UITableView!
+    
+    //
     let notificationCenter = NotificationCenter.default
     
-    @IBOutlet weak var tableView: UITableView!
+    //
     var chatBoxExtractedDataList = [ChatBoxExtractedData]()
     var friends = [User]()
-    var authenticatedUser: AuthenticatedUser!
+    var user: AuthenticatedUser!
     let messagingViewController = MessagingViewController()
     
     
@@ -34,30 +38,25 @@ class ChatBoxViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        view.backgroundColor = .systemBackground
+        prepareView()
         configureHierarchy()
         
         // Observer
-        notificationCenter.addObserver(self, selector: #selector(websocketReceivedPackage(_:)), name: .WebsocketReceivedPackage, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(websocketReceivedChatBoxPackage(_:)), name: .WebsocketReceivedMessagePackage, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.prefersLargeTitles = true
-        // Prepare data
         prepareData()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         tabBarController?.tabBar.isHidden = false
-        //
-        
-//        navigationController?.navigationBar.prefersLargeTitles = true
-//        navigationItem.largeTitleDisplayMode = .always
     }
     deinit {
-        notificationCenter.removeObserver(self, name: .WebsocketReceivedPackage, object: nil)
+        notificationCenter.removeObserver(self, name: .WebsocketReceivedMessagePackage, object: nil)
     }
 
 
@@ -73,7 +72,7 @@ class ChatBoxViewController: UIViewController {
     
     
     // MARK: - Tasks
-    @objc func websocketReceivedPackage(_ notification: Notification) {
+    @objc func websocketReceivedChatBoxPackage(_ notification: Notification) {
         if navigationController?.topViewController == self {
             prepareData()
         }
@@ -81,14 +80,17 @@ class ChatBoxViewController: UIViewController {
     func prepareData() {
         resetData()
         
-        // ChatBox Friend pivot
         guard let authenticatedUser = AuthenticatedUser.retrieve(),
-              let mappingId = authenticatedUser.data?.mappingId else { return }
-        self.authenticatedUser = authenticatedUser
+              let mappingId = authenticatedUser.data?.mappingId
+        else { return }
+        user = authenticatedUser
         chatBoxExtractedDataList.retrieve(with: mappingId)
         friends = Friend.retrieve().friends
         
         tableView.reloadData()
+    }
+    func prepareView() {
+        view.backgroundColor = .systemBackground
     }
     
     
@@ -96,13 +98,11 @@ class ChatBoxViewController: UIViewController {
     func resetData() {
         chatBoxExtractedDataList = []
         friends = []
-        authenticatedUser = nil
+        user = nil
     }
-    
     func getMembersInChatBox(with mappingIds: [UUID]) -> [User] {
         return friends.filter { mappingIds.contains($0.mappingId!) }
     }
-    
 }
 
 

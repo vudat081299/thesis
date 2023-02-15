@@ -15,6 +15,10 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
     
+    //
+    let notificationCenter = NotificationCenter.default
+    
+    //
     var dataSource: UICollectionViewDiffableDataSource<Int, UserExtractedData>! = nil
     var userExtractedDataList = [UserExtractedData]()
     
@@ -27,8 +31,9 @@ class ViewController: UIViewController {
         configureHierarchy()
         configureDataSource()
         setUpNavigationBar()
-        fetchData()
-        fetchStoredData()
+        fetch()
+        
+        notificationCenter.addObserver(self, selector: #selector(websocketReceivedUserPackage(_:)), name: .WebsocketReceivedUserPackage, object: nil)
     }
     
 
@@ -52,33 +57,39 @@ class ViewController: UIViewController {
     
     
     // MARK: - Tasks
-    func fetchStoredData() {
-        let mappings = Mappings.retrieve()
-        let friends = Friend.retrieve().friends
-        friends.forEach {
-            if let friendId = $0.id,
-               let friendMappingId = mappings.mappingId(friendId) {
-                userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
+    func fetch() {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            // Fetch from local
+            var storeData = [UserExtractedData]()
+            let mappings = Mappings.retrieve()
+            let friends = Friend.retrieve().friends
+            friends.forEach {
+                if let friendId = $0.id,
+                   let friendMappingId = mappings.mappingId(friendId) {
+                    storeData.append(UserExtractedData(mappingId: friendMappingId, user: $0))
+                }
             }
-        }
-        applySnapshot()
-    }
-    func fetchData() {
-        DataInteraction.fetchData { [self] in
-            DispatchQueue.main.async { [self] in
+            self.userExtractedDataList = storeData
+            self.applySnapshot()
+            
+            // Fetch from server
+            var fetchData = [UserExtractedData]()
+            DataInteraction.fetchData { [self] in
                 let mappings = Mappings.retrieve()
                 let friends = Friend.retrieve().friends
                 friends.forEach {
                     if let friendId = $0.id,
                        let friendMappingId = mappings.mappingId(friendId) {
-                        userExtractedDataList.append(UserExtractedData(mappingId: friendMappingId, user: $0))
+                        fetchData.append(UserExtractedData(mappingId: friendMappingId, user: $0))
                     }
                 }
-                applySnapshot()
+                self.userExtractedDataList = fetchData
+                self.applySnapshot()
                 if let mappingId = AuthenticatedUser.retrieve()?.data?.mappingId {
                     MappingChatBoxPivots.retrieve().pivots[mappingId].forEach {
                         RequestEngine.getMessagesOfChatBox($0) { messages in
-                            Messages(resolveMessages: messages).store()
+                            Messages(messages).store()
                         }
                     }
                 }
@@ -92,7 +103,9 @@ class ViewController: UIViewController {
         self.present(vc, animated:true, completion:nil)
         configureApplication()
     }
-    
+    @objc func websocketReceivedUserPackage(_ notification: Notification) {
+        fetch()
+    }
     func resetApplicationMetadata() {
         AuthenticatedUser.remove()
         ChatBoxes.remove()
@@ -162,22 +175,27 @@ extension ViewController {
     }
     
     
-    
     func trailingSwipeActionConfigurationForListCellItem(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let sec = indexPath.section
-        let _ = indexPath.row
-        let starAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
+        let cellData = userExtractedDataList[indexPath.section]
+        let action = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
             guard let self = self else {
                 completion(false)
                 return
             }
-            
-            // call video here
+            RequestEngine.createChatBox(cellData.mappingId) {
+                self.fetch()
+                SoundFeedBack.success()
+                self.navigationItem.rightBarButtonItem?.tintColor = .systemGreen
+                self.navigationItem.rightBarButtonItem?.image = UIImage(systemName: "checkmark.circle.fill")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.navigationItem.rightBarButtonItem?.image = nil
+                }
+            }
             completion(true)
         }
-        starAction.image = UIImage(systemName: "message")
-        starAction.backgroundColor = .link
-        return UISwipeActionsConfiguration(actions: [starAction])
+        action.image = UIImage(systemName: "message")
+        action.backgroundColor = .systemGray2
+        return UISwipeActionsConfiguration(actions: [action])
     }
 }
 
@@ -224,14 +242,16 @@ extension ViewController {
     }
     
     func applySnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, UserExtractedData>()
-        var numberOfSections = 0
-        for data in userExtractedDataList {
-            snapshot.appendSections([numberOfSections])
-            numberOfSections += 1
-            snapshot.appendItems([data])
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            var snapshot = NSDiffableDataSourceSnapshot<Int, UserExtractedData>()
+            let sections = Array(0..<self.userExtractedDataList.count)
+            for section in sections {
+                snapshot.appendSections([section])
+                snapshot.appendItems([self.userExtractedDataList[section]])
+            }
+            self.dataSource.apply(snapshot, animatingDifferences: true)
         }
-        dataSource.apply(snapshot, animatingDifferences: true)
     }
 }
 
@@ -242,8 +262,8 @@ extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        let chatBoxViewController = ChatBoxViewController()
-        navigationController?.pushViewController(chatBoxViewController, animated: true)
+//        let chatBoxViewController = ChatBoxViewController()
+//        navigationController?.pushViewController(chatBoxViewController, animated: true)
     }
 }
 

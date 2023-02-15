@@ -57,11 +57,14 @@ class MainTabBarController: UITabBarController {
             viewControllers?.append($0.viewController)
         }
         connectWebSocket()
-        notificationCenter.addObserver(self, selector: #selector(send(_:)), name: .WebsocketSendPackage, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(send(_:)), name: .WebsocketSendMessagePackage, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    }
+    deinit {
+        notificationCenter.removeObserver(self, name: .WebsocketSendMessagePackage, object: nil)
     }
     
     /*
@@ -77,6 +80,7 @@ class MainTabBarController: UITabBarController {
     
     // MARK: - Mini tasks
     func connectWebSocket() {
+        releaseWebSocket()
         print("\(#function)")
         let userMappingId = (AuthenticatedUser.retrieve()?.data?.mappingId?.uuidString) ?? ""
         let domain = RouteCoordinator.websocket.url()! + userMappingId
@@ -86,6 +90,13 @@ class MainTabBarController: UITabBarController {
         socket = WebSocket(request: request)
         socket.delegate = self
         socket.connect()
+    }
+    func releaseWebSocket() {
+        if socket != nil {
+            socket.disconnect()
+    //        socket.forceDisconnect()
+            socket = nil
+        }
     }
     
     
@@ -116,17 +127,19 @@ extension MainTabBarController: WebSocketDelegate {
             }
             switch webSocketPackage.type {
             case .message:
-                var storedMessages = Messages.retrieve(with: webSocketPackage.message.chatBoxId!).messages
-                storedMessages.receive([webSocketPackage.convertToMessage()])
-                Messages(storedMessages).store()
+//                var storedMessages = Messages.retrieve(with: webSocketPackage.message.chatBoxId!).messages
+//                storedMessages.receive([webSocketPackage.convertToMessage()])
+                Messages([webSocketPackage.convertToMessage()]).store()
 //                NotificationCenter.default.post(name: .WebsocketReceivedPackage, object: nil, userInfo: ["package": webSocketPackage])
-                NotificationCenter.default.post(name: .WebsocketReceivedPackage, object: nil)
+                NotificationCenter.default.post(name: .WebsocketReceivedMessagePackage, object: nil)
+                break
             case .chatBox:
+                NotificationCenter.default.post(name: .WebsocketReceivedChatBoxPackage, object: nil)
                 break
             case .user:
+                NotificationCenter.default.post(name: .WebsocketReceivedUserPackage, object: nil)
                 break
             }
-            print(webSocketPackage.message)
         case .binary(let data):
             print("Received data: \(data.count)")
         case .ping(_):

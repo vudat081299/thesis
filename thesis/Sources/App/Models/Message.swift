@@ -57,7 +57,7 @@ final class Message: Model {
             return nil
         }
         self.sender = packageMessageSender
-        self.mediaType = packageMessageMediaType
+        self.mediaType = packageMessageMediaType.rawValue
         self.content = packageMessageContent
         self.$chatBox.id = packageMessageChatBoxId
     }
@@ -67,7 +67,7 @@ extension Message: Content {}
 extension Message {
     // Confuse
     func convertToWebSocketPackage() -> WebSocketPackage {
-        return WebSocketPackage(type: .message, message: WebSocketPackageMessage(id: self.id, createdAt: createdAt, sender: sender, chatBoxId: self.$chatBox.id, mediaType: mediaType, content: content))
+        return WebSocketPackage(type: .message, message: WebSocketPackageMessage(id: self.id, createdAt: createdAt, sender: sender, chatBoxId: self.$chatBox.id, mediaType: MediaType(rawValue: mediaType), content: content))
     }
 }
 
