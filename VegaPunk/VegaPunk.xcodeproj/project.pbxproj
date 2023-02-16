@@ -42,7 +42,6 @@
 		84A938CC296AAABD008ED0DC /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9387A296AAABD008ED0DC /* AuthenticationService.swift */; };
 		84A938CD296AAABD008ED0DC /* ErrorControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9387C296AAABD008ED0DC /* ErrorControl.swift */; };
 		84A938D1296AAABD008ED0DC /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93881296AAABD008ED0DC /* Token.swift */; };
-		84A938D2296AAABD008ED0DC /* Upload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93883296AAABD008ED0DC /* Upload.swift */; };
 		84A938D3296AAABD008ED0DC /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93886296AAABD008ED0DC /* UIView.swift */; };
 		84A938D4296AAABD008ED0DC /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93887296AAABD008ED0DC /* UIColor.swift */; };
 		84A938D5296AAABD008ED0DC /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93888296AAABD008ED0DC /* TableView.swift */; };
@@ -59,7 +58,6 @@
 		84A938E0296AAABD008ED0DC /* CacheData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93895296AAABD008ED0DC /* CacheData.swift */; };
 		84A938E1296AAABD008ED0DC /* Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93896296AAABD008ED0DC /* Time.swift */; };
 		84A938E2296AAABD008ED0DC /* FeedbackGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93897296AAABD008ED0DC /* FeedbackGenerator.swift */; };
-		84A938E3296AAABD008ED0DC /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93898296AAABD008ED0DC /* Key.swift */; };
 		84A938E4296AAABD008ED0DC /* SoundFeedBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93899296AAABD008ED0DC /* SoundFeedBack.swift */; };
 		84A938E5296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */; };
 		84A938E6296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */; };
@@ -167,7 +165,6 @@
 		84A9387A296AAABD008ED0DC /* AuthenticationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
 		84A9387C296AAABD008ED0DC /* ErrorControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorControl.swift; sourceTree = "<group>"; };
 		84A93881296AAABD008ED0DC /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
-		84A93883296AAABD008ED0DC /* Upload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Upload.swift; sourceTree = "<group>"; };
 		84A93886296AAABD008ED0DC /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		84A93887296AAABD008ED0DC /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		84A93888296AAABD008ED0DC /* TableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
@@ -184,7 +181,6 @@
 		84A93895296AAABD008ED0DC /* CacheData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheData.swift; sourceTree = "<group>"; };
 		84A93896296AAABD008ED0DC /* Time.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Time.swift; sourceTree = "<group>"; };
 		84A93897296AAABD008ED0DC /* FeedbackGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedbackGenerator.swift; sourceTree = "<group>"; };
-		84A93898296AAABD008ED0DC /* Key.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
 		84A93899296AAABD008ED0DC /* SoundFeedBack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundFeedBack.swift; sourceTree = "<group>"; };
 		84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupDatePickerInputTableViewCell.swift; sourceTree = "<group>"; };
 		84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignupPickerInputTableViewCell.xib; sourceTree = "<group>"; };
@@ -405,7 +401,6 @@
 		84A9387D296AAABD008ED0DC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				84A93882296AAABD008ED0DC /* Archived */,
 				84A93913296AF86C008ED0DC /* AuthenticatedUser.swift */,
 				84A9391B296B2E7B008ED0DC /* ChatBoxes.swift */,
 				84A82765298FA1C700753846 /* DataInteraction.swift */,
@@ -418,14 +413,6 @@
 				84A8276F298FAD8E00753846 /* MappingChatBoxPivot.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		84A93882296AAABD008ED0DC /* Archived */ = {
-			isa = PBXGroup;
-			children = (
-				84A93883296AAABD008ED0DC /* Upload.swift */,
-			);
-			path = Archived;
 			sourceTree = "<group>";
 		};
 		84A93884296AAABD008ED0DC /* Extensions */ = {
@@ -476,7 +463,6 @@
 				84A93895296AAABD008ED0DC /* CacheData.swift */,
 				84A93896296AAABD008ED0DC /* Time.swift */,
 				84A93897296AAABD008ED0DC /* FeedbackGenerator.swift */,
-				84A93898296AAABD008ED0DC /* Key.swift */,
 				84A93899296AAABD008ED0DC /* SoundFeedBack.swift */,
 			);
 			path = Utilities;
@@ -809,7 +795,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84A938D2296AAABD008ED0DC /* Upload.swift in Sources */,
 				84A8276D298FACB800753846 /* ChatBoxViewController.swift in Sources */,
 				84A2C4212994FB5D00EE8CD8 /* FooterMessage.swift in Sources */,
 				84A2C4292995617B00EE8CD8 /* MessagingViewController.swift in Sources */,
@@ -881,7 +866,6 @@
 				84A8276A298FA81600753846 /* ConcurrencyInteraction.swift in Sources */,
 				84A9391C296B2E7B008ED0DC /* ChatBoxes.swift in Sources */,
 				84A8AFEC299BE63000D9A6D3 /* Dictionary.swift in Sources */,
-				84A938E3296AAABD008ED0DC /* Key.swift in Sources */,
 				84A93902296AAABE008ED0DC /* File.swift in Sources */,
 				84A938F9296AAABE008ED0DC /* NVActivityIndicatorAnimationDelegate.swift in Sources */,
 			);

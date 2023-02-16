@@ -34,6 +34,9 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
         fetch()
     }
+    deinit {
+        notificationCenter.removeObserver(self, name: .WebsocketReceivedUserPackage, object: nil)
+    }
     
     
     // MARK: - Prepare view

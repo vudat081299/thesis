@@ -9,6 +9,7 @@ import UIKit
 
 class ChatBoxViewController: UIViewController {
     
+    
     // MARK: - IBOutlet
     @IBOutlet weak var tableView: UITableView!
     
@@ -60,29 +61,36 @@ class ChatBoxViewController: UIViewController {
         notificationCenter.removeObserver(self, name: .WebsocketReceivedChatBoxPackage, object: nil)
         notificationCenter.removeObserver(self, name: .WebsocketReceivedMessagePackage, object: nil)
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
     
     
     // MARK: - Tasks
     @objc func websocketReceivedChatBoxPackage(_ notification: Notification) {
         if navigationController?.topViewController == self {
             fetchChatBox()
-            i = 0
         }
     }
     @objc func websocketReceivedMessagePackage(_ notification: Notification) {
         if navigationController?.topViewController == self {
             fetchMessage()
+        }
+    }
+    func fetchChatBox() {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            guard let authenticatedUser = AuthenticatedUser.retrieve(),
+                  let mappingId = authenticatedUser.data?.mappingId
+            else { return }
+            self.user = authenticatedUser
+            self.friends = Friend.retrieve().friends
+            
+            // Fetch from local
+            self.setUp(with: mappingId)
+            
+            // Fetch from server
+            DataInteraction.newChatBoxFetch() {
+                self.setUp(with: mappingId)
+            }
+            
         }
     }
     func fetchMessage() {
@@ -91,16 +99,11 @@ class ChatBoxViewController: UIViewController {
         else { return }
         setUp(with: mappingId)
     }
-    var i = 0
+    /// Confuse declaration
     func setUp(with mappingId: UUID) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.i += 1
-            print(self.i)
             self.chatBoxViewModel.retrieve(with: mappingId)
-            self.chatBoxViewModel.forEach {
-                print($0.lastestMessage?.content)
-            }
             self.tableView.reloadData()
         }
         
@@ -122,33 +125,9 @@ class ChatBoxViewController: UIViewController {
             Thread.sleep(until: Date().addingTimeInterval(1))
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                self.i += 1
-                print(self.i)
                 self.chatBoxViewModel.retrieve(with: mappingId)
-                self.chatBoxViewModel.forEach {
-                    print($0.lastestMessage?.content)
-                }
                 self.tableView.reloadData()
             }
-        }
-    }
-    func fetchChatBox() {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
-            guard let authenticatedUser = AuthenticatedUser.retrieve(),
-                  let mappingId = authenticatedUser.data?.mappingId
-            else { return }
-            self.user = authenticatedUser
-            self.friends = Friend.retrieve().friends
-            
-            // Fetch from local
-            self.setUp(with: mappingId)
-            
-            // Fetch from server
-            DataInteraction.newChatBoxFetch() {
-                self.setUp(with: mappingId)
-            }
-            
         }
     }
     func prepareView() {

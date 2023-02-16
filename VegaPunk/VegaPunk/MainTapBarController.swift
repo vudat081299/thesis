@@ -44,9 +44,6 @@ class MainTabBarController: UITabBarController {
     let notificationCenter = NotificationCenter.default
     var socket: WebSocket!
     
-    //
-    var isConnected = false
-    
     
     // MARK: - Life cycle.
     override func viewDidLoad() {
@@ -84,7 +81,6 @@ class MainTabBarController: UITabBarController {
         print("\(#function)")
         let userMappingId = (AuthenticatedUser.retrieve()?.data?.mappingId?.uuidString) ?? ""
         let domain = RouteCoordinator.websocket.url()! + userMappingId
-        print(domain)
         var request = URLRequest(url: URL(string: domain)!)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
@@ -112,10 +108,8 @@ extension MainTabBarController: WebSocketDelegate {
     func didReceive(event: WebSocketEvent, client: WebSocket) {
         switch event {
         case .connected(let headers):
-            isConnected = true
             print("Web socket is connected: \(headers)")
         case .disconnected(let reason, let code):
-            isConnected = false
             print("Web socket is disconnected: \(reason) with code: \(code)")
         case .text(let string):
             let decoder = JSONDecoder()
@@ -127,10 +121,7 @@ extension MainTabBarController: WebSocketDelegate {
             }
             switch webSocketPackage.type {
             case .message:
-//                var storedMessages = Messages.retrieve(with: webSocketPackage.message.chatBoxId!).messages
-//                storedMessages.receive([webSocketPackage.convertToMessage()])
                 Messages([webSocketPackage.convertToMessage()]).store()
-//                NotificationCenter.default.post(name: .WebsocketReceivedPackage, object: nil, userInfo: ["package": webSocketPackage])
                 NotificationCenter.default.post(name: .WebsocketReceivedMessagePackage, object: nil)
                 break
             case .chatBox:
@@ -154,11 +145,9 @@ extension MainTabBarController: WebSocketDelegate {
             break
         case .cancelled:
             print("cancelled")
-            isConnected = false
             connectWebSocket()
         case .error(let error):
             print("error")
-            isConnected = false
             handleError(error)
             connectWebSocket()
         }

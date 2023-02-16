@@ -8,7 +8,6 @@
 import Foundation
 
 class ConcurrencyInteraction {
-    
     static func leave(_ dispatchGroup: DispatchGroup) {
         DispatchQueue.main.async {
             dispatchGroup.leave()
