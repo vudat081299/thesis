@@ -146,24 +146,28 @@ extension Array where Element == User {
 
 
 // MARK: - ChatBoxExtractedData
-extension Array where Element == ChatBoxExtractedData {
-    mutating func retrieve(with mappingId: UUID) {
-        self = []
+extension Array where Element == ChatBoxViewModel {
+    mutating func retrieve(with mappingId: UUID, completion: (([ChatBoxViewModel]) -> ())? = nil) {
         var chatBoxes = ChatBoxes.retrieve().chatBoxes
-        let pivots = MappingChatBoxPivots.retrieve().pivots
-        let userChatBoxIds = pivots[mappingId]
-        chatBoxes = chatBoxes.filter { userChatBoxIds.contains($0.id) }
-        chatBoxes.forEach {
-            let lastestMessage = Message.retrieve(with: $0.id)
-            let members = pivots[mappingId, $0.id]
-            self.append(ChatBoxExtractedData(chatBox: $0, lastestMessage: lastestMessage, members: members))
+        handle()
+        func handle() {
+            self = []
+            let pivots = MappingChatBoxPivots.retrieve().pivots
+            let userChatBoxIds = pivots[mappingId]
+            chatBoxes = chatBoxes.filter { userChatBoxIds.contains($0.id) }
+            chatBoxes.forEach {
+                let lastestMessage = Message.retrieve(with: $0.id)
+                let members = pivots[mappingId, $0.id]
+                self.append(ChatBoxViewModel(chatBox: $0, lastestMessage: lastestMessage, members: members))
+            }
+            self = self.filter { $0.lastestMessage != nil }
+            self.sort(by: >)
         }
-        self.sort(by: >)
     }
 }
 
 
-// MARK:
+// MARK: - UUID
 extension Array where Element == UUID {
     func retrieveUsers() -> [User] {
         Friend.retrieve().friends.filter {
@@ -174,3 +178,36 @@ extension Array where Element == UUID {
         }
     }
 }
+
+
+// MARK: - View model
+extension Array where Element == UserViewModel {
+    mutating func retrieve() {
+        self = []
+        let mappings = Mappings.retrieve()
+        let friends = Friend.retrieve().friends
+        friends.forEach {
+            if let friendId = $0.id,
+               let friendMappingId = mappings.mappingId(friendId) {
+                self.append(UserViewModel(mappingId: friendMappingId, user: $0))
+            }
+        }
+        self.sort(by: {
+            if let join0 = $0.user.join,
+               let join1 = $1.user.join {
+                return join0 > join1
+            }
+            return false
+        })
+    }
+}
+/// Message view model
+extension Array where Element == [Message] {
+    mutating func retrieve(from chatBoxId: UUID) {
+        var storedMessaged = Messages.retrieve(with: chatBoxId).messages
+        self = storedMessaged.transformStructure()
+//        var sampleData = sampleData(mappingId: (self?.user.mappingId!)!)
+//        self = sampleData.transformStructure()
+    }
+}
+

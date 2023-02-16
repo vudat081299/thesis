@@ -19,90 +19,82 @@ class ViewController: UIViewController {
     let notificationCenter = NotificationCenter.default
     
     //
-    var dataSource: UICollectionViewDiffableDataSource<Int, UserExtractedData>! = nil
-    var userExtractedDataList = [UserExtractedData]()
+    var dataSource: UICollectionViewDiffableDataSource<Int, UserViewModel>! = nil
+    var userViewModel = [UserViewModel]()
     
     
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        prepareView()
+        fetch()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetch()
+    }
+    
+    
+    // MARK: - Prepare view
+    func prepareView() {
         prepareNavigationViewController()
         configureHierarchy()
         configureDataSource()
-        setUpNavigationBar()
-        fetch()
+        prepareObserver()
         
-        notificationCenter.addObserver(self, selector: #selector(websocketReceivedUserPackage(_:)), name: .WebsocketReceivedUserPackage, object: nil)
-    }
-    
-
-    func prepareNavigationViewController() {
-        title = "Explore"
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.navigationBar.sizeToFit()
-        self.navigationController?.navigationItem.largeTitleDisplayMode = .always
-        
-    }
-    // MARK: - Set up methods.
-    func setUpNavigationBar() {
-        // BarButtonItem.
-        let leftBarButtonItem: UIBarButtonItem = {
-            let bt = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(signOut))
-            bt.tintColor = .systemRed
-            return bt
-        }()
-        navigationItem.leftBarButtonItem = leftBarButtonItem
+        func prepareObserver() {
+            notificationCenter.addObserver(self, selector: #selector(websocketReceivedUserPackage(_:)), name: .WebsocketReceivedUserPackage, object: nil)
+        }
+        func prepareNavigationViewController() {
+            title = "Explore"
+            self.navigationController?.navigationBar.prefersLargeTitles = true
+            self.navigationController?.navigationBar.sizeToFit()
+            self.navigationController?.navigationItem.largeTitleDisplayMode = .always
+            prepareNavigationBar()
+        }
+        func prepareNavigationBar() {
+            // BarButtonItem.
+            let leftBarButtonItem: UIBarButtonItem = {
+                let bt = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(signOut))
+                bt.tintColor = .systemRed
+                return bt
+            }()
+            navigationItem.leftBarButtonItem = leftBarButtonItem
+        }
     }
     
     
     // MARK: - Tasks
+    /// Fetch data from local storage and then fetch data from server.
+    /// - Note: This method reload collectionView snapshot in closure on sub thread so the collectionView must have been set up before call this method.
     func fetch() {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
             // Fetch from local
-            var storeData = [UserExtractedData]()
-            let mappings = Mappings.retrieve()
-            let friends = Friend.retrieve().friends
-            friends.forEach {
-                if let friendId = $0.id,
-                   let friendMappingId = mappings.mappingId(friendId) {
-                    storeData.append(UserExtractedData(mappingId: friendMappingId, user: $0))
-                }
-            }
-            self.userExtractedDataList = storeData
+            self.userViewModel.retrieve()
             self.applySnapshot()
             
             // Fetch from server
-            var fetchData = [UserExtractedData]()
-            DataInteraction.fetchData { [self] in
-                let mappings = Mappings.retrieve()
-                let friends = Friend.retrieve().friends
-                friends.forEach {
-                    if let friendId = $0.id,
-                       let friendMappingId = mappings.mappingId(friendId) {
-                        fetchData.append(UserExtractedData(mappingId: friendMappingId, user: $0))
-                    }
-                }
-                self.userExtractedDataList = fetchData
+            DataInteraction.newUserFetch() { [self] in
+                self.userViewModel.retrieve()
                 self.applySnapshot()
-                if let mappingId = AuthenticatedUser.retrieve()?.data?.mappingId {
-                    MappingChatBoxPivots.retrieve().pivots[mappingId].forEach {
-                        RequestEngine.getMessagesOfChatBox($0) { messages in
-                            Messages(messages).store()
-                        }
-                    }
-                }
+                Messages.fetch()
             }
         }
     }
     @objc func signOut() {
         resetApplicationMetadata()
-        let vc = UIStoryboard(name: "UserAccess", bundle: nil).instantiateInitialViewController()!
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated:true, completion:nil)
+//        let vc = UIStoryboard(name: "UserAccess", bundle: nil).instantiateInitialViewController()!
+//        vc.modalPresentationStyle = .fullScreen
+//        self.present(vc, animated:true, completion:nil)
         configureApplication()
+        appState = .unauthorized
+        self.view.window?.switchRootViewController()
     }
+    
+    
+    // MARK: Mini tasks
     @objc func websocketReceivedUserPackage(_ notification: Notification) {
         fetch()
     }
@@ -123,12 +115,11 @@ class ViewController: UIViewController {
 }
 
 
-
-// MARK: - Tasks
+// MARK: - Prepare collection view
 extension ViewController {
     
     
-    // MARK: - Prepare
+    // MARK: - Prepare composition layout
     func prepareCompositionalLayout(for scrollingBehavior: UICollectionLayoutSectionOrthogonalScrollingBehavior = UICollectionLayoutSectionOrthogonalScrollingBehavior.none, at section: Int, in environment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
         switch scrollingBehavior {
         case .none:
@@ -137,7 +128,7 @@ extension ViewController {
             configuration.showsSeparators = false
             configuration.trailingSwipeActionsConfigurationProvider = { [weak self] (indexPath) in
                 guard let self = self else { return nil }
-                return self.trailingSwipeActionConfigurationForListCellItem(indexPath)
+                return self.trailingSwipeAction(indexPath)
             }
             layoutSection = NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: environment)
             layoutSection.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 10, bottom: 4, trailing: 10)
@@ -173,10 +164,8 @@ extension ViewController {
             }
         }
     }
-    
-    
-    func trailingSwipeActionConfigurationForListCellItem(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let cellData = userExtractedDataList[indexPath.section]
+    func trailingSwipeAction(_ indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let cellData = userViewModel[indexPath.section]
         let action = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
             guard let self = self else {
                 completion(false)
@@ -198,10 +187,6 @@ extension ViewController {
         return UISwipeActionsConfiguration(actions: [action])
     }
 }
-
-
-
-// MARK: - Prepare collection view
 extension ViewController {
     func configureHierarchy() {
         // configure collection view
@@ -221,18 +206,18 @@ extension ViewController {
         config.interSectionSpacing = 0
         let layout = UICollectionViewCompositionalLayout(
             sectionProvider: {(
-                sectionIndex: Int,
+                section: Int,
                 layoutEnvironment: NSCollectionLayoutEnvironment
             ) -> NSCollectionLayoutSection? in
-                return self.prepareCompositionalLayout(at: sectionIndex, in: layoutEnvironment)
+                return self.prepareCompositionalLayout(at: section, in: layoutEnvironment)
             },
             configuration: config
         )
         return layout
     }
     func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Int, UserExtractedData>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, data: UserExtractedData) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Int, UserViewModel>(collectionView: collectionView) {
+            (collectionView: UICollectionView, indexPath: IndexPath, data: UserViewModel) -> UICollectionViewCell? in
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: UserCollectionViewCell.reuseIdentifier,
                 for: indexPath) as? UserCollectionViewCell else { fatalError("Cannot create new cell!") }
@@ -240,21 +225,20 @@ extension ViewController {
             return cell
         }
     }
-    
     func applySnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, UserViewModel>()
+        let sections = Array(0..<self.userViewModel.count)
+        for section in sections {
+            snapshot.appendSections([section])
+            snapshot.appendItems([self.userViewModel[section]])
+        }
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            var snapshot = NSDiffableDataSourceSnapshot<Int, UserExtractedData>()
-            let sections = Array(0..<self.userExtractedDataList.count)
-            for section in sections {
-                snapshot.appendSections([section])
-                snapshot.appendItems([self.userExtractedDataList[section]])
-            }
             self.dataSource.apply(snapshot, animatingDifferences: true)
+            self.collectionView.layoutIfNeeded()
         }
     }
 }
-
 
 
 // MARK: - UICollectionViewDelegate

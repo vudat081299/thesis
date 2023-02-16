@@ -26,7 +26,7 @@ enum HighLightColor: Int {
     }
 }
 
-struct UserExtractedData: Hashable {
+struct UserViewModel: Hashable {
     var mappingId: UUID
     var user: User
     var chatBox: ChatBox?
@@ -35,7 +35,7 @@ struct UserExtractedData: Hashable {
         hasher.combine(mappingId)
     }
     
-    static func == (lhs: UserExtractedData, rhs: UserExtractedData) -> Bool {
+    static func == (lhs: UserViewModel, rhs: UserViewModel) -> Bool {
         return lhs.mappingId == rhs.mappingId
     }
 }
@@ -46,11 +46,11 @@ class UserCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var emoji: UILabel!
     @IBOutlet weak var containerView: UIView!
-    @IBOutlet weak var type: UILabel!
-    @IBOutlet weak var note: UILabel!
+    @IBOutlet weak var name: UILabel!
+    @IBOutlet weak var username: UILabel!
     @IBOutlet weak var bio: UILabel!
     
-    var data: UserExtractedData!
+    var data: UserViewModel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -58,23 +58,21 @@ class UserCollectionViewCell: UICollectionViewCell {
         
         self.contentView.backgroundColor = .systemBackground
         image.roundedBorder()
-        image.image = nil
-        emoji.text = ""
+        resetCell()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        image.image = nil
-        emoji.text = ""
+        resetCell()
     }
     
-    func prepare(with userExtractedData: UserExtractedData? = nil) {
+    func prepare(with userExtractedData: UserViewModel? = nil) {
         guard let validatedData = userExtractedData else { return }
         data = validatedData
         
         prepareAvatar()
-        fillTextIBOutlets()
+        prepareLabel()
     }
     
     func prepareAvatar() {
@@ -92,15 +90,17 @@ class UserCollectionViewCell: UICollectionViewCell {
 //        }
     }
     
-    func fillTextIBOutlets() {
-        if let name = data.user.name {
-            type.text = name
-        }
-        if let username = data.user.username {
-            note.text = "@" + username
-        }
-        if let bio = data.user.bio {
-            self.bio.text = bio
-        }
+    func prepareLabel() {
+        name.text = data.user.name
+        username.text = "@" + (data.user.username ?? "")
+        bio.text = data.user.bio
+    }
+    
+    func resetCell() {
+        image.image = nil
+        emoji.text = nil
+        name.text = nil
+        username.text = nil
+        bio.text = nil
     }
 }

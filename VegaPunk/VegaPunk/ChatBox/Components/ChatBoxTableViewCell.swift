@@ -9,7 +9,7 @@ import UIKit
 
 
 // MARK: - Definition
-struct ChatBoxExtractedData: Hashable {
+struct ChatBoxViewModel: Hashable {
     let chatBox: ChatBox
     var lastestMessage: Message?
     let members: [UUID]
@@ -18,11 +18,11 @@ struct ChatBoxExtractedData: Hashable {
         hasher.combine(chatBox.id)
     }
     
-    static func == (lhs: ChatBoxExtractedData, rhs: ChatBoxExtractedData) -> Bool {
+    static func == (lhs: ChatBoxViewModel, rhs: ChatBoxViewModel) -> Bool {
         return lhs.chatBox.id == rhs.chatBox.id
     }
     
-    static func > (lhs: ChatBoxExtractedData, rhs: ChatBoxExtractedData) -> Bool {
+    static func > (lhs: ChatBoxViewModel, rhs: ChatBoxViewModel) -> Bool {
         if let lhsLastestMessage = lhs.lastestMessage,
            let rhsLastestMessage = rhs.lastestMessage {
             return lhsLastestMessage > rhsLastestMessage
@@ -47,7 +47,7 @@ class ChatBoxTableViewCell: UITableViewCell {
     @IBOutlet weak var lastestMesssage: UILabel!
     @IBOutlet weak var dayTime: UILabel!
     
-    var data: ChatBoxExtractedData!
+    var data: ChatBoxViewModel!
     var delegate: ChatBoxViewController?
     
     override func awakeFromNib() {
@@ -74,10 +74,9 @@ class ChatBoxTableViewCell: UITableViewCell {
     
     
     // MARK: - Prepare
-    func prepare(with chatBoxExtractedData: ChatBoxExtractedData? = nil) {
+    func prepare(with chatBoxExtractedData: ChatBoxViewModel? = nil) {
         guard let validateData = chatBoxExtractedData else { return }
         data = validateData
-        
         prepareAvatar()
         prepareTextIBOutlets()
         prepareLastestMessage()

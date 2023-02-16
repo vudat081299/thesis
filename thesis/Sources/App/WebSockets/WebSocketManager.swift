@@ -7,7 +7,7 @@
 
 import Vapor
 
-let webSocketManager = WebSocketManager()
+var webSocketManager = WebSocketManager()
 final class WebSocketManager {
     var dictionary: [String: WebSocket] = [:]
     
@@ -34,9 +34,9 @@ final class WebSocketManager {
             }
         }
     }
-    func send(to mappingIds: [UUID], package: WebSocketPackage) {
+    func send(to mappingIds: [UUID?], package: WebSocketPackage) {
         mappingIds.forEach { mappingId in
-            if let ws = dictionary[mappingId.uuidString] {
+            if let mappingId = mappingId, let ws = dictionary[mappingId.uuidString] {
                 ws.send(package)
             }
         }

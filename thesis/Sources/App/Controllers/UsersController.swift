@@ -61,8 +61,13 @@ struct UsersController: RouteCollection {
     func createHandler(_ req: Request) async throws -> User.Public {
         let newUser = try req.content.decode(User.self)
         newUser.password = try Bcrypt.hash(newUser.password)
+        newUser.join = Date().milliStampString
         try await newUser.save(on: req.db)
         try await Mapping(userID: newUser.requireID()).save(on: req.db)
+        
+        let mappings = try await Mapping.query(on: req.db).all()
+        let mappingIds = mappings.map { $0.id }
+        webSocketManager.send(to: mappingIds, package: WebSocketPackage(type: .user, message: WebSocketPackageMessage(id: nil, createdAt: newUser.join, sender: nil, chatBoxId: nil, mediaType: nil, content: nil)))
         return newUser.convertToPublic()
     }
     

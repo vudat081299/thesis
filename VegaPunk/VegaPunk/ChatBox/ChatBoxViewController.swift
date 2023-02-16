@@ -16,7 +16,7 @@ class ChatBoxViewController: UIViewController {
     let notificationCenter = NotificationCenter.default
     
     //
-    var chatBoxExtractedDataList = [ChatBoxExtractedData]()
+    var chatBoxViewModel = [ChatBoxViewModel]()
     var friends = [User]()
     var user: AuthenticatedUser!
     let messagingViewController = MessagingViewController()
@@ -42,13 +42,14 @@ class ChatBoxViewController: UIViewController {
         configureHierarchy()
         
         // Observer
-        notificationCenter.addObserver(self, selector: #selector(websocketReceivedChatBoxPackage(_:)), name: .WebsocketReceivedMessagePackage, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(websocketReceivedChatBoxPackage(_:)), name: .WebsocketReceivedChatBoxPackage, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(websocketReceivedMessagePackage(_:)), name: .WebsocketReceivedMessagePackage, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.prefersLargeTitles = true
-        prepareData()
+        fetchChatBox()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -56,6 +57,7 @@ class ChatBoxViewController: UIViewController {
         tabBarController?.tabBar.isHidden = false
     }
     deinit {
+        notificationCenter.removeObserver(self, name: .WebsocketReceivedChatBoxPackage, object: nil)
         notificationCenter.removeObserver(self, name: .WebsocketReceivedMessagePackage, object: nil)
     }
 
@@ -74,20 +76,80 @@ class ChatBoxViewController: UIViewController {
     // MARK: - Tasks
     @objc func websocketReceivedChatBoxPackage(_ notification: Notification) {
         if navigationController?.topViewController == self {
-            prepareData()
+            fetchChatBox()
+            i = 0
         }
     }
-    func prepareData() {
-        resetData()
-        
+    @objc func websocketReceivedMessagePackage(_ notification: Notification) {
+        if navigationController?.topViewController == self {
+            fetchMessage()
+        }
+    }
+    func fetchMessage() {
         guard let authenticatedUser = AuthenticatedUser.retrieve(),
               let mappingId = authenticatedUser.data?.mappingId
         else { return }
-        user = authenticatedUser
-        chatBoxExtractedDataList.retrieve(with: mappingId)
-        friends = Friend.retrieve().friends
+        setUp(with: mappingId)
+    }
+    var i = 0
+    func setUp(with mappingId: UUID) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.i += 1
+            print(self.i)
+            self.chatBoxViewModel.retrieve(with: mappingId)
+            self.chatBoxViewModel.forEach {
+                print($0.lastestMessage?.content)
+            }
+            self.tableView.reloadData()
+        }
         
-        tableView.reloadData()
+        let queue = DispatchQueue(label: "com.vudat081299.Vegapunk")
+        queue.async {
+            let listChatBoxId1 = self.chatBoxViewModel.map { $0.chatBox.id }
+            let chatBoxes = ChatBoxes.retrieve().chatBoxes
+            let listChatBoxId2 = chatBoxes.map { $0.id }
+            var newChatBoxId: UUID?
+            for chatBoxId in listChatBoxId2 {
+                if !listChatBoxId1.contains(chatBoxId) {
+                    newChatBoxId = chatBoxId
+                    break
+                }
+            }
+            if let chatBoxId = newChatBoxId {
+                Messages.fetch(chatBoxId)
+            }
+            Thread.sleep(until: Date().addingTimeInterval(1))
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.i += 1
+                print(self.i)
+                self.chatBoxViewModel.retrieve(with: mappingId)
+                self.chatBoxViewModel.forEach {
+                    print($0.lastestMessage?.content)
+                }
+                self.tableView.reloadData()
+            }
+        }
+    }
+    func fetchChatBox() {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            guard let authenticatedUser = AuthenticatedUser.retrieve(),
+                  let mappingId = authenticatedUser.data?.mappingId
+            else { return }
+            self.user = authenticatedUser
+            self.friends = Friend.retrieve().friends
+            
+            // Fetch from local
+            self.setUp(with: mappingId)
+            
+            // Fetch from server
+            DataInteraction.newChatBoxFetch() {
+                self.setUp(with: mappingId)
+            }
+            
+        }
     }
     func prepareView() {
         view.backgroundColor = .systemBackground
@@ -95,11 +157,6 @@ class ChatBoxViewController: UIViewController {
     
     
     // MARK: - Mini tasks
-    func resetData() {
-        chatBoxExtractedDataList = []
-        friends = []
-        user = nil
-    }
     func getMembersInChatBox(with mappingIds: [UUID]) -> [User] {
         return friends.filter { mappingIds.contains($0.mappingId!) }
     }
@@ -116,19 +173,19 @@ extension ChatBoxViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.register(UINib(nibName: ChatBoxTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: ChatBoxTableViewCell.reuseIdentifier)
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return chatBoxExtractedDataList.count;
+        return chatBoxViewModel.count;
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ChatBoxTableViewCell.reuseIdentifier, for: indexPath) as! ChatBoxTableViewCell
         cell.delegate = self
-        let data = chatBoxExtractedDataList[indexPath.row]
+        let data = chatBoxViewModel[indexPath.row]
         cell.prepare(with: data)
         
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        messagingViewController.extractedChatBox = chatBoxExtractedDataList[indexPath.row]
+        messagingViewController.extractedChatBox = chatBoxViewModel[indexPath.row]
         messagingViewController.tabBarController?.tabBar.isHidden = true
         messagingViewController.navigationController?.modalPresentationStyle = .fullScreen
         navigationController?.pushViewController(messagingViewController, animated: true)

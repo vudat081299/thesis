@@ -7,6 +7,34 @@
 
 import UIKit
 
+extension UIWindow {
+    func switchRootViewController(_ viewController: UIViewController? = nil,
+                                  animated: Bool = true,
+                                  duration: TimeInterval = 1,
+                                  options: AnimationOptions = .curveEaseInOut,
+                                  completion: (() -> Void)? = nil) {
+        var destinationViewController: UIViewController!
+        destinationViewController = viewController
+        if destinationViewController == nil {
+            destinationViewController = appState.handleHierarchyOnState()
+        }
+        guard animated else {
+            rootViewController = destinationViewController
+            return
+        }
+        UIView.transition(with: self, duration: duration, options: options, animations: {
+//            let oldState = UIView.areAnimationsEnabled
+            UIView.setAnimationsEnabled(animated)
+            self.rootViewController = destinationViewController
+//            UIView.setAnimationsEnabled(oldState)
+            UIView.setAnimationsEnabled(animated)
+        }, completion: { _ in
+            completion?()
+        })
+    }
+}
+
+var appState: ApplicationState = .unauthorized
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
@@ -20,7 +48,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         configureApplication()
         
         // MARK: - App become active
-        var appState: ApplicationState = .unauthorized
         if let user = AuthenticatedUser.retrieve(),
             let data = user.data, data.token != nil {
             appState = .authorized

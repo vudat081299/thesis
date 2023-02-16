@@ -200,18 +200,19 @@ class RequestEngine {
                 }
             }
     }
-    static func getMessagesOfChatBox(_ chatBoxId: UUID, _ completion: (([Message.Resolve]) -> ())? = nil) {
+    static func getMessagesOfChatBox(_ chatBoxId: UUID, onSuccess: (([Message.Resolve]) -> ())? = nil, completion: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.getMessagesOfChatBox, ["chatBoxId": chatBoxId.uuidString]) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
             .responseDecodable(of: [Message.Resolve].self) { response in
                 switch response.result {
                 case .success(let messages):
-                    if let completion = completion { completion(messages) }
+                    if let onSuccess = onSuccess { onSuccess(messages) }
                     break
                 case .failure:
                     print("getMessagesOfChatBox fail!")
                     break
                 }
+                if let completion = completion { completion() }
             }
     }
     static func getLastestUpdatedTimeStampChatBox(_ chatBoxId: UUID, _ completion: ((String) -> ())? = nil) {
@@ -231,7 +232,7 @@ class RequestEngine {
                 }
             }
     }
-    static func getMessageFromTime(_ chatBoxId: UUID, _ time: String, _ completion: (([Message.Resolve]) -> ())? = nil) {
+    static func fetchMessages(from time: String, in chatBoxId: UUID, _ completion: (([Message.Resolve]) -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(
             .getMessagesFromTimeChatBox,
             ["chatBoxId": chatBoxId.uuidString,
@@ -241,6 +242,9 @@ class RequestEngine {
             .responseDecodable(of: [Message.Resolve].self) { response in
                 switch response.result {
                 case .success(let resolveMessages):
+                    if (resolveMessages.count > 0) {
+                        Messages(resolveMessages).store()
+                    }
                     if let completion = completion { completion(resolveMessages) }
                     break
                 case .failure:

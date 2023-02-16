@@ -195,6 +195,24 @@ extension Messages: Codable {
 
 // MARK: - Data handler
 extension Messages {
+    /// Fetch from server.
+    /// - Note: Fetch messages from user's chatBoxes and store them.
+    static func fetch() {
+        if let mappingId = AuthenticatedUser.retrieve()?.data?.mappingId {
+            MappingChatBoxPivots.retrieve().pivots[mappingId].forEach {
+                RequestEngine.getMessagesOfChatBox($0, onSuccess: { messages in
+                    Messages(messages).store()
+                })
+            }
+        }
+    }
+    static func fetch(_ chatBoxId: UUID, _ completion: (() -> ())? = nil) {
+        RequestEngine.getMessagesOfChatBox(chatBoxId, onSuccess: { messages in
+            Messages(messages).store()
+        }) {
+            if let completion = completion { completion() }
+        }
+    }
     func store() {
         let groupedMessagesByChatBox = messages.groupByChatBox()
         for (chatBoxId, messages) in groupedMessagesByChatBox {

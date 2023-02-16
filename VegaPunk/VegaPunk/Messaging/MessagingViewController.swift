@@ -25,8 +25,8 @@ class MessagingViewController: UIViewController {
     //
     var dataSource: UICollectionViewDiffableDataSource<Int, Message>! = nil
     var user: User!
-    var extractedChatBox: ChatBoxExtractedData!
-    var messages = [[Message]]()
+    var extractedChatBox: ChatBoxViewModel!
+    var messageViewModel = [[Message]]()
     var members = [User]()
     var previousSendingPackage: WebSocketPackage!
     
@@ -71,7 +71,6 @@ class MessagingViewController: UIViewController {
         
         // Do any additional setup after loading the view.
         prepareView()
-        hidePickedImageContainer()
         
         // Configure collection view
         configureHierarchy()
@@ -123,30 +122,27 @@ class MessagingViewController: UIViewController {
     func fetch() {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
-            // fetch from local
             let chatBox = self.extractedChatBox.chatBox
             self.members = self.extractedChatBox.members.retrieveUsers()
-            var storedMessaged = Messages.retrieve(with: chatBox.id).messages
-//            var sampleData = sampleData(mappingId: (self?.user.mappingId!)!)
-            self.messages = storedMessaged.transformStructure()
-            self.markLastestSeenMessage()
-            self.setUpDataSource()
+            
+            // fetch from local
+            setUp(for: chatBox.id)
             
             // fetch from server
             var time: String!
-            if self.messages.count > 0 {
-                time = self.messages.last?.last?.createdAt
+            if self.messageViewModel.count > 0 {
+                time = self.messageViewModel.last?.last?.createdAt
             }
-            if time == nil {
-                time = "0"
-            }
-            RequestEngine.getMessageFromTime(chatBox.id, time) { resolveMessages in
+            if time == nil { time = "0" }
+            RequestEngine.fetchMessages(from: time, in: chatBox.id) { resolveMessages in
                 if (resolveMessages.count == 0) { return }
-                Messages(resolveMessages).store()
-                storedMessaged = Messages.retrieve(with: chatBox.id).messages
-                self.messages = storedMessaged.transformStructure()
-                self.setUpDataSource()
+                setUp(for: chatBox.id)
             }
+        }
+        func setUp(for chatBoxId: UUID) {
+            self.messageViewModel.retrieve(from: chatBoxId)
+            self.markLastestSeenMessage()
+            self.applySnapshot()
         }
     }
     func prepareView() {
@@ -161,6 +157,7 @@ class MessagingViewController: UIViewController {
             heightInputContainerOnDeviceType = 84
         }
         heightInputContainer.constant = heightInputContainerOnDeviceType
+        hidePickedImageContainer()
     }
     func hidePickedImageContainer() {
         leadingAlignPickedImage.constant = -160
@@ -189,9 +186,9 @@ class MessagingViewController: UIViewController {
         if navigationController?.topViewController == self {
             let chatBoxId = extractedChatBox.chatBox.id
             var storedMessaged = Messages.retrieve(with: chatBoxId).messages
-            self.messages = storedMessaged.transformStructure()
+            self.messageViewModel = storedMessaged.transformStructure()
             markLastestSeenMessage()
-            setUpDataSource()
+            applySnapshot()
         }
     }
     
@@ -199,13 +196,13 @@ class MessagingViewController: UIViewController {
     // MARK: - Mini tasks
     func resetData() {
         members = []
-        messages = []
+        messageViewModel = []
         user = nil
     }
     func markLastestSeenMessage() {
         DispatchQueue.main.async {
             if self.navigationController?.topViewController == self {
-                self.messages.last?.last?.store(.lastestSeenMessage)
+                self.messageViewModel.last?.last?.store(.lastestSeenMessage)
             }
         }
     }
@@ -450,7 +447,7 @@ extension MessagingViewController {
                 return supplementaryView
             } else {
                 guard let supplementaryView = view.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FooterMessage.reuseIdentifier, for: index) as? FooterMessage else { fatalError("Cannot create FooterMessage!") }
-                if (index.section == self.messages.count - 1) {
+                if (index.section == self.messageViewModel.count - 1) {
                     
                     supplementaryView.frame.size.height = 8
 //                    supplementaryView.frame.size.height = 50 + 16
@@ -459,17 +456,18 @@ extension MessagingViewController {
             }
         }
     }
-    func setUpDataSource() {
+    func applySnapshot() {
         var sections = Array(0..<0)
-        if (messages.count > 0) {
-            sections = Array(0..<messages.count)
+        if (messageViewModel.count > 0) {
+            sections = Array(0..<messageViewModel.count)
         }
         var snapshot = NSDiffableDataSourceSnapshot<Int, Message>()
         sections.forEach {
             snapshot.appendSections([$0])
-            snapshot.appendItems(messages[$0])
+            snapshot.appendItems(messageViewModel[$0])
         }
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.dataSource.apply(snapshot, animatingDifferences: true)
             self.collectionView.layoutIfNeeded()
         }
@@ -479,8 +477,8 @@ extension MessagingViewController {
     // MARK: - Tasks.
     func scrollToBottom(of collectionView: UICollectionView) {
         // method 1
-        if messages.count > 0 && messages.last!.count > 0 {
-            collectionView.scrollToItem(at: IndexPath(item: messages.last!.count - 1, section: messages.count - 1), at: .bottom, animated: true)
+        if messageViewModel.count > 0 && messageViewModel.last!.count > 0 {
+            collectionView.scrollToItem(at: IndexPath(item: messageViewModel.last!.count - 1, section: messageViewModel.count - 1), at: .bottom, animated: true)
             self.view.layoutIfNeeded()
         }
         
@@ -495,7 +493,7 @@ extension MessagingViewController {
     }
     func scrollToTop(of collectionView: UICollectionView) {
         // method 1
-        if messages.count > 0 && messages.last!.count > 0 {
+        if messageViewModel.count > 0 && messageViewModel.last!.count > 0 {
             collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
             self.view.layoutIfNeeded()
         }

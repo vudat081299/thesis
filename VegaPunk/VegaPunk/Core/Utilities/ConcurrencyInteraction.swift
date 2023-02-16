@@ -8,6 +8,12 @@
 import Foundation
 
 class ConcurrencyInteraction {
+    
+    static func leave(_ dispatchGroup: DispatchGroup) {
+        DispatchQueue.main.async {
+            dispatchGroup.leave()
+        }
+    }
     static func mainQueueAsync(_ task: (() -> ())? = nil) {
         DispatchQueue.main.async {
             if let task = task { task() }

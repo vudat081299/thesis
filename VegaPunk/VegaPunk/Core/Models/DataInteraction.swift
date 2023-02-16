@@ -44,4 +44,56 @@ class DataInteraction {
             ConcurrencyInteraction.mainQueueAsync(completion)
         }
     }
+    
+    static func newUserFetch(_ completion: (() -> ())? = nil) {
+        let dispatchGroup = DispatchGroup()
+        /// Leave dispatchGroup.
+        func leave(_ dispatchGroup: DispatchGroup) {
+            DispatchQueue.main.async {
+                dispatchGroup.leave()
+            }
+        }
+        
+        // Request APIs
+        dispatchGroup.enter() // <--
+        RequestEngine.getAllUsers ({
+            leave(dispatchGroup)
+        }, onSuccess: nil)
+        
+        dispatchGroup.enter() // <--
+        RequestEngine.getAllMappings ({
+            leave(dispatchGroup)
+        }, onSuccess: nil)
+        
+        // Call handler when all tasks is finished
+        dispatchGroup.notify(queue: .main) {
+            ConcurrencyInteraction.mainQueueAsync(completion)
+        }
+    }
+    
+    static func newChatBoxFetch(_ completion: (() -> ())? = nil) {
+        let dispatchGroup = DispatchGroup()
+        /// Leave dispatchGroup.
+        func leave(_ dispatchGroup: DispatchGroup) {
+            DispatchQueue.main.async {
+                dispatchGroup.leave()
+            }
+        }
+        
+        // Request APIs
+        dispatchGroup.enter() // <--
+        RequestEngine.getAllMappingPivots ({
+            leave(dispatchGroup)
+        }, onSuccess: nil)
+        
+        dispatchGroup.enter() // <--
+        RequestEngine.getMyChatBoxes ({
+            leave(dispatchGroup)
+        }, onSuccess: nil)
+        
+        // Call handler when all tasks is finished
+        dispatchGroup.notify(queue: .main) {
+            ConcurrencyInteraction.mainQueueAsync(completion)
+        }
+    }
 }
