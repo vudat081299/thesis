@@ -24,7 +24,6 @@
 		84A82770298FAD8E00753846 /* MappingChatBoxPivot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8276F298FAD8E00753846 /* MappingChatBoxPivot.swift */; };
 		84A827742990188D00753846 /* UUID+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A827732990188D00753846 /* UUID+Extensions.swift */; };
 		84A8AFE82998CC1E00D9A6D3 /* NSNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */; };
-		84A8AFEA299980D000D9A6D3 /* MessContentCell--.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFE9299980D000D9A6D3 /* MessContentCell--.xib */; };
 		84A8AFEC299BE63000D9A6D3 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */; };
 		84A8AFF0299BF73700D9A6D3 /* payment_success.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */; };
 		84A8AFF1299BF73700D9A6D3 /* payment_failure.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFEF299BF73700D9A6D3 /* payment_failure.m4a */; };
@@ -157,7 +156,6 @@
 		84A8276F298FAD8E00753846 /* MappingChatBoxPivot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MappingChatBoxPivot.swift; sourceTree = "<group>"; };
 		84A827732990188D00753846 /* UUID+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UUID+Extensions.swift"; sourceTree = "<group>"; };
 		84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSNotification.swift; sourceTree = "<group>"; };
-		84A8AFE9299980D000D9A6D3 /* MessContentCell--.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MessContentCell--.xib"; sourceTree = "<group>"; };
 		84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_success.m4a; sourceTree = "<group>"; };
 		84A8AFEF299BF73700D9A6D3 /* payment_failure.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_failure.m4a; sourceTree = "<group>"; };
@@ -500,33 +498,20 @@
 		84A9389A296AAABD008ED0DC /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				84A938A2296AAABD008ED0DC /* HomeFunction */,
 				84A938A5296AAABD008ED0DC /* MessagingFunction */,
 				84A938B0296AAABD008ED0DC /* Definitions */,
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
-		84A938A2296AAABD008ED0DC /* HomeFunction */ = {
-			isa = PBXGroup;
-			children = (
-				84A938A3296AAABD008ED0DC /* UserView.swift */,
-				84A938A4296AAABD008ED0DC /* UserView.xib */,
-			);
-			path = HomeFunction;
-			sourceTree = "<group>";
-		};
 		84A938A5296AAABD008ED0DC /* MessagingFunction */ = {
 			isa = PBXGroup;
 			children = (
-				84A938A7296AAABD008ED0DC /* CustomListCell.swift */,
-				84A938A6296AAABD008ED0DC /* CustomListCell.xib */,
 				84A938AF296AAABD008ED0DC /* FirstMessContentCellForSection.swift */,
 				84A938AB296AAABD008ED0DC /* FirstMessContentCellForSection.xib */,
 				84A938AC296AAABD008ED0DC /* HeaderSessionChat.swift */,
 				84A938AE296AAABD008ED0DC /* HeaderSessionChat.xib */,
 				84A938AD296AAABD008ED0DC /* MessContentCell.swift */,
-				84A8AFE9299980D000D9A6D3 /* MessContentCell--.xib */,
 				84A938A9296AAABD008ED0DC /* MessContentCell.xib */,
 				84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */,
 				84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */,
@@ -624,6 +609,10 @@
 			isa = PBXGroup;
 			children = (
 				84A938C8296AAABD008ED0DC /* CitiesDataSource.swift */,
+				84A938A7296AAABD008ED0DC /* CustomListCell.swift */,
+				84A938A6296AAABD008ED0DC /* CustomListCell.xib */,
+				84A938A3296AAABD008ED0DC /* UserView.swift */,
+				84A938A4296AAABD008ED0DC /* UserView.xib */,
 			);
 			path = Archived;
 			sourceTree = "<group>";
@@ -852,7 +841,6 @@
 				84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */,
 				84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */,
 				84A2C42A2995617B00EE8CD8 /* MessagingViewController.xib in Resources */,
-				84A8AFEA299980D000D9A6D3 /* MessContentCell--.xib in Resources */,
 				84A938ED296AAABD008ED0DC /* CustomListCell.xib in Resources */,
 				84A8AFF0299BF73700D9A6D3 /* payment_success.m4a in Resources */,
 				84A938F0296AAABE008ED0DC /* MessContentCell.xib in Resources */,
