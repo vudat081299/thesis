@@ -79,8 +79,6 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
             contentTextLabel.text = ""
             let query = QueryBuilder.queryInfomation(.downloadFile)
             let url = (query?.genUrl())! + message.content!
-            print("------")
-            print(url)
             Nuke.loadImage(with: URL(string: url)!, into: contentImageView)
         } else {
             contentTextLabel.text = message.content

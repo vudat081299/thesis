@@ -61,13 +61,7 @@ class ViewController: UIViewController {
             prepareNavigationBar()
         }
         func prepareNavigationBar() {
-            // BarButtonItem.
-            let leftBarButtonItem: UIBarButtonItem = {
-                let bt = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(signOut))
-                bt.tintColor = .systemRed
-                return bt
-            }()
-            navigationItem.leftBarButtonItem = leftBarButtonItem
+            // BarButtonItem
         }
     }
     
@@ -90,35 +84,12 @@ class ViewController: UIViewController {
             }
         }
     }
-    @objc func signOut() {
-        resetApplicationMetadata()
-//        let vc = UIStoryboard(name: "UserAccess", bundle: nil).instantiateInitialViewController()!
-//        vc.modalPresentationStyle = .fullScreen
-//        self.present(vc, animated:true, completion:nil)
-        configureApplication()
-        appState = .unauthorized
-        self.view.window?.switchRootViewController()
-    }
     
     
     // MARK: Mini tasks
     @objc func websocketReceivedUserPackage(_ notification: Notification) {
         fetch()
     }
-    func resetApplicationMetadata() {
-        AuthenticatedUser.remove()
-        ChatBoxes.remove()
-        Mappings.remove()
-        Messages.remove()
-        Friend.remove()
-    }
-    
-    /// Configure default specification for application.
-    /// - ex: domain, ip, port,..
-    func configureApplication() {
-        AuthenticatedUser.store(networkConfig: NetworkConfig(domain: "http://\(configureIp):8080/", ip: configureIp, port: "8080"))
-    }
-    
 }
 
 

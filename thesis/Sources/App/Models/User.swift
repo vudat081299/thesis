@@ -131,6 +131,8 @@ final class User: Model, Content {
         var name: String
         var username: String
         
+        var email: String?
+        var phone: String?
         var avatar: String?
         var gender: Gender?
         var birth: String?
@@ -138,13 +140,15 @@ final class User: Model, Content {
         var join: String?
         var bio: String?
         
-        init(id: UUID?, mappingId: UUID? = nil, token: Token? = nil, name: String, username: String, avatar: String? = nil, gender: Gender? = nil, birth: String? = nil, country: String? = nil, join: String? = nil, bio: String? = nil) {
+        init(id: UUID?, mappingId: UUID? = nil, token: Token? = nil, name: String, username: String, email: String?, phone: String?, avatar: String? = nil, gender: Gender? = nil, birth: String? = nil, country: String? = nil, join: String? = nil, bio: String? = nil) {
             self.id = id
             self.mappingId = mappingId
             self.token = token
             self.name = name
             self.username = username
             
+            self.email = email
+            self.phone = phone
             self.avatar = avatar
             self.gender = gender
             self.birth = birth
@@ -157,7 +161,7 @@ final class User: Model, Content {
 
 extension User {
     func convertToPublic() -> User.Public {
-        return User.Public(id: id, mappingId: mappingId, token: token, name: name, username: username, avatar: avatar, gender: gender, birth: birth, country: country, join: join, bio: bio)
+        return User.Public(id: id, mappingId: mappingId, token: token, name: name, username: username, email: email, phone: phone, avatar: avatar, gender: gender, birth: birth, country: country, join: join, bio: bio)
     }
 }
 

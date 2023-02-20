@@ -179,6 +179,7 @@ struct UsersController: RouteCollection {
         if let birth = updateUserData.birth { user.birth = birth }
         if let country = updateUserData.country { user.country = country }
         if let join = updateUserData.join { user.join = join }
+        if let bio = updateUserData.bio { user.bio = bio }
         print("handler 😀😀😀: \(#function), line: \(#line), \(String(describing: user.country))")
         try await user.save(on: req.db)
         let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })

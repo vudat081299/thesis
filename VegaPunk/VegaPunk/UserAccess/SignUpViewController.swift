@@ -58,11 +58,7 @@ class SignUpViewController: UIViewController, UIScrollViewDelegate {
         // Do any additional setup after loading the view.
         prepareNavigation()
         configureHierarchy()
-        
-        
-        // Observer
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        prepareObserver()
     }
     
     
@@ -106,6 +102,10 @@ class SignUpViewController: UIViewController, UIScrollViewDelegate {
             }
         }
     }
+    func prepareObserver() {
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
 }
 
 
@@ -132,6 +132,7 @@ extension SignUpViewController {
 // MARK: - Navigation
 extension SignUpViewController {
     func prepareNavigation() {
+        title = "Regist Account"
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.sizeToFit()

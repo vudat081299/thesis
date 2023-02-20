@@ -85,8 +85,11 @@ class RequestEngine {
         )
         .responseDecodable(of: User.self) { response in
             switch response.result {
-            case .success(let users):
-                let _ = AuthenticatedUser.store(data: users)
+            case .success(let user):
+                var user = user
+                let authenticatedUser = AuthenticatedUser.retrieve()?.data
+                user.token = authenticatedUser?.token
+                AuthenticatedUser.store(data: user)
                 if let completion = completion { completion() }
                 break
             case .failure:

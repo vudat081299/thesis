@@ -43,13 +43,26 @@ class ChatBoxAvatarView: ReusableUIView {
     }
     
     func prepare(with text: String? = nil, type: TypeAvatar) {
-        let validateText = text != nil ? text! : imageUrl
-        label.isHidden = validateText.count > 1
-        image.isHidden = validateText.count < 1
-        if validateText.count > 1 {
-            Nuke.loadImage(with: URL(string: validateText)!, into: image)
+        
+        let placeholderImage = UIImage(systemName: "person")
+        let options = ImageLoadingOptions(
+            placeholder: placeholderImage?.withTintColor(.systemGray2),
+            transition: .fadeIn(duration: 0.5)
+        )
+        
+        let query = QueryBuilder.queryInfomation(.downloadFile)
+        guard let imageUrl = text else { return }
+        let urlString = (query?.genUrl())! + imageUrl
+        let url = URL(string: urlString)!
+        
+        label.isHidden = imageUrl.count > 1
+        image.isHidden = imageUrl.count < 1
+        
+        
+        if imageUrl.count > 1 {
+            Nuke.loadImage(with: url, options: options, into: image)
         } else {
-            label.text = validateText.first?.description
+            label.text = imageUrl.first?.description
         }
 //        containerView.roundedBorder()
 //        image.roundedBorder()

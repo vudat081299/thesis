@@ -87,6 +87,10 @@ class ChatBoxTableViewCell: UITableViewCell {
         let shouldHideSingleChatBox = !isSingleChatBox
         singleChatBoxAvatarContainer.isHidden = shouldHideSingleChatBox
         multipleChatBoxAvatarContainer.isHidden = !shouldHideSingleChatBox
+        
+//        if isSingleChatBox {
+//            firstAvatar.prepare(with: delegate. type: <#T##TypeAvatar#>)
+//        }
     }
     
     func prepareTextIBOutlets() {

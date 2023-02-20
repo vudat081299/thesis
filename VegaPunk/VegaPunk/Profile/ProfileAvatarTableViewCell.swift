@@ -18,18 +18,20 @@ class ProfileAvatarTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         avatarContainer.roundedBorder()
+        avatarImage.contentMode = .scaleAspectFill
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
     func prepare(_ imageUrl: String?) {
+        let placeholderImage = UIImage(systemName: "person")
         let options = ImageLoadingOptions(
-          placeholder: UIImage(systemName: "person"),
-          transition: .fadeIn(duration: 0.5)
+            placeholder: placeholderImage?.withTintColor(.systemGray2),
+            transition: .fadeIn(duration: 0.5)
         )
         let query = QueryBuilder.queryInfomation(.downloadFile)
         guard let imageUrl = imageUrl else { return }

@@ -64,6 +64,11 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
         setUpNavigationBar()
         prepareObserver()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super .viewWillAppear(animated)
+        prepareData()
+        tableView.reloadData()
+    }
     
     
     // MARK: - Tasks
@@ -74,6 +79,15 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
         tableView.register(UINib(nibName: TextInputCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: TextInputCell.reuseIdentifier)
         tableView.register(UINib(nibName: SignupDatePickerInputTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: SignupDatePickerInputTableViewCell.reuseIdentifier)
         tableView.register(UINib(nibName: ProfileAvatarTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: ProfileAvatarTableViewCell.reuseIdentifier)
+    }
+    @objc func signOut() {
+        resetApplicationMetadata()
+//        let vc = UIStoryboard(name: "UserAccess", bundle: nil).instantiateInitialViewController()!
+//        vc.modalPresentationStyle = .fullScreen
+//        self.present(vc, animated:true, completion:nil)
+        configureApplication()
+        appState = .unauthorized
+        self.view.window?.switchRootViewController()
     }
     
     
@@ -107,24 +121,39 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
     func prepareData() {
         user = AuthenticatedUser.retrieve()?.data
         var userClone = user
-        userClone?.gender = nil
-        userClone?.token = nil
+        let gender = userClone?.gender?.rawValue.description
         do {
+            userClone?.gender = nil
+            userClone?.token = nil
             if let userCloneDictionary = try userClone?.toDictionary() {
                 for (index, field) in fieldKeys.enumerated() {
                     inputData[index] = userCloneDictionary[field]
                 }
             }
+            inputData[inputTypes[.gender]] = gender
         } catch {
             inputData[0] = user.avatar
             inputData[1] = user.name
-            inputData[2] = user.gender?.description
+            inputData[2] = user.gender?.rawValue.description
             inputData[3] = user.phone
             inputData[4] = user.email
             inputData[5] = user.birth
             inputData[6] = user.bio
             inputData[7] = user.country
         }
+    }
+    func resetApplicationMetadata() {
+        AuthenticatedUser.remove()
+        ChatBoxes.remove()
+        Mappings.remove()
+        Messages.remove()
+        Friend.remove()
+    }
+    
+    /// Configure default specification for application.
+    /// - ex: domain, ip, port,..
+    func configureApplication() {
+        AuthenticatedUser.store(networkConfig: NetworkConfig(domain: "http://\(configureIp):8080/", ip: configureIp, port: "8080"))
     }
 }
 
@@ -167,6 +196,7 @@ extension UserProfileViewController {
 // MARK: - Navigation
 extension UserProfileViewController {
     func prepareNavigation() {
+        title = "Profile"
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.sizeToFit()
@@ -177,7 +207,7 @@ extension UserProfileViewController {
         if validateInput() {
             do {
                 var user = try inputDataKeyValue.convert(to: User.self)
-//                user.username = self.user.username
+                user.username = self.user.username
                 if let gender = inputDataKeyValue["gender"] {
                     user.gender = Gender(rawValue: Int(gender)!)
                 }
@@ -196,6 +226,12 @@ extension UserProfileViewController {
             return bt
         }()
         navigationItem.rightBarButtonItem = rightBarItem
+        let leftBarButtonItem: UIBarButtonItem = {
+            let bt = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(signOut))
+            bt.tintColor = .systemRed
+            return bt
+        }()
+        navigationItem.leftBarButtonItem = leftBarButtonItem
     }
 }
 
@@ -219,6 +255,9 @@ extension UserProfileViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sectionHeaders[section]
+    }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 350
@@ -274,6 +313,13 @@ extension UserProfileViewController: UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        prepareAvatarPickerView(for: indexPath)
+        prepareGenderPickerView(for: indexPath)
+    }
+    
+    
+    // MARK: - Tasks
+    func prepareAvatarPickerView(for indexPath: IndexPath) {
         let row = indexPath.row
         if row == inputTypes.firstIndex(where: { $0 == .imagePicker}) {
             FeedBackTapEngine.tapped(style: .medium)
@@ -281,31 +327,23 @@ extension UserProfileViewController: UITableViewDelegate {
             imagePicker.sourceType = .photoLibrary
             self.present(imagePicker, animated: true, completion: nil)
         }
-        if row == inputTypes.firstIndex(where: { $0 == .gender}) {
+    }
+    func prepareGenderPickerView(for indexPath: IndexPath) {
+        let row = indexPath.row
+        if row == inputTypes.firstIndex(of: .gender) {
             let alert = UIAlertController(title: "Pick your gender", message: "", preferredStyle: .actionSheet)
-            let maleAction = UIAlertAction(title: "Male", style: .default) { _ in
-                self.reloadGenderRow(indexPath, value: "0")
-                
+            Gender.allCases.forEach { gender in
+                let action = UIAlertAction(title: gender.description.Capitalized, style: .default) { _ in
+                    self.reloadGender(indexPath, value: gender.rawValue)
+                }
+                alert.addAction(action)
             }
-            let femaleAction = UIAlertAction(title: "Female", style: .default) { _ in
-                self.reloadGenderRow(indexPath, value: "1")
-                
-            }
-            let otherAction = UIAlertAction(title: "Other", style: .default) { _ in
-                self.reloadGenderRow(indexPath, value: "2")
-            }
-            alert.addAction(maleAction)
-            alert.addAction(femaleAction)
-            alert.addAction(otherAction)
             self.present(alert, animated: true, completion: nil)
         }
     }
-    
-    
-    // MARK: - Tasks
-    func reloadGenderRow(_ indexPath: IndexPath, value: String) {
+    func reloadGender(_ indexPath: IndexPath, value: Int) {
         let row = indexPath.row
-        inputData[row] = value
+        inputData[row] = value.description
         tableView.reloadRows(at: [indexPath], with: .fade)
     }
 }

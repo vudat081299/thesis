@@ -48,7 +48,7 @@ class Auth {
         if let avatar = user.avatar { parameters["avatar"] = avatar }
         if let password = user.password { parameters["password"] = password }
         if let country = user.country { parameters["country"] = country }
-        if let gender = user.gender { parameters["gender"] = gender }
+        if let gender = user.gender { parameters["gender"] = gender.rawValue }
         AF.request(query.genUrl(), method: query.httpMethod, parameters: parameters)
             .responseDecodable(of: User.self) { response in
                 switch response.result {

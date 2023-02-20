@@ -33,6 +33,7 @@ class MessagingViewController: UIViewController {
     var keyboardHeight: CGFloat = 0.0
     var touchPosition: CGPoint = CGPoint(x: 0, y: 0)
     var heightInputContainerOnDeviceType: CGFloat = 50
+    var avatarFileIds = [String?]()
     
     
     // MARK: - IBOutlet
@@ -472,9 +473,10 @@ extension MessagingViewController {
             }
         }
         
-        dataSource.supplementaryViewProvider = { (view, kind, index) in
+        dataSource.supplementaryViewProvider = { [self] (view, kind, index) in
             if kind == MessagingViewController.sectionHeaderElementKind {
                 guard let supplementaryView = view.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HeaderSessionChat.reuseIdentifier, for: index) as? HeaderSessionChat else { fatalError("Cannot create HeaderSessionChat!") }
+                supplementaryView.prepare(avatarFileIds[index.section])
                 return supplementaryView
             } else {
                 guard let supplementaryView = view.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FooterMessage.reuseIdentifier, for: index) as? FooterMessage else { fatalError("Cannot create FooterMessage!") }
@@ -494,6 +496,7 @@ extension MessagingViewController {
         }
         var snapshot = NSDiffableDataSourceSnapshot<Int, ChatBoxMessage>()
         sections.forEach {
+            avatarFileIds.append(user(messageViewModel[$0][0].sender!)?.avatar)
             snapshot.appendSections([$0])
             snapshot.appendItems(messageViewModel[$0])
         }

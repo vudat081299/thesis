@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Nuke
 
 class HeaderSessionChat: UICollectionReusableView {
     static let reuseIdentifier = "HeaderSessionChat"
@@ -27,19 +28,28 @@ class HeaderSessionChat: UICollectionReusableView {
     }
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        configure()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
         constraint.constant = 0
-//        avatar.image = nil
+        avatar.image = nil
     }
 }
 
 extension HeaderSessionChat {
-    func configure() {
+    func prepare(_ imageUrl: String?) {
+        let placeholderImage = UIImage(systemName: "person")
+        let options = ImageLoadingOptions(
+            placeholder: placeholderImage?.withTintColor(.systemGray2),
+            transition: .fadeIn(duration: 0.5)
+        )
+        let query = QueryBuilder.queryInfomation(.downloadFile)
+        guard let imageUrl = imageUrl else { return }
+        let urlString = (query?.genUrl())! + imageUrl
+        let url = URL(string: urlString)!
+        Nuke.loadImage(with: url, options: options, into: avatar)
     }
 }
 
