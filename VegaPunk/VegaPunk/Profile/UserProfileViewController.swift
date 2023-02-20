@@ -15,17 +15,18 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var tableViewBottomCS: NSLayoutConstraint!
     var pickedImage: UIImage!
     
-    // MARK: - Variables.
-    var keyboardHeight: CGFloat = 0.0
-    var inputDataKeyValue: [String: String] = [:]
-    var birthString = ""
     
+    // MARK: - Variables.
     let notificationCenter = NotificationCenter.default
     var user: User!
     let imagePicker = UIImagePickerController()
     
+    var keyboardHeight: CGFloat = 0.0
+    var inputDataKeyValue: [String: String] = [:]
+    var birthString = ""
     
-    // MARK: - Data tableView.
+    
+    // MARK: - Table view data.
     let sectionHeaders = ["Update your profile"]
     let rowLabels = [
         "Avatar", "Name",
@@ -35,47 +36,44 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
         "Optional", "Optional",
         "Optional", "Optional", "Optional", "dd/mm/yyyy", "Optional", "Optional"
     ]
-    let inputTypes: [InputType] = [
+    let inputTypes: [CellCategory] = [
         .imagePicker, .text,
         .gender, .text, .text, .datePicker, .text, .text
     ]
     var inputData: [String?] = [
-        "", "",
-        "", "", "", "", "", ""
+        nil, nil,
+        nil, nil, nil, nil, nil, nil
     ]
-    let fieldKey = [
-        "", "name",
+    let fieldKeys = [
+        "avatar", "name",
         "gender", "phone", "email", "birth", "bio", "country"
     ]
     
+    
+    // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Profile"
-        navigationController?.navigationBar.isHidden = false
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.sizeToFit()
-        navigationItem.largeTitleDisplayMode = .always
         
         // Do any additional setup after loading the view.
-        configureHierarchy()
-        setUpNavigationBar()
-        user = AuthenticatedUser.retrieve()?.data
-        inputData[0] = user.avatar
-        inputData[1] = user.name
-        inputData[2] = user.gender?.description
-        inputData[3] = user.phone
-        inputData[4] = user.email
-        inputData[5] = user.birth
-        inputData[6] = user.bio
-        inputData[7] = user.country
-        
-        // Observer
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        
         // Delegate
         imagePicker.delegate = self
+        
+        // Prepare
+        prepareData()
+        configureHierarchy()
+        setUpNavigationBar()
+        prepareObserver()
+    }
+    
+    
+    // MARK: - Tasks
+    ///  Configure `tableView` hierarchy
+    private func configureHierarchy() {
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(UINib(nibName: TextInputCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: TextInputCell.reuseIdentifier)
+        tableView.register(UINib(nibName: SignupDatePickerInputTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: SignupDatePickerInputTableViewCell.reuseIdentifier)
+        tableView.register(UINib(nibName: ProfileAvatarTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: ProfileAvatarTableViewCell.reuseIdentifier)
     }
     
     
@@ -83,21 +81,51 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
     func validateInput() -> Bool {
         let requiredIndex = [1, 3, 4]
         for (index, value) in inputData.enumerated() {
-            if requiredIndex.contains(index) && value == "" {
+            if requiredIndex.contains(index) && (value == nil || value == "") {
                 AlertNotification.notify(message: "Please fill in required field!", on: self)
                 return false
             }
-            if index == inputTypes.firstIndex(where: { $0 == .gender})! ||
-                index == inputTypes.firstIndex(where: { $0 == .imagePicker})! {
-                continue
-            }
-            if (value != "") {
-                inputDataKeyValue[fieldKey[index]] = value
-            }
+            fillDataToSubmitForm()
         }
         return true
     }
-    
+    func fillDataToSubmitForm() {
+        for (index, value) in inputData.enumerated() {
+            if index == inputTypes[.gender] ||
+                index == inputTypes[.imagePicker] {
+                continue
+            }
+            if (value != nil && value != "") {
+                inputDataKeyValue[fieldKeys[index]] = value
+            }
+        }
+    }
+    func prepareObserver() {
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    func prepareData() {
+        user = AuthenticatedUser.retrieve()?.data
+        var userClone = user
+        userClone?.gender = nil
+        userClone?.token = nil
+        do {
+            if let userCloneDictionary = try userClone?.toDictionary() {
+                for (index, field) in fieldKeys.enumerated() {
+                    inputData[index] = userCloneDictionary[field]
+                }
+            }
+        } catch {
+            inputData[0] = user.avatar
+            inputData[1] = user.name
+            inputData[2] = user.gender?.description
+            inputData[3] = user.phone
+            inputData[4] = user.email
+            inputData[5] = user.birth
+            inputData[6] = user.bio
+            inputData[7] = user.country
+        }
+    }
 }
 
 
@@ -109,7 +137,6 @@ extension UserProfileViewController {
             RequestEngine.upload(image.pngData()!) { [self] fileId in
                 pickedImage = nil
                 user.avatar = fileId
-                user.username = self.user.username
                 RequestEngine.updateUser(user) {
                     updatedSuccess()
                 }
@@ -139,11 +166,18 @@ extension UserProfileViewController {
 
 // MARK: - Navigation
 extension UserProfileViewController {
+    func prepareNavigation() {
+        navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.sizeToFit()
+        setUpNavigationBar()
+    }
     @objc func rightBarItemAction() {
         self.view.endEditing(true)
         if validateInput() {
             do {
                 var user = try inputDataKeyValue.convert(to: User.self)
+//                user.username = self.user.username
                 if let gender = inputDataKeyValue["gender"] {
                     user.gender = Gender(rawValue: Int(gender)!)
                 }
@@ -155,6 +189,7 @@ extension UserProfileViewController {
     }
     func setUpNavigationBar() {
         navigationItem.title = "Profile"
+        navigationItem.largeTitleDisplayMode = .always
         // BarButtonItem.
         let rightBarItem: UIBarButtonItem = {
             let bt = UIBarButtonItem(title: "Update", style: .plain, target: self, action: #selector(rightBarItemAction))
@@ -177,16 +212,8 @@ extension UserProfileViewController: UIImagePickerControllerDelegate & UINavigat
 }
 
 
-// MARK: - TableView.
-extension UserProfileViewController: UITableViewDataSource, UITableViewDelegate {
-    private func configureHierarchy() {
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(UINib(nibName: TextInputCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: TextInputCell.reuseIdentifier)
-        tableView.register(UINib(nibName: SignupPickerInputTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: SignupPickerInputTableViewCell.reuseIdentifier)
-        tableView.register(UINib(nibName: SignupDatePickerInputTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: SignupDatePickerInputTableViewCell.reuseIdentifier)
-        tableView.register(UINib(nibName: ProfileAvatarTableViewCell.reuseIdentifier, bundle: nil), forCellReuseIdentifier: ProfileAvatarTableViewCell.reuseIdentifier)
-    }
+// MARK: - Table view DataSource.
+extension UserProfileViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -205,6 +232,9 @@ extension UserProfileViewController: UITableViewDataSource, UITableViewDelegate 
         }
         return 44
     }
+}
+// MARK: - Table view Delegate.
+extension UserProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let row = indexPath.row
         if row == 0 {
@@ -270,6 +300,9 @@ extension UserProfileViewController: UITableViewDataSource, UITableViewDelegate 
             self.present(alert, animated: true, completion: nil)
         }
     }
+    
+    
+    // MARK: - Tasks
     func reloadGenderRow(_ indexPath: IndexPath, value: String) {
         let row = indexPath.row
         inputData[row] = value
@@ -278,7 +311,7 @@ extension UserProfileViewController: UITableViewDataSource, UITableViewDelegate 
 }
 
 
-//MARK: Keyboard.
+// MARK: Text field Delegate.
 extension UserProfileViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         tableView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
@@ -306,6 +339,9 @@ extension UserProfileViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         inputData[textField.tag] = textField.text ?? ""
     }
+    
+    
+    // MARK: - Key board observer
     @objc func keyboardWillShow(_ notification: NSNotification) {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             keyboardHeight = keyboardRect.height

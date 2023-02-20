@@ -1,5 +1,5 @@
 //
-//  URLRequest+Extensions.swift
+//  URLRequest.swift
 //  Social Messaging
 //
 //  Created by Vũ Quý Đạt  on 12/05/2021.

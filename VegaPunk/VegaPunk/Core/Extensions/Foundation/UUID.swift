@@ -1,5 +1,5 @@
 //
-//  UUID+Extensions.swift
+//  UUID.swift
 //  VegaPunk
 //
 //  Created by Dat Vu on 06/02/2023.

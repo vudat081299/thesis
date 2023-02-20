@@ -11,8 +11,6 @@ class TextInputCell: UITableViewCell {
     static let reuseIdentifier = "TextInputCell"
     @IBOutlet weak var contentLabel: UILabel!
     @IBOutlet weak var inputTextField: UITextField!
-    
-    var delegate: PassInputDataFromCell?
     var indexPath: IndexPath?
     
     override func awakeFromNib() {

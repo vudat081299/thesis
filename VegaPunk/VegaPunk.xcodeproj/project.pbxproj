@@ -41,7 +41,7 @@
 		84A8276D298FACB800753846 /* ChatBoxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8276B298FACB700753846 /* ChatBoxViewController.swift */; };
 		84A8276E298FACB800753846 /* ChatBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A8276C298FACB800753846 /* ChatBoxViewController.xib */; };
 		84A82770298FAD8E00753846 /* MappingChatBoxPivot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8276F298FAD8E00753846 /* MappingChatBoxPivot.swift */; };
-		84A827742990188D00753846 /* UUID+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A827732990188D00753846 /* UUID+Extensions.swift */; };
+		84A827742990188D00753846 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A827732990188D00753846 /* UUID.swift */; };
 		84A8AFE82998CC1E00D9A6D3 /* NSNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */; };
 		84A8AFEC299BE63000D9A6D3 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */; };
 		84A8AFF0299BF73700D9A6D3 /* payment_success.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */; };
@@ -67,19 +67,17 @@
 		84A938D7296AAABD008ED0DC /* CGColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9388A296AAABD008ED0DC /* CGColor.swift */; };
 		84A938D8296AAABD008ED0DC /* UICollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9388B296AAABD008ED0DC /* UICollectionViewCell.swift */; };
 		84A938D9296AAABD008ED0DC /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9388D296AAABD008ED0DC /* Date.swift */; };
-		84A938DA296AAABD008ED0DC /* URLSession+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9388E296AAABD008ED0DC /* URLSession+Extensions.swift */; };
+		84A938DA296AAABD008ED0DC /* URLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9388E296AAABD008ED0DC /* URLSession.swift */; };
 		84A938DB296AAABD008ED0DC /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9388F296AAABD008ED0DC /* FileManager.swift */; };
-		84A938DC296AAABD008ED0DC /* URLRequest+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93890296AAABD008ED0DC /* URLRequest+Extensions.swift */; };
-		84A938DD296AAABD008ED0DC /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93891296AAABD008ED0DC /* String+Extensions.swift */; };
-		84A938DE296AAABD008ED0DC /* URLResponse+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93892296AAABD008ED0DC /* URLResponse+Extensions.swift */; };
-		84A938DF296AAABD008ED0DC /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93893296AAABD008ED0DC /* Data+Extensions.swift */; };
+		84A938DC296AAABD008ED0DC /* URLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93890296AAABD008ED0DC /* URLRequest.swift */; };
+		84A938DD296AAABD008ED0DC /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93891296AAABD008ED0DC /* String.swift */; };
+		84A938DE296AAABD008ED0DC /* URLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93892296AAABD008ED0DC /* URLResponse.swift */; };
+		84A938DF296AAABD008ED0DC /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93893296AAABD008ED0DC /* Data.swift */; };
 		84A938E0296AAABD008ED0DC /* CacheData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93895296AAABD008ED0DC /* CacheData.swift */; };
 		84A938E1296AAABD008ED0DC /* Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93896296AAABD008ED0DC /* Time.swift */; };
 		84A938E2296AAABD008ED0DC /* FeedbackGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93897296AAABD008ED0DC /* FeedbackGenerator.swift */; };
 		84A938E4296AAABD008ED0DC /* SoundFeedBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93899296AAABD008ED0DC /* SoundFeedBack.swift */; };
 		84A938E5296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */; };
-		84A938E6296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */; };
-		84A938E7296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */; };
 		84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */; };
 		84A938E9296AAABD008ED0DC /* TextInputCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A938A0296AAABD008ED0DC /* TextInputCell.xib */; };
 		84A938EA296AAABD008ED0DC /* TextInputCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A938A1296AAABD008ED0DC /* TextInputCell.swift */; };
@@ -119,13 +117,14 @@
 		84A93918296B219C008ED0DC /* User+Friends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93917296B219C008ED0DC /* User+Friends.swift */; };
 		84A9391A296B2BB7008ED0DC /* Mappings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93919296B2BB7008ED0DC /* Mappings.swift */; };
 		84A9391C296B2E7B008ED0DC /* ChatBoxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391B296B2E7B008ED0DC /* ChatBoxes.swift */; };
-		84A9391E296B3C36008ED0DC /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391D296B3C36008ED0DC /* Array+Extensions.swift */; };
+		84A9391E296B3C36008ED0DC /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391D296B3C36008ED0DC /* Array.swift */; };
 		84A93921296B65C0008ED0DC /* UserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */; };
 		84A93922296B65C0008ED0DC /* UserCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */; };
 		84B950C129916F7F009EBBB8 /* ChatBoxAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B950C029916F7F009EBBB8 /* ChatBoxAvatarView.swift */; };
 		84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84B950C229916F88009EBBB8 /* ChatBoxAvatarView.xib */; };
 		84B950C529918820009EBBB8 /* ReusableUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B950C429918820009EBBB8 /* ReusableUIView.swift */; };
 		84CDE8DB298985360067C512 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CDE8DA298985360067C512 /* Messages.swift */; };
+		C4DF90EA29A3712A00C565A3 /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF90E929A3712A00C565A3 /* Int.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,7 +176,7 @@
 		84A8276B298FACB700753846 /* ChatBoxViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatBoxViewController.swift; sourceTree = "<group>"; };
 		84A8276C298FACB800753846 /* ChatBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatBoxViewController.xib; sourceTree = "<group>"; };
 		84A8276F298FAD8E00753846 /* MappingChatBoxPivot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MappingChatBoxPivot.swift; sourceTree = "<group>"; };
-		84A827732990188D00753846 /* UUID+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UUID+Extensions.swift"; sourceTree = "<group>"; };
+		84A827732990188D00753846 /* UUID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUID.swift; sourceTree = "<group>"; };
 		84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSNotification.swift; sourceTree = "<group>"; };
 		84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_success.m4a; sourceTree = "<group>"; };
@@ -207,19 +206,17 @@
 		84A9388A296AAABD008ED0DC /* CGColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGColor.swift; sourceTree = "<group>"; };
 		84A9388B296AAABD008ED0DC /* UICollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UICollectionViewCell.swift; sourceTree = "<group>"; };
 		84A9388D296AAABD008ED0DC /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
-		84A9388E296AAABD008ED0DC /* URLSession+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLSession+Extensions.swift"; sourceTree = "<group>"; };
+		84A9388E296AAABD008ED0DC /* URLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSession.swift; sourceTree = "<group>"; };
 		84A9388F296AAABD008ED0DC /* FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
-		84A93890296AAABD008ED0DC /* URLRequest+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLRequest+Extensions.swift"; sourceTree = "<group>"; };
-		84A93891296AAABD008ED0DC /* String+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
-		84A93892296AAABD008ED0DC /* URLResponse+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLResponse+Extensions.swift"; sourceTree = "<group>"; };
-		84A93893296AAABD008ED0DC /* Data+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Extensions.swift"; sourceTree = "<group>"; };
+		84A93890296AAABD008ED0DC /* URLRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLRequest.swift; sourceTree = "<group>"; };
+		84A93891296AAABD008ED0DC /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		84A93892296AAABD008ED0DC /* URLResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLResponse.swift; sourceTree = "<group>"; };
+		84A93893296AAABD008ED0DC /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		84A93895296AAABD008ED0DC /* CacheData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheData.swift; sourceTree = "<group>"; };
 		84A93896296AAABD008ED0DC /* Time.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Time.swift; sourceTree = "<group>"; };
 		84A93897296AAABD008ED0DC /* FeedbackGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedbackGenerator.swift; sourceTree = "<group>"; };
 		84A93899296AAABD008ED0DC /* SoundFeedBack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundFeedBack.swift; sourceTree = "<group>"; };
 		84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupDatePickerInputTableViewCell.swift; sourceTree = "<group>"; };
-		84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignupPickerInputTableViewCell.xib; sourceTree = "<group>"; };
-		84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupPickerInputTableViewCell.swift; sourceTree = "<group>"; };
 		84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignupDatePickerInputTableViewCell.xib; sourceTree = "<group>"; };
 		84A938A0296AAABD008ED0DC /* TextInputCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextInputCell.xib; sourceTree = "<group>"; };
 		84A938A1296AAABD008ED0DC /* TextInputCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputCell.swift; sourceTree = "<group>"; };
@@ -258,13 +255,14 @@
 		84A93917296B219C008ED0DC /* User+Friends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Friends.swift"; sourceTree = "<group>"; };
 		84A93919296B2BB7008ED0DC /* Mappings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mappings.swift; sourceTree = "<group>"; };
 		84A9391B296B2E7B008ED0DC /* ChatBoxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBoxes.swift; sourceTree = "<group>"; };
-		84A9391D296B3C36008ED0DC /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
+		84A9391D296B3C36008ED0DC /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		84A9391F296B65C0008ED0DC /* UserCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserCollectionViewCell.swift; sourceTree = "<group>"; };
 		84A93920296B65C0008ED0DC /* UserCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UserCollectionViewCell.xib; sourceTree = "<group>"; };
 		84B950C029916F7F009EBBB8 /* ChatBoxAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBoxAvatarView.swift; sourceTree = "<group>"; };
 		84B950C229916F88009EBBB8 /* ChatBoxAvatarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatBoxAvatarView.xib; sourceTree = "<group>"; };
 		84B950C429918820009EBBB8 /* ReusableUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableUIView.swift; sourceTree = "<group>"; };
 		84CDE8DA298985360067C512 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
+		C4DF90E929A3712A00C565A3 /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -429,7 +427,6 @@
 		84A9383F296AAA0C008ED0DC /* VegaPunk */ = {
 			isa = PBXGroup;
 			children = (
-				8438E43029A31DE2009D20CC /* Profile */,
 				84A8AFED299BF73700D9A6D3 /* Sound */,
 				84A93851296AAA0F008ED0DC /* Info.plist */,
 				84A93840296AAA0C008ED0DC /* AppDelegate.swift */,
@@ -437,13 +434,14 @@
 				84A93842296AAA0C008ED0DC /* SceneDelegate.swift */,
 				84A93844296AAA0C008ED0DC /* ViewController.swift */,
 				84A9384C296AAA0F008ED0DC /* Assets.xcassets */,
-				8481DE4929A0C1BE002C36CD /* VideoCall */,
-				84A2C41529929D4E00EE8CD8 /* Messaging */,
+				84A93905296AAAFC008ED0DC /* UserAccess */,
 				843CEE35296B998C00A09695 /* ChatBox */,
+				84A2C41529929D4E00EE8CD8 /* Messaging */,
+				8481DE4929A0C1BE002C36CD /* VideoCall */,
+				8438E43029A31DE2009D20CC /* Profile */,
 				84A93873296AAABD008ED0DC /* Core */,
 				84A9384E296AAA0F008ED0DC /* LaunchScreen.storyboard */,
 				84A93846296AAA0C008ED0DC /* Main.storyboard */,
-				84A93905296AAAFC008ED0DC /* UserAccess */,
 				84A93849296AAA0C008ED0DC /* VegaPunk.xcdatamodeld */,
 			);
 			path = VegaPunk;
@@ -559,17 +557,18 @@
 			isa = PBXGroup;
 			children = (
 				84A9388D296AAABD008ED0DC /* Date.swift */,
-				84A9388E296AAABD008ED0DC /* URLSession+Extensions.swift */,
+				84A9388E296AAABD008ED0DC /* URLSession.swift */,
 				84A9388F296AAABD008ED0DC /* FileManager.swift */,
-				84A93890296AAABD008ED0DC /* URLRequest+Extensions.swift */,
-				84A93891296AAABD008ED0DC /* String+Extensions.swift */,
-				84A93892296AAABD008ED0DC /* URLResponse+Extensions.swift */,
-				84A93893296AAABD008ED0DC /* Data+Extensions.swift */,
-				84A9391D296B3C36008ED0DC /* Array+Extensions.swift */,
-				84A827732990188D00753846 /* UUID+Extensions.swift */,
+				84A93890296AAABD008ED0DC /* URLRequest.swift */,
+				84A93891296AAABD008ED0DC /* String.swift */,
+				84A93892296AAABD008ED0DC /* URLResponse.swift */,
+				84A93893296AAABD008ED0DC /* Data.swift */,
+				84A9391D296B3C36008ED0DC /* Array.swift */,
+				84A827732990188D00753846 /* UUID.swift */,
 				84A2C41D2992E1A700EE8CD8 /* UserDefaults+Keys.swift */,
 				84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */,
 				84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */,
+				C4DF90E929A3712A00C565A3 /* Int.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -715,8 +714,6 @@
 				84A93908296AAB63008ED0DC /* SignUpViewController.swift */,
 				84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */,
 				84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */,
-				84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */,
-				84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */,
 				84A938A1296AAABD008ED0DC /* TextInputCell.swift */,
 				84A938A0296AAABD008ED0DC /* TextInputCell.xib */,
 				84A93907296AAB63008ED0DC /* UserAccess.storyboard */,
@@ -875,7 +872,6 @@
 				84A9390A296AAB63008ED0DC /* UserAccess.storyboard in Resources */,
 				84A8AFF1299BF73700D9A6D3 /* payment_failure.m4a in Resources */,
 				84A8276E298FACB800753846 /* ChatBoxViewController.xib in Resources */,
-				84A938E6296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib in Resources */,
 				84A93848296AAA0C008ED0DC /* Main.storyboard in Resources */,
 				84A938EC296AAABD008ED0DC /* UserView.xib in Resources */,
 				8481DE6429A0C1BF002C36CD /* MainViewController.xib in Resources */,
@@ -911,12 +907,13 @@
 				84A8276D298FACB800753846 /* ChatBoxViewController.swift in Sources */,
 				84A2C4212994FB5D00EE8CD8 /* FooterMessage.swift in Sources */,
 				84A2C4292995617B00EE8CD8 /* MessagingViewController.swift in Sources */,
+				C4DF90EA29A3712A00C565A3 /* Int.swift in Sources */,
 				84CDE8DB298985360067C512 /* Messages.swift in Sources */,
 				84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */,
 				84A938D8296AAABD008ED0DC /* UICollectionViewCell.swift in Sources */,
 				84A93914296AF86C008ED0DC /* AuthenticatedUser.swift in Sources */,
 				84A93841296AAA0C008ED0DC /* AppDelegate.swift in Sources */,
-				84A9391E296B3C36008ED0DC /* Array+Extensions.swift in Sources */,
+				84A9391E296B3C36008ED0DC /* Array.swift in Sources */,
 				84A9390D296ABDB1008ED0DC /* MainTapBarController.swift in Sources */,
 				84A938CD296AAABD008ED0DC /* ErrorControl.swift in Sources */,
 				84A2C41E2992E1A700EE8CD8 /* UserDefaults+Keys.swift in Sources */,
@@ -931,7 +928,7 @@
 				84A93912296AD43B008ED0DC /* ResourceRequest.swift in Sources */,
 				8481DE6629A0C1BF002C36CD /* WebSocketProvider.swift in Sources */,
 				84A938F3296AAABE008ED0DC /* HeaderSessionChat.swift in Sources */,
-				84A827742990188D00753846 /* UUID+Extensions.swift in Sources */,
+				84A827742990188D00753846 /* UUID.swift in Sources */,
 				84A938FC296AAABE008ED0DC /* NVActivityIndicatorAnimationBallPulseSync.swift in Sources */,
 				84A938EB296AAABD008ED0DC /* UserView.swift in Sources */,
 				8481DE6B29A0C1BF002C36CD /* SignalingClient.swift in Sources */,
@@ -951,9 +948,8 @@
 				84A938E2296AAABD008ED0DC /* FeedbackGenerator.swift in Sources */,
 				84A938E0296AAABD008ED0DC /* CacheData.swift in Sources */,
 				84A93916296B1965008ED0DC /* RouteCoodinator.swift in Sources */,
-				84A938E7296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift in Sources */,
 				84B950C529918820009EBBB8 /* ReusableUIView.swift in Sources */,
-				84A938DF296AAABD008ED0DC /* Data+Extensions.swift in Sources */,
+				84A938DF296AAABD008ED0DC /* Data.swift in Sources */,
 				84A938E5296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift in Sources */,
 				8481DE6A29A0C1BF002C36CD /* RTCMessage.swift in Sources */,
 				8481DE6129A0C1BF002C36CD /* IceCandidate.swift in Sources */,
@@ -962,7 +958,7 @@
 				8438E43729A320FA009D20CC /* ProfileAvatarTableViewCell.swift in Sources */,
 				84A938F7296AAABE008ED0DC /* NVActivityIndicatorPresenter.swift in Sources */,
 				84A938FE296AAABE008ED0DC /* GradientView.swift in Sources */,
-				84A938DA296AAABD008ED0DC /* URLSession+Extensions.swift in Sources */,
+				84A938DA296AAABD008ED0DC /* URLSession.swift in Sources */,
 				84A938E1296AAABD008ED0DC /* Time.swift in Sources */,
 				84A938D3296AAABD008ED0DC /* UIView.swift in Sources */,
 				84A82768298FA3AE00753846 /* ApplicationState.swift in Sources */,
@@ -972,15 +968,15 @@
 				84A938D5296AAABD008ED0DC /* TableView.swift in Sources */,
 				84A938FF296AAABE008ED0DC /* MessagePresenter.swift in Sources */,
 				84A938EF296AAABE008ED0DC /* ChatBoxTableViewCell.swift in Sources */,
-				84A938DD296AAABD008ED0DC /* String+Extensions.swift in Sources */,
+				84A938DD296AAABD008ED0DC /* String.swift in Sources */,
 				84A938CC296AAABD008ED0DC /* AuthenticationService.swift in Sources */,
 				84A938D9296AAABD008ED0DC /* Date.swift in Sources */,
 				84A938FD296AAABE008ED0DC /* NVActivityIndicatorAnimationCubeTransition.swift in Sources */,
 				84A938D6296AAABD008ED0DC /* UIImage.swift in Sources */,
-				84A938DE296AAABD008ED0DC /* URLResponse+Extensions.swift in Sources */,
+				84A938DE296AAABD008ED0DC /* URLResponse.swift in Sources */,
 				84A938EE296AAABD008ED0DC /* CustomListCell.swift in Sources */,
 				84A9390B296AAB63008ED0DC /* SignUpViewController.swift in Sources */,
-				84A938DC296AAABD008ED0DC /* URLRequest+Extensions.swift in Sources */,
+				84A938DC296AAABD008ED0DC /* URLRequest.swift in Sources */,
 				84A4F6A8298C340900E5FEC4 /* Storing.swift in Sources */,
 				84A938F4296AAABE008ED0DC /* MessContentCell.swift in Sources */,
 				8481DE6729A0C1BF002C36CD /* NativeWebSocket.swift in Sources */,

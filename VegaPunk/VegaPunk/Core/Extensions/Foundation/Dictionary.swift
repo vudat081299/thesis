@@ -8,6 +8,7 @@
 import Foundation
 
 extension Dictionary where Key == String {
+    /// Convert from `Dictionary` to `Object`.
     func convert<T: Decodable>(to type: T.Type) throws -> T {
         do {
             let json = try JSONSerialization.data(withJSONObject: self)
@@ -17,5 +18,23 @@ extension Dictionary where Key == String {
         } catch {
             throw error
         }
+    }
+}
+extension User {
+    /// Convert from `Object` to `Dictionary`.
+    func toDictionary() throws -> Dictionary<String, String> {
+        do {
+            let encodedData = try JSONEncoder().encode(self)
+            let json = try JSONSerialization.jsonObject(with: encodedData, options: .mutableContainers) as! [String: String]
+            return json
+        } catch {
+            throw error
+        }
+    }
+}
+extension Data {
+    /// Convert from `Data` to `JSON`.
+    func convertToJSON() -> String? {
+        return String(data: self, encoding: .utf8)
     }
 }

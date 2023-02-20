@@ -1,5 +1,5 @@
 //
-//  Array+Extensions.swift
+//  Array.swift
 //  VegaPunk
 //
 //  Created by Dat Vu on 09/01/2023.
@@ -199,5 +199,29 @@ extension Array where Element == [ChatBoxMessage] {
         self = storedMessaged.transformStructure()
 //        var sampleData = sampleData(mappingId: (self?.user.mappingId!)!)
 //        self = sampleData.transformStructure()
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK: - Mini tasks
+extension Array where Element == CellCategory {
+    func firstIndex(of category: CellCategory) -> Int {
+        return self.firstIndex(where: { $0 == category })!
+    }
+    subscript(category: CellCategory) -> Int {
+        get {
+            return self.firstIndex(of: category)
+        }
     }
 }

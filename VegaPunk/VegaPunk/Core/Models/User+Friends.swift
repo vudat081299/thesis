@@ -28,6 +28,27 @@ struct User: Codable {
     var gender: Gender?
 }
 
+enum Gender: Int, CaseIterable, Codable {
+    case male, female, other
+    static var listRawValue: [String] {
+        var list = [String]()
+        for item in self.allCases {
+            list.append("\(item.rawValue)")
+        }
+        return list
+    }
+    var description: String {
+        switch self {
+        case .male:
+            return "male"
+        case .female:
+            return "female"
+        case .other:
+            return "other"
+        }
+    }
+}
+
 struct Friend {
     var friends: [User]
     init(_ friends: [User] = []) {
