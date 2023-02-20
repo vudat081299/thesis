@@ -28,7 +28,7 @@ enum Gender: Int, CaseIterable, Codable {
     }
 }
 enum InputType: Int {
-    case text, username, password, confirmPassword, gender, datePicker
+    case text, username, password, confirmPassword, gender, datePicker, imagePicker
 }
 
 protocol PassInputDataFromCell {

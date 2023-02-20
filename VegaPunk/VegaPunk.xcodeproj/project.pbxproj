@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8438E43329A31E74009D20CC /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438E43129A31E74009D20CC /* UserProfileViewController.swift */; };
 		8438E43429A31E74009D20CC /* UserProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8438E43229A31E74009D20CC /* UserProfileViewController.xib */; };
+		8438E43729A320FA009D20CC /* ProfileAvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438E43529A320FA009D20CC /* ProfileAvatarTableViewCell.swift */; };
+		8438E43829A320FA009D20CC /* ProfileAvatarTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8438E43629A320FA009D20CC /* ProfileAvatarTableViewCell.xib */; };
 		8481DE3B29A0BCC5002C36CD /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 8481DE3A29A0BCC5002C36CD /* Starscream */; };
 		8481DE4129A0BDDD002C36CD /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 8481DE4029A0BDDD002C36CD /* WebRTC */; };
 		8481DE5E29A0C1BF002C36CD /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8481DE4A29A0C1BE002C36CD /* Config.swift */; };
@@ -146,6 +148,8 @@
 /* Begin PBXFileReference section */
 		8438E43129A31E74009D20CC /* UserProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
 		8438E43229A31E74009D20CC /* UserProfileViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UserProfileViewController.xib; sourceTree = "<group>"; };
+		8438E43529A320FA009D20CC /* ProfileAvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAvatarTableViewCell.swift; sourceTree = "<group>"; };
+		8438E43629A320FA009D20CC /* ProfileAvatarTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProfileAvatarTableViewCell.xib; sourceTree = "<group>"; };
 		8481DE4A29A0C1BE002C36CD /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		8481DE4C29A0C1BE002C36CD /* RTCStates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTCStates.swift; sourceTree = "<group>"; };
 		8481DE4D29A0C1BE002C36CD /* SessionDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionDescription.swift; sourceTree = "<group>"; };
@@ -297,6 +301,8 @@
 			children = (
 				8438E43129A31E74009D20CC /* UserProfileViewController.swift */,
 				8438E43229A31E74009D20CC /* UserProfileViewController.xib */,
+				8438E43529A320FA009D20CC /* ProfileAvatarTableViewCell.swift */,
+				8438E43629A320FA009D20CC /* ProfileAvatarTableViewCell.xib */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -705,14 +711,14 @@
 		84A93905296AAAFC008ED0DC /* UserAccess */ = {
 			isa = PBXGroup;
 			children = (
-				84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */,
-				84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */,
-				84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */,
-				84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */,
-				84A938A0296AAABD008ED0DC /* TextInputCell.xib */,
-				84A938A1296AAABD008ED0DC /* TextInputCell.swift */,
 				84A93906296AAB63008ED0DC /* SignInViewController.swift */,
 				84A93908296AAB63008ED0DC /* SignUpViewController.swift */,
+				84A9389C296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.swift */,
+				84A9389F296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib */,
+				84A9389E296AAABD008ED0DC /* SignupPickerInputTableViewCell.swift */,
+				84A9389D296AAABD008ED0DC /* SignupPickerInputTableViewCell.xib */,
+				84A938A1296AAABD008ED0DC /* TextInputCell.swift */,
+				84A938A0296AAABD008ED0DC /* TextInputCell.xib */,
 				84A93907296AAB63008ED0DC /* UserAccess.storyboard */,
 			);
 			path = UserAccess;
@@ -855,6 +861,7 @@
 			files = (
 				84A938E9296AAABD008ED0DC /* TextInputCell.xib in Resources */,
 				84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */,
+				8438E43829A320FA009D20CC /* ProfileAvatarTableViewCell.xib in Resources */,
 				84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */,
 				84A2C42A2995617B00EE8CD8 /* MessagingViewController.xib in Resources */,
 				84A938ED296AAABD008ED0DC /* CustomListCell.xib in Resources */,
@@ -952,6 +959,7 @@
 				8481DE6129A0C1BF002C36CD /* IceCandidate.swift in Sources */,
 				8481DE5F29A0C1BF002C36CD /* RTCStates.swift in Sources */,
 				8481DE6329A0C1BF002C36CD /* VideoViewController.swift in Sources */,
+				8438E43729A320FA009D20CC /* ProfileAvatarTableViewCell.swift in Sources */,
 				84A938F7296AAABE008ED0DC /* NVActivityIndicatorPresenter.swift in Sources */,
 				84A938FE296AAABE008ED0DC /* GradientView.swift in Sources */,
 				84A938DA296AAABD008ED0DC /* URLSession+Extensions.swift in Sources */,

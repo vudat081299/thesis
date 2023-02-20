@@ -22,6 +22,7 @@ struct ViewControllerData {
         let array = [
 //            ViewControllerData(title: "Profile", iconNormal: "person", selectedIcon: "person.fill", viewController: UINavigationController(rootViewController: ViewController())),
             ViewControllerData(title: "Chat box", iconNormal: "message", selectedIcon: "message.fill", viewController: UINavigationController(rootViewController: ChatBoxViewController())),
+            ViewControllerData(title: "Profile", iconNormal: "person", selectedIcon: "person.fill", viewController: UINavigationController(rootViewController: UserProfileViewController())),
         ]
         var dataList: [ViewControllerData] = []
         array.forEach {
