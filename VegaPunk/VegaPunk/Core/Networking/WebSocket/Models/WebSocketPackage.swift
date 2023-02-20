@@ -38,8 +38,8 @@ struct WebSocketPackage: Codable {
     let type: WebSocketPackageType
     let message: WebSocketPackageMessage
     
-    func convertToMessage() -> Message {
-        return Message(id: message.id!, createdAt: message.createdAt!, sender: message.sender!, chatBoxId: message.chatBoxId!, mediaType: message.mediaType ?? .text , content: message.content!)
+    func convertToMessage() -> ChatBoxMessage {
+        return ChatBoxMessage(id: message.id!, createdAt: message.createdAt!, sender: message.sender!, chatBoxId: message.chatBoxId!, mediaType: message.mediaType ?? .text , content: message.content!)
     }
     func json() throws -> String {
         guard let jsonString = try String(data: JSONEncoder().encode(self), encoding: .utf8) else { throw WebSocketError.cannotParsePackageToJsonString }

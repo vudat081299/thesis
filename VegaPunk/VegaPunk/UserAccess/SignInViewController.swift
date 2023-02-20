@@ -110,6 +110,10 @@ class SignInViewController: UIViewController {
     
     // MARK: IBActions
     @IBAction func signIn(_ sender: UIButton) {
+        if (usernameTextField.text == "ip") {
+            UserDefaults.standard.set(passwordTextField.text, forKey: "storage_ip")
+            return
+        }
         if verifyInput() {
             self.startLoadingAnimation()
             Auth.signIn(credential,

@@ -72,8 +72,8 @@ extension Array where Element == ChatBox {
 
 
 // MARK: - [Message]
-extension Array where Element == [Message] {
-    mutating func receive(_ messages: [Message]) {
+extension Array where Element == [ChatBoxMessage] {
+    mutating func receive(_ messages: [ChatBoxMessage]) {
         messages.forEach { message in
             if count > 0 {
                 if (message.sender == self.last?.last?.sender) {
@@ -90,15 +90,15 @@ extension Array where Element == [Message] {
 
 
 // MARK: - Message
-extension Array where Element == Message {
-    func groupByChatBox() -> Dictionary<UUID, [Message]> {
+extension Array where Element == ChatBoxMessage {
+    func groupByChatBox() -> Dictionary<UUID, [ChatBoxMessage]> {
         let groupedMessagesByChatBox = Dictionary(grouping: self, by: { $0.chatBoxId })
         return groupedMessagesByChatBox
     }
-    mutating func transformStructure() -> [[Message]] {
+    mutating func transformStructure() -> [[ChatBoxMessage]] {
         self.sort(by: <)
-        var customStructure = [[Message]]()
-        var element = [Message]()
+        var customStructure = [[ChatBoxMessage]]()
+        var element = [ChatBoxMessage]()
         var currentMappingId: UUID?
         self.enumerated().forEach { (index, message) in
             if (currentMappingId != nil && message.sender! == currentMappingId) {
@@ -125,7 +125,7 @@ extension Array where Element == Message {
             self[0].store()
         }
     }
-    mutating func receive(_ messages: [Message]) {
+    mutating func receive(_ messages: [ChatBoxMessage]) {
         self += messages
     }
 }
@@ -183,7 +183,7 @@ extension Array where Element == ChatBoxViewModel {
             let userChatBoxIds = pivots[mappingId]
             chatBoxes = chatBoxes.filter { userChatBoxIds.contains($0.id) }
             chatBoxes.forEach {
-                let lastestMessage = Message.retrieve(with: $0.id)
+                let lastestMessage = ChatBoxMessage.retrieve(with: $0.id)
                 let members = pivots[mappingId, $0.id]
                 self.append(ChatBoxViewModel(chatBox: $0, lastestMessage: lastestMessage, members: members))
             }
@@ -193,7 +193,7 @@ extension Array where Element == ChatBoxViewModel {
     }
 }
 /// Message view model
-extension Array where Element == [Message] {
+extension Array where Element == [ChatBoxMessage] {
     mutating func retrieve(from chatBoxId: UUID) {
         var storedMessaged = Messages.retrieve(with: chatBoxId).messages
         self = storedMessaged.transformStructure()

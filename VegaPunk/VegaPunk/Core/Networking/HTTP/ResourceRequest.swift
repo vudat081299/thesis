@@ -29,11 +29,11 @@ class DataCentral {
         }
         return []
     }
-    static func getMessages(of chatBoxId: UUID) -> [Message.Resolve] {
+    static func getMessages(of chatBoxId: UUID) -> [ChatBoxMessage.Resolve] {
         if let data = UserDefaults.standard.data(forKey: chatBoxId.uuidString + "_Messages_SAVE_KEY") {
             do {
                 let decoder = JSONDecoder()
-                let messages = try decoder.decode([Message.Resolve].self, from: data)
+                let messages = try decoder.decode([ChatBoxMessage.Resolve].self, from: data)
                 return messages
             } catch {
                 print("Unable to Decode ResolvePivot (\(error))")
@@ -200,10 +200,10 @@ class RequestEngine {
                 }
             }
     }
-    static func getMessagesOfChatBox(_ chatBoxId: UUID, onSuccess: (([Message.Resolve]) -> ())? = nil, completion: (() -> ())? = nil) {
+    static func getMessagesOfChatBox(_ chatBoxId: UUID, onSuccess: (([ChatBoxMessage.Resolve]) -> ())? = nil, completion: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.getMessagesOfChatBox, ["chatBoxId": chatBoxId.uuidString]) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
-            .responseDecodable(of: [Message.Resolve].self) { response in
+            .responseDecodable(of: [ChatBoxMessage.Resolve].self) { response in
                 switch response.result {
                 case .success(let messages):
                     if let onSuccess = onSuccess { onSuccess(messages) }
@@ -232,14 +232,14 @@ class RequestEngine {
                 }
             }
     }
-    static func fetchMessages(from time: String, in chatBoxId: UUID, _ completion: (([Message.Resolve]) -> ())? = nil) {
+    static func fetchMessages(from time: String, in chatBoxId: UUID, _ completion: (([ChatBoxMessage.Resolve]) -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(
             .getMessagesFromTimeChatBox,
             ["chatBoxId": chatBoxId.uuidString,
              "time": time]
         ) else { return }
         AF.request(query.genUrl(), method: query.httpMethod)
-            .responseDecodable(of: [Message.Resolve].self) { response in
+            .responseDecodable(of: [ChatBoxMessage.Resolve].self) { response in
                 switch response.result {
                 case .success(let resolveMessages):
                     if (resolveMessages.count > 0) {
@@ -257,7 +257,7 @@ class RequestEngine {
     
     
     // MARK: - Messages
-    static func createMessage(_ message: Message, _ completion: (() -> ())? = nil) {
+    static func createMessage(_ message: ChatBoxMessage, _ completion: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.createMessage),
               let url = URL(string: query.genUrl()),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
@@ -306,28 +306,51 @@ class RequestEngine {
     
     
     // MARK: - File
-    static func upload(_ data: Data, _ completion: (() -> ())? = nil) {
+    static func upload(_ data: Data, _ completion: ((String) -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.uploadFile),
               let url = URL(string: query.genUrl()),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
         var parameters: Parameters = [:]
-        parameters["data"] = data
-        AF.request(
-            url,
-            method: query.httpMethod,
-            parameters: parameters,
-            headers: bearerTokenHeaders)
-        .responseDecodable(of: String.self) { response in
-                switch response.result {
-                case .success(let fileId):
-                    print("Create chat box successful!")
-                    if let completion = completion { completion() }
-                    break
-                case let .failure(error):
-                    print(error)
-                    break
+        let utf8String = String(data: data, encoding: .utf8)
+        parameters["data"] = ""
+        AF.upload(multipartFormData: { multipartFormData in
+                    //Parameter for Upload files
+            multipartFormData.append(data, withName: "data")
+                    
+        }, to: url, usingThreshold:UInt64.init(), //URL Here
+                    method: query.httpMethod,
+                    headers: bearerTokenHeaders) //pass header dictionary here
+                  .responseDecodable(of: ResolveId.self) { response in
+                      
+                              switch response.result {
+                              case .success(let object):
+                                  print("Create chat box successful!")
+                                  if let completion = completion { completion(object.id) }
+                                  break
+                              case let .failure(error):
+                                  print(error)
+                                  break
+                              }
                 }
-            }
+        
+        
+        
+//        AF.request(
+//            url,
+//            method: query.httpMethod,
+//            parameters: parameters,
+//            headers: bearerTokenHeaders)
+//        .responseDecodable(of: String.self) { response in
+//                switch response.result {
+//                case .success(let fileId):
+//                    print("Create chat box successful!")
+//                    if let completion = completion { completion(fileId) }
+//                    break
+//                case let .failure(error):
+//                    print(error)
+//                    break
+//                }
+//            }
     }
 }
 
@@ -336,6 +359,10 @@ class RequestEngine {
 
 struct ResolveUUID: Codable {
     let id: UUID
+}
+
+struct ResolveId: Codable {
+    let id: String
 }
 
 

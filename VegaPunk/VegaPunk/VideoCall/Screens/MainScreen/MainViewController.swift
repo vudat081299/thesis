@@ -99,7 +99,7 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "Video call"
+//        self.title = "WebRTC Demo"
         self.signalingConnected = false
         self.hasLocalSdp = false
         self.hasRemoteSdp = false
@@ -186,9 +186,10 @@ extension MainViewController: SignalClientDelegate {
     }
     
     func signalClient(_ signalClient: SignalingClient, didReceiveCandidate candidate: RTCIceCandidate) {
-        print("Received remote candidate")
-        self.remoteCandidateCount += 1
-        self.webRTCClient.set(remoteCandidate: candidate)
+        self.webRTCClient.set(remoteCandidate: candidate) { error in
+            print("Received remote candidate")
+            self.remoteCandidateCount += 1
+        }
     }
 }
 

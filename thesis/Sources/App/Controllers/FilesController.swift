@@ -26,7 +26,7 @@ struct FilesController: RouteCollection {
         }
     }
     
-    func postFileHandler(_ req: Request) throws -> EventLoopFuture<String> {
+    func postFileHandler(_ req: Request) throws -> EventLoopFuture<ResolveId> {
         let newFile = try req.content.decode(ResolveFile.self)
         let fileObjectId: EventLoopFuture<ObjectId?>
 
@@ -43,9 +43,13 @@ struct FilesController: RouteCollection {
             guard let id = id else {
                 throw Abort(.badRequest)
             }
-            return id.hexString
+            return ResolveId(id: id.hexString)
         }
     }
+    struct ResolveId: Content {
+        let id: String
+    }
+    
     
     
     

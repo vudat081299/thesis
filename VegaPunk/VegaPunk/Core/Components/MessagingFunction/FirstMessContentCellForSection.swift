@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Nuke
 
 class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate {
     static let reuseIdentifier = "FirstMessContentCellForSection"
@@ -72,16 +73,18 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
     
     
     // MARK: - Tasks
-    func prepare(_ message: Message) {
-        creationDate.text = message.createdAt.toDate().iso8601StringShortDateTime
+    func prepare(_ message: ChatBoxMessage) {
+        if message.mediaType == .file {
+            heightContentImageCS.constant = 120
+            contentTextLabel.text = ""
+            let query = QueryBuilder.queryInfomation(.downloadFile)
+            let url = (query?.genUrl())! + message.content!
+            print("------")
+            print(url)
+            Nuke.loadImage(with: URL(string: url)!, into: contentImageView)
+        } else {
+            contentTextLabel.text = message.content
+        }
         timeLabel.text = message.createdAt.toDate().dayTime
-        contentTextLabel.text = message.content
-        guard let delegate = delegate else { return }
-        if let user = delegate.user(message.sender!) {
-            senderName.text = user.name
-        }
-        if delegate.checkIsSender(message.sender!) {
-            senderName.textColor = .systemGreen
-        }
     }
 }

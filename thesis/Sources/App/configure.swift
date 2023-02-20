@@ -15,10 +15,10 @@ public func configure(_ app: Application) throws {
     
     
     // MARK: - Config http server.
-    let host = "192.168.1.24"
+    let host = "172.20.10.8"
     app.http.server.configuration.hostname = host
     app.http.server.configuration.port = 8080
-    app.routes.defaultMaxBodySize = "5mb"
+    app.routes.defaultMaxBodySize = "20mb"
     
     
     // MARK: - Database configuration

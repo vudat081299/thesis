@@ -11,7 +11,7 @@ import UIKit
 // MARK: - Definition
 struct ChatBoxViewModel: Hashable {
     let chatBox: ChatBox
-    var lastestMessage: Message?
+    var lastestMessage: ChatBoxMessage?
     let members: [UUID]
     
     func hash(into hasher: inout Hasher) {
@@ -121,17 +121,18 @@ class ChatBoxTableViewCell: UITableViewCell {
         let chatBoxId = data.chatBox.id
         switch lastestMessage.mediaType {
         case .file:
+            lastestMesssage.text = "An image 🌃"
             break
         default:
             lastestMesssage.text = lastestMessage.content
-            let lastestSeenMessage = Message.retrieve(.lastestSeenMessage, with: chatBoxId)
-            if lastestSeenMessage == nil ||
-                lastestMessage > lastestSeenMessage! {
-                lastestMesssage.textColor = .black
-                lastestMesssage.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-                newMessageFlag.isHidden = false
-            }
             break
+        }
+        let lastestSeenMessage = ChatBoxMessage.retrieve(.lastestSeenMessage, with: chatBoxId)
+        if lastestSeenMessage == nil ||
+            lastestMessage > lastestSeenMessage! {
+            lastestMesssage.textColor = .black
+            lastestMesssage.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+            newMessageFlag.isHidden = false
         }
         let date = lastestMessage.createdAt.toDate()
         dayTime.text = date.weekDay + "\n" + date.dayTime

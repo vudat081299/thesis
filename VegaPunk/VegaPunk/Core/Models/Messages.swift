@@ -17,7 +17,7 @@ enum MediaType: String, Codable {
  This is a structure of `ChatBox` table on `Database`
  - `createdAt`: this is a millisecond timestamp - 13 bits of Date()
  */
-struct Message: Hashable {
+struct ChatBoxMessage: Hashable {
     let id: UUID
     let createdAt: String
     let sender: UUID?
@@ -33,21 +33,21 @@ struct Message: Hashable {
         let mediaType: MediaType
         let content: String?
         
-        func flatten() -> Message {
-            Message(id: id, createdAt: createdAt, sender: sender, chatBoxId: chatBox.id, mediaType: mediaType, content: content)
+        func flatten() -> ChatBoxMessage {
+            ChatBoxMessage(id: id, createdAt: createdAt, sender: sender, chatBoxId: chatBox.id, mediaType: mediaType, content: content)
         }
     }
     
-    static func == (lhs: Message, rhs: Message) -> Bool {
+    static func == (lhs: ChatBoxMessage, rhs: ChatBoxMessage) -> Bool {
         return lhs.id == rhs.id
     }
-    static func < (lhs: Message, rhs: Message) -> Bool {
+    static func < (lhs: ChatBoxMessage, rhs: ChatBoxMessage) -> Bool {
         if lhs.createdAt == rhs.createdAt {
             return lhs.id.uuidString < rhs.id.uuidString
         }
         return lhs.createdAt < rhs.createdAt
     }
-    static func > (lhs: Message, rhs: Message) -> Bool {
+    static func > (lhs: ChatBoxMessage, rhs: ChatBoxMessage) -> Bool {
         if lhs.createdAt == rhs.createdAt {
             return lhs.id.uuidString > rhs.id.uuidString
         }
@@ -57,7 +57,7 @@ struct Message: Hashable {
 
 
 // MARK: - Apply Codable
-extension Message: Codable {
+extension ChatBoxMessage: Codable {
     enum Key: String, CodingKey {
         case id
         case createdAt
@@ -98,10 +98,10 @@ extension Message: Codable {
             print("Error when saving AuthenticatedUser object!")
         }
     }
-    static func retrieve(_ domain: UserDefaults.Keys = .lastestMessage, with chatBoxId: UUID) -> Message? {
+    static func retrieve(_ domain: UserDefaults.Keys = .lastestMessage, with chatBoxId: UUID) -> ChatBoxMessage? {
         if let data = UserDefaults.standard.data(forKey: domain.genKey(chatBoxId.uuidString)) {
             do {
-                let message = try PropertyListDecoder().decode(Message?.self, from: data)
+                let message = try PropertyListDecoder().decode(ChatBoxMessage?.self, from: data)
                 return message
             } catch {
                 print("Retrieve AuthenticatedUser object failed!")
@@ -115,13 +115,13 @@ extension Message: Codable {
 }
 
 struct Messages {
-    var messages: [Message] = []
+    var messages: [ChatBoxMessage] = []
     
-    init(_ messages: [Message] = []) {
+    init(_ messages: [ChatBoxMessage] = []) {
         self.messages = messages
     }
     
-    init(_ resolveMessages: [Message.Resolve]) {
+    init(_ resolveMessages: [ChatBoxMessage.Resolve]) {
         self.messages = resolveMessages.map { $0.flatten() }
     }
 }
@@ -164,7 +164,7 @@ extension Messages: Codable {
     }
     
     public init(from decoder: Decoder) throws {
-        var messages = [Message]()
+        var messages = [ChatBoxMessage]()
         let container = try decoder.container(keyedBy: MessageKey.self)
         for key in container.allKeys {
             // Note how the `key` in the loop above is used immediately to access a nested container.
@@ -185,7 +185,7 @@ extension Messages: Codable {
                   let senderUUID = UUID(uuidString: sender),
                   let chatBoxId = UUID(uuidString: chatBoxId)
             else { continue }
-            let message = Message(id: messageUUID, createdAt: createdAt, sender: senderUUID, chatBoxId: chatBoxId, mediaType: MediaType(rawValue: mediaType)!, content: content)
+            let message = ChatBoxMessage(id: messageUUID, createdAt: createdAt, sender: senderUUID, chatBoxId: chatBoxId, mediaType: MediaType(rawValue: mediaType)!, content: content)
             messages.append(message)
         }
         self.init(messages)
@@ -268,7 +268,7 @@ extension Messages {
     var count: Int {
         return messages.count
     }
-    subscript(index: Int) -> Message {
+    subscript(index: Int) -> ChatBoxMessage {
         get {
             // Return an appropriate subscript value here.
             return messages[index]

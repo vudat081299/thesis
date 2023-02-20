@@ -27,7 +27,7 @@ enum RouteCoordinator: String {
         if let domain = AuthenticatedUser.retrieve()?.networkConfig?.domain {
             return domain + self.rawValue
         }
-        return "http://192.168.1.24:8080/" + self.rawValue
+        return "http://\(configureIp):8080/" + self.rawValue
     }
 }
 
@@ -49,6 +49,7 @@ enum Route: CaseIterable {
     case getMessagesFromTimeChatBox
     case getAllMappingPivots
     case uploadFile
+    case downloadFile
 }
 
 struct QueryBuilder {
@@ -75,7 +76,7 @@ struct QueryBuilder {
             return QueryInformation(url: chatBoxRoute! + chatBoxId + "/mappings", decodableType: [Mapping.Resolve].self)
         case .getMessagesOfChatBox:
             guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
-            return QueryInformation(url: chatBoxRoute! + chatBoxId + "/messages", decodableType: [Message.Resolve].self)
+            return QueryInformation(url: chatBoxRoute! + chatBoxId + "/messages", decodableType: [ChatBoxMessage.Resolve].self)
 //        case .createChatBox2: return QueryInformation(httpMethod: .post, url: chatBoxRoute! + "chatBox/create")
         case .removeChatBox:
             guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
@@ -88,9 +89,10 @@ struct QueryBuilder {
             guard let chatBoxId = parammeters["chatBoxId"],
                   let time = parammeters["time"]
             else { return nil }
-            return QueryInformation(url: messageRoute! + "messages/" + chatBoxId + "/" + time, decodableType: [Message.Resolve].self)
+            return QueryInformation(url: messageRoute! + "messages/" + chatBoxId + "/" + time, decodableType: [ChatBoxMessage.Resolve].self)
         case .getAllMappingPivots: return QueryInformation(url: pivotRoute!, decodableType: [MappingChatBoxPivot.Resolve].self)
         case .uploadFile: return QueryInformation(httpMethod: .post, url: fileRoute!, decodableType: String.self)
+        case .downloadFile: return QueryInformation(httpMethod: .post, url: fileRoute!, decodableType: String.self)
         }
     }
 }

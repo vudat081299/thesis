@@ -23,10 +23,10 @@ class MessagingViewController: UIViewController {
     let imagePicker = UIImagePickerController()
     
     //
-    var dataSource: UICollectionViewDiffableDataSource<Int, Message>! = nil
+    var dataSource: UICollectionViewDiffableDataSource<Int, ChatBoxMessage>! = nil
     var user: User!
     var extractedChatBox: ChatBoxViewModel!
-    var messageViewModel = [[Message]]()
+    var messageViewModel = [[ChatBoxMessage]]()
     var members = [User]()
     var previousSendingPackage: WebSocketPackage!
     
@@ -248,10 +248,22 @@ class MessagingViewController: UIViewController {
     // MARK: - IBAction
     @IBAction func sendMessage(_ sender: UIButton) {
         FeedBackTapEngine.tapped(style: .medium)
-        if (chatTextField.text == nil || chatTextField.text?.count == 0) { return }
-        previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
-        chatTextField.text = ""
-        NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
+        if pickedImage.image != nil {
+            RequestEngine.upload((pickedImage.image?.pngData())!) { [self] fileId in
+                previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .file, content: fileId))
+                NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
+                hidePickedImageContainer()
+            }
+        } else {
+            if (chatTextField.text == nil || chatTextField.text?.count == 0) { return }
+            previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
+            chatTextField.text = ""
+            NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
+        }
+        
+        
+        
+        
     }
     @IBAction func pickImage(_ sender: UIButton) {
         FeedBackTapEngine.tapped(style: .medium)
@@ -270,6 +282,7 @@ class MessagingViewController: UIViewController {
 extension MessagingViewController {
     @objc func rightBarItemAction() {
         FeedBackTapEngine.tapped(style: .medium)
+        present(buildMainViewController(), animated: true)
     }
     func setUpNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
@@ -433,20 +446,15 @@ extension MessagingViewController {
     // MARK: - Config datasource
     /// - Tag: PinnedHeaderRegistration
     func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Int, Message>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, message: Message) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Int, ChatBoxMessage>(collectionView: collectionView) {
+            (collectionView: UICollectionView, indexPath: IndexPath, message: ChatBoxMessage) -> UICollectionViewCell? in
             let row = indexPath.row
             if row == 0 {
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: FirstMessContentCellForSection.reuseIdentifier,
                     for: indexPath) as? FirstMessContentCellForSection else { fatalError("Cannot create new cell") }
-                
-//                cell.prepare(message)
-//                cell.delegate = self
-                
+                cell.prepare(message)
                 cell.creationDate.text = message.createdAt.toDate().iso8601StringShortDateTime
-                cell.timeLabel.text = message.createdAt.toDate().dayTime
-                cell.contentTextLabel.text = message.content
                 if let user = self.user(message.sender!) {
                     cell.senderName.text = user.name
                 }
@@ -459,11 +467,7 @@ extension MessagingViewController {
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: MessContentCell.reuseIdentifier,
                     for: indexPath) as? MessContentCell else { fatalError("Cannot create new cell") }
-//                cell.prepare(message)
-                
-                cell.timeLabel.text = message.createdAt.toDate().dayTime
-                cell.contentTextLabel.text = message.content
-                
+                cell.prepare(message)
                 return cell
             }
         }
@@ -488,7 +492,7 @@ extension MessagingViewController {
         if (messageViewModel.count > 0) {
             sections = Array(0..<messageViewModel.count)
         }
-        var snapshot = NSDiffableDataSourceSnapshot<Int, Message>()
+        var snapshot = NSDiffableDataSourceSnapshot<Int, ChatBoxMessage>()
         sections.forEach {
             snapshot.appendSections([$0])
             snapshot.appendItems(messageViewModel[$0])

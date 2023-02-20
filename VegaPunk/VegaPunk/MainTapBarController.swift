@@ -8,7 +8,7 @@
 import UIKit
 import Starscream
 
-let imageUrl = "http://192.168.1.24:8080/api/files/63e28ee8c6b2f7c2a220cc04"
+let imageUrl = "http://\(configureIp):8080/api/files/63e28ee8c6b2f7c2a220cc04"
 
 struct ViewControllerData {
     let title: String

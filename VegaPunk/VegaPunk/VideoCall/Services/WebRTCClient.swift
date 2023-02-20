@@ -31,7 +31,7 @@ final class WebRTCClient: NSObject {
     private let rtcAudioSession =  RTCAudioSession.sharedInstance()
     private let audioQueue = DispatchQueue(label: "audio")
     private let mediaConstrains = [kRTCMediaConstraintsOfferToReceiveAudio: kRTCMediaConstraintsValueTrue,
-                                   kRTCMediaConstraintsOfferToReceiveVideo: kRTCMediaConstraintsValueTrue]    
+                                   kRTCMediaConstraintsOfferToReceiveVideo: kRTCMediaConstraintsValueTrue]
     private var videoCapturer: RTCVideoCapturer?
     private var localVideoTrack: RTCVideoTrack?
     private var remoteVideoTrack: RTCVideoTrack?
@@ -56,7 +56,12 @@ final class WebRTCClient: NSObject {
         // Define media constraints. DtlsSrtpKeyAgreement is required to be true to be able to connect with web browsers.
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil,
                                               optionalConstraints: ["DtlsSrtpKeyAgreement":kRTCMediaConstraintsValueTrue])
-        self.peerConnection = WebRTCClient.factory.peerConnection(with: config, constraints: constraints, delegate: nil)
+        
+        guard let peerConnection = WebRTCClient.factory.peerConnection(with: config, constraints: constraints, delegate: nil) else {
+            fatalError("Could not create new RTCPeerConnection")
+        }
+        
+        self.peerConnection = peerConnection
         
         super.init()
         self.createMediaSenders()
@@ -97,8 +102,8 @@ final class WebRTCClient: NSObject {
         self.peerConnection.setRemoteDescription(remoteSdp, completionHandler: completion)
     }
     
-    func set(remoteCandidate: RTCIceCandidate) {
-        self.peerConnection.add(remoteCandidate)
+    func set(remoteCandidate: RTCIceCandidate, completion: @escaping (Error?) -> ()) {
+        self.peerConnection.add(remoteCandidate, completionHandler: completion)
     }
     
     // MARK: Media
@@ -174,7 +179,7 @@ final class WebRTCClient: NSObject {
     private func createVideoTrack() -> RTCVideoTrack {
         let videoSource = WebRTCClient.factory.videoSource()
         
-        #if TARGET_OS_SIMULATOR
+        #if targetEnvironment(simulator)
         self.videoCapturer = RTCFileVideoCapturer(delegate: videoSource)
         #else
         self.videoCapturer = RTCCameraVideoCapturer(delegate: videoSource)

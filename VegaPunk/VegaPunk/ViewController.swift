@@ -7,6 +7,10 @@
 
 import UIKit
 
+var configureIp: String {
+    UserDefaults.standard.string(forKey: "storage_ip") ?? "192.168.1.24"
+}
+
 class ViewController: UIViewController {
     
     // MARK: -
@@ -112,7 +116,7 @@ class ViewController: UIViewController {
     /// Configure default specification for application.
     /// - ex: domain, ip, port,..
     func configureApplication() {
-        AuthenticatedUser.store(networkConfig: NetworkConfig(domain: "http://192.168.1.24:8080/", ip: "192.168.1.24", port: "8080"))
+        AuthenticatedUser.store(networkConfig: NetworkConfig(domain: "http://\(configureIp):8080/", ip: configureIp, port: "8080"))
     }
     
 }
