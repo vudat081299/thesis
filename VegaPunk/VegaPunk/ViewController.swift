@@ -148,6 +148,12 @@ extension ViewController {
                 completion(false)
                 return
             }
+            if let userMappingId = AuthenticatedUser.retrieve()?.data?.mappingId! {
+                if MappingChatBoxPivots.retrieve().pivots.hasChatBox(between: [userMappingId, cellData.mappingId]) != nil {
+                    completion(true)
+                    return
+                }
+            }
             RequestEngine.createChatBox(cellData.mappingId) {
                 self.fetch()
                 SoundFeedBack.success()

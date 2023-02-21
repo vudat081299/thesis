@@ -43,8 +43,12 @@ extension Array where Element == MappingChatBoxPivot {
         let firstSet = Set(self.filter { $0.mappingId == mappingIds[0] }.flattenToChatBoxes())
         let secondSet = Set(self.filter { $0.mappingId == mappingIds[1] }.flattenToChatBoxes())
         let intersection = firstSet.intersection(secondSet)
-        if intersection.count > 0 {
-            return intersection.first
+        for element in intersection {
+            if let authenticatedUserMappingId = AuthenticatedUser.retrieve()?.data?.mappingId! {
+                if self[authenticatedUserMappingId, element].count == 1 {
+                    return element
+                }
+            }
         }
         return nil
     }
