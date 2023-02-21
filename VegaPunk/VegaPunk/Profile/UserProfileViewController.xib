@@ -11,8 +11,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UserProfileViewController" customModule="VegaPunk" customModuleProvider="target">
             <connections>
-                <outlet property="tableView" destination="ksg-mf-8z9" id="aHb-nG-dnE"/>
-                <outlet property="tableViewBottomCS" destination="MD4-Ch-Y5E" id="dqJ-ky-hTb"/>
+                <outlet property="tableView" destination="VO2-W9-5eM" id="vDr-f3-nJW"/>
+                <outlet property="tableViewBottomCS" destination="QFV-Ms-g7c" id="y5C-9f-gzI"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="fv3-lz-ScL"/>
             </connections>
         </placeholder>
@@ -21,18 +21,18 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="interactive" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ksg-mf-8z9">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="VO2-W9-5eM">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                 </tableView>
             </subviews>
-            <viewLayoutGuide key="safeArea" id="qQW-q7-LdI"/>
+            <viewLayoutGuide key="safeArea" id="7PM-QU-9ra"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="ksg-mf-8z9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="1Or-6A-g9v"/>
-                <constraint firstAttribute="bottom" secondItem="ksg-mf-8z9" secondAttribute="bottom" id="MD4-Ch-Y5E"/>
-                <constraint firstItem="ksg-mf-8z9" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="MuA-Rz-3ed"/>
-                <constraint firstAttribute="trailing" secondItem="ksg-mf-8z9" secondAttribute="trailing" id="gcR-G2-ax8"/>
+                <constraint firstAttribute="bottom" secondItem="VO2-W9-5eM" secondAttribute="bottom" id="QFV-Ms-g7c"/>
+                <constraint firstItem="VO2-W9-5eM" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="dSn-RN-9cl"/>
+                <constraint firstItem="VO2-W9-5eM" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="hF9-Qs-juE"/>
+                <constraint firstAttribute="trailing" secondItem="VO2-W9-5eM" secondAttribute="trailing" id="jX5-JX-B12"/>
             </constraints>
             <point key="canvasLocation" x="102" y="21"/>
         </view>
@@ -40,6 +40,9 @@
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGroupedBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

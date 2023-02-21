@@ -179,7 +179,9 @@ class MessagingViewController: UIViewController {
         pickedImage.contentMode = .scaleAspectFit
         pickedImageContainer.border(8)
         pickedImageContainer.dropShadow()
-        if LAContext().biometryType == .touchID {
+        let myContext = LAContext()
+        myContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
+        if myContext.biometryType == .touchID {
             heightInputContainerOnDeviceType = 50
         } else {
             heightInputContainerOnDeviceType = 84
@@ -234,7 +236,7 @@ class MessagingViewController: UIViewController {
             }
         }
     }
-    func user(_ mappingId: UUID) -> User? {
+    func getUser(with mappingId: UUID) -> User? {
         if mappingId == user.mappingId { return user }
         return members.first {
             $0.mappingId == mappingId
@@ -456,7 +458,7 @@ extension MessagingViewController {
                     for: indexPath) as? FirstMessContentCellForSection else { fatalError("Cannot create new cell") }
                 cell.prepare(message)
                 cell.creationDate.text = message.createdAt.toDate().iso8601StringShortDateTime
-                if let user = self.user(message.sender!) {
+                if let user = self.getUser(with: message.sender!) {
                     cell.senderName.text = user.name
                 }
                 if self.checkIsSender(message.sender!) {
@@ -476,7 +478,8 @@ extension MessagingViewController {
         dataSource.supplementaryViewProvider = { [self] (view, kind, index) in
             if kind == MessagingViewController.sectionHeaderElementKind {
                 guard let supplementaryView = view.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HeaderSessionChat.reuseIdentifier, for: index) as? HeaderSessionChat else { fatalError("Cannot create HeaderSessionChat!") }
-                supplementaryView.prepare(avatarFileIds[index.section])
+                let avatarFileId = getUser(with: messageViewModel[index.section][0].sender!)?.avatar
+                supplementaryView.prepare(avatarFileId)
                 return supplementaryView
             } else {
                 guard let supplementaryView = view.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FooterMessage.reuseIdentifier, for: index) as? FooterMessage else { fatalError("Cannot create FooterMessage!") }
@@ -496,7 +499,7 @@ extension MessagingViewController {
         }
         var snapshot = NSDiffableDataSourceSnapshot<Int, ChatBoxMessage>()
         sections.forEach {
-            avatarFileIds.append(user(messageViewModel[$0][0].sender!)?.avatar)
+//            avatarFileIds.append(getUser(with: messageViewModel[$0][0].sender!)!.avatar)
             snapshot.appendSections([$0])
             snapshot.appendItems(messageViewModel[$0])
         }

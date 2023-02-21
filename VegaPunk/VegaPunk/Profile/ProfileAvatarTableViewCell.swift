@@ -17,7 +17,6 @@ class ProfileAvatarTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        avatarContainer.roundedBorder()
         avatarImage.contentMode = .scaleAspectFill
     }
 
@@ -28,15 +27,14 @@ class ProfileAvatarTableViewCell: UITableViewCell {
     }
     
     func prepare(_ imageUrl: String?) {
-        let placeholderImage = UIImage(systemName: "person")
+        let placeholderImage = UIImage(systemName: "person.circle")
         let options = ImageLoadingOptions(
             placeholder: placeholderImage?.withTintColor(.systemGray2),
             transition: .fadeIn(duration: 0.5)
         )
-        let query = QueryBuilder.queryInfomation(.downloadFile)
-        guard let imageUrl = imageUrl else { return }
-        let urlString = (query?.genUrl())! + imageUrl
-        let url = URL(string: urlString)!
-        Nuke.loadImage(with: url, options: options, into: avatarImage)
+        let urlString = QueryBuilder.queryInfomation(.downloadFile)!.genUrl() + (imageUrl ?? "")
+        let url = URL(string: urlString)
+        Nuke.loadImage(with: url!, options: options, into: avatarImage)
+        avatarContainer.roundedBorder()
     }
 }

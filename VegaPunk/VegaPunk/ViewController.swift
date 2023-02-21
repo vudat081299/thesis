@@ -32,7 +32,6 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         prepareView()
-        fetch()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -224,8 +223,10 @@ extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-//        let chatBoxViewController = ChatBoxViewController()
-//        navigationController?.pushViewController(chatBoxViewController, animated: true)
+        let userProfileViewController = UserProfileViewController()
+        let user = userViewModel[indexPath.section].user
+        userProfileViewController.user = user
+        navigationController?.pushViewController(userProfileViewController, animated: true)
     }
 }
 

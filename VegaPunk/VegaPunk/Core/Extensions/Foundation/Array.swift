@@ -136,6 +136,9 @@ extension Array where Element == User {
     func clean() -> Friend {
         return Friend(self.filter { $0.mappingId != nil })
     }
+    func getUser(with mappingId: UUID) -> User? {
+        return self.first { $0.mappingId == mappingId }
+    }
 }
 
 

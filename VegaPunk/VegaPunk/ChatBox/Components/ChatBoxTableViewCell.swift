@@ -70,6 +70,9 @@ class ChatBoxTableViewCell: UITableViewCell {
         lastestMesssage.textColor = .secondaryLabel
         lastestMesssage.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         newMessageFlag.isHidden = true
+        firstAvatar.avatar.image = nil
+        secondAvatar.avatar.image = nil
+        thirdAvatar.avatar.image = nil
     }
     
     

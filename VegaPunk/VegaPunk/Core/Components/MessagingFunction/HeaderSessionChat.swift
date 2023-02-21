@@ -39,15 +39,13 @@ class HeaderSessionChat: UICollectionReusableView {
 }
 
 extension HeaderSessionChat {
-    func prepare(_ imageUrl: String?) {
-        let placeholderImage = UIImage(systemName: "person")
+    func prepare(_ avatarFileId: String?) {
+        let placeholderImage = UIImage(systemName: "person.circle")
         let options = ImageLoadingOptions(
             placeholder: placeholderImage?.withTintColor(.systemGray2),
             transition: .fadeIn(duration: 0.5)
         )
-        let query = QueryBuilder.queryInfomation(.downloadFile)
-        guard let imageUrl = imageUrl else { return }
-        let urlString = (query?.genUrl())! + imageUrl
+        let urlString = (QueryBuilder.queryInfomation(.downloadFile)?.genUrl())! + (avatarFileId ?? "")
         let url = URL(string: urlString)!
         Nuke.loadImage(with: url, options: options, into: avatar)
     }

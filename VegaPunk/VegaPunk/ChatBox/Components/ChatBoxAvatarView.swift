@@ -19,7 +19,7 @@ class ChatBoxAvatarView: ReusableUIView {
     
     @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var containerView: UIView!
-    @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var label: UILabel!
     
     let defaultEmoji = "😄"
@@ -38,42 +38,31 @@ class ChatBoxAvatarView: ReusableUIView {
     }
     
     func configure() {
-        image.contentMode = .scaleAspectFit
+        label.isHidden = true
+        avatar.contentMode = .scaleAspectFill
         containerView.backgroundColor = .white
     }
     
-    func prepare(with text: String? = nil, type: TypeAvatar) {
-        
-        let placeholderImage = UIImage(systemName: "person")
+    func prepare(with avatarFileId: String? = nil, type: TypeAvatar) {
+        let placeholderImage = UIImage(systemName: "person.circle")
         let options = ImageLoadingOptions(
             placeholder: placeholderImage?.withTintColor(.systemGray2),
             transition: .fadeIn(duration: 0.5)
         )
-        
-        let query = QueryBuilder.queryInfomation(.downloadFile)
-        guard let imageUrl = text else { return }
-        let urlString = (query?.genUrl())! + imageUrl
+        let urlString = (QueryBuilder.queryInfomation(.downloadFile)?.genUrl())! + (avatarFileId ?? "")
         let url = URL(string: urlString)!
+        Nuke.loadImage(with: url, options: options, into: avatar)
         
-        label.isHidden = imageUrl.count > 1
-        image.isHidden = imageUrl.count < 1
-        
-        
-        if imageUrl.count > 1 {
-            Nuke.loadImage(with: url, options: options, into: image)
-        } else {
-            label.text = imageUrl.first?.description
-        }
 //        containerView.roundedBorder()
 //        image.roundedBorder()
         switch type {
         case .single:
             containerView.border(20)
-            image.border(18)
+            avatar.border(18)
             break
         case .multiple:
             containerView.border(16)
-            image.border(14)
+            avatar.border(14)
             break
         }
     }

@@ -83,13 +83,13 @@ In a real app that you publish on the App Store, you would provide a user experi
                         <rect key="frame" x="0.0" y="-50" width="421" height="50"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Datvu" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gsJ-15-L8l">
-                                <rect key="frame" x="65" y="10" width="45" height="19.5"/>
+                                <rect key="frame" x="65" y="9.9999999999999982" width="45" height="19.333333333333329"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                                 <color key="textColor" systemColor="systemOrangeColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="koq-8q-juk">
-                                <rect key="frame" x="454" y="29.5" width="42" height="0.0"/>
+                                <rect key="frame" x="454" y="29.333333333333332" width="42" height="0.0"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="42" id="PVz-Sz-fRN"/>
                                 </constraints>
@@ -98,7 +98,7 @@ In a real app that you publish on the App Store, you would provide a user experi
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This view hierarchy is useful" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hAA-qD-cTu">
-                                <rect key="frame" x="65" y="29" width="159.5" height="21"/>
+                                <rect key="frame" x="65.000000000000014" y="29" width="159.33333333333337" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="9Ew-Ls-pTC"/>
                                 </constraints>

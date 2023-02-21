@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -9,9 +8,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatBoxAvatarView" customModule="VegaPunk" customModuleProvider="target">
             <connections>
+                <outlet property="avatar" destination="v8k-Mg-Dup" id="FaW-M0-fIq"/>
                 <outlet property="containerView" destination="Q0L-6N-uhv" id="elA-75-vWk"/>
                 <outlet property="contentView" destination="iN0-l3-epB" id="4KO-AG-9ST"/>
-                <outlet property="image" destination="v8k-Mg-Dup" id="FaW-M0-fIq"/>
                 <outlet property="label" destination="q3B-Us-olV" id="SeS-EH-ma5"/>
             </connections>
         </placeholder>

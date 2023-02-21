@@ -43,7 +43,7 @@ struct UserViewModel: Hashable {
 class UserCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifier = "UserCollectionViewCell"
     
-    @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var emoji: UILabel!
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var name: UILabel!
@@ -57,7 +57,7 @@ class UserCollectionViewCell: UICollectionViewCell {
         // Initialization code
         
         self.contentView.backgroundColor = .systemBackground
-        image.roundedBorder()
+        avatar.roundedBorder()
         resetCell()
     }
     
@@ -76,13 +76,14 @@ class UserCollectionViewCell: UICollectionViewCell {
     }
     
     func prepareAvatar() {
-        image.isHidden = data.user.avatar?.count == 1
-        emoji.isHidden = !image.isHidden
-        if (data.user.avatar?.count == 1) {
-            emoji.text = data.user.avatar
-        } else {
-            Nuke.loadImage(with: URL(string: imageUrl)!, into: image)
-        }
+        let placeholderImage = UIImage(systemName: "person.circle")
+        let options = ImageLoadingOptions(
+            placeholder: placeholderImage?.withTintColor(.systemGray2),
+            transition: .fadeIn(duration: 0.5)
+        )
+        let urlString = (QueryBuilder.queryInfomation(.downloadFile)?.genUrl())! + (data.user.avatar ?? "")
+        let url = URL(string: urlString)!
+        Nuke.loadImage(with: url, options: options, into: avatar)
         
 //        let avatarLabels = ["🐝", "😝", "🍌", "☔️", "😊", "☕️"]
 //        if let userInfor = data.user.avatar, let avatar = Int(userInfor) {
@@ -97,7 +98,7 @@ class UserCollectionViewCell: UICollectionViewCell {
     }
     
     func resetCell() {
-        image.image = nil
+        avatar.image = nil
         emoji.text = nil
         name.text = nil
         username.text = nil

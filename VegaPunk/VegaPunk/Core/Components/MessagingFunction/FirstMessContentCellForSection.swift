@@ -75,6 +75,8 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
     // MARK: - Tasks
     func prepare(_ message: ChatBoxMessage) {
         if message.mediaType == .file {
+            contentImageContainerScrollView.backgroundColor = .systemGray2
+            contentImageContainerScrollView.border(16)
             heightContentImageCS.constant = 120
             contentTextLabel.text = ""
             let query = QueryBuilder.queryInfomation(.downloadFile)

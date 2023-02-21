@@ -8,7 +8,7 @@
 import UIKit
 
 enum CellCategory: Int {
-    case imagePicker, text, username, password, confirmPassword, gender, datePicker
+    case imagePicker, text, username, password, confirmPassword, gender, datePicker, number
 }
 
 class SignUpViewController: UIViewController, UIScrollViewDelegate {
@@ -56,8 +56,8 @@ class SignUpViewController: UIViewController, UIScrollViewDelegate {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        prepareNavigation()
         configureHierarchy()
+        prepareNavigation()
         prepareObserver()
     }
     
@@ -138,6 +138,16 @@ extension SignUpViewController {
         navigationController?.navigationBar.sizeToFit()
         setUpNavigationBar()
     }
+    func setUpNavigationBar() {
+        navigationItem.title = "Regist Account"
+        navigationItem.largeTitleDisplayMode = .always
+        // BarButtonItem.
+        let rightBarItem: UIBarButtonItem = {
+            let bt = UIBarButtonItem(title: "Regist", style: .plain, target: self, action: #selector(rightBarItemAction))
+            return bt
+        }()
+        navigationItem.rightBarButtonItem = rightBarItem
+    }
     @objc func rightBarItemAction() {
         self.view.endEditing(true)
         if validateInput() {
@@ -153,20 +163,10 @@ extension SignUpViewController {
             }
         }
     }
-    func setUpNavigationBar() {
-        navigationItem.title = "Regist Account"
-        navigationItem.largeTitleDisplayMode = .always
-        // BarButtonItem.
-        let rightBarItem: UIBarButtonItem = {
-            let bt = UIBarButtonItem(title: "Regist", style: .plain, target: self, action: #selector(rightBarItemAction))
-            return bt
-        }()
-        navigationItem.rightBarButtonItem = rightBarItem
-    }
 }
 
 
-// MARK: - Table view DataSource.
+// MARK: - Table view
 extension SignUpViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -175,7 +175,7 @@ extension SignUpViewController: UITableViewDataSource {
         return sectionHeaders[section]
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 350
+        return 240
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rowLabels.count
@@ -184,7 +184,6 @@ extension SignUpViewController: UITableViewDataSource {
         return 44
     }
 }
-// MARK: - Table view Delegate.
 extension SignUpViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let row = indexPath.row
@@ -221,8 +220,6 @@ extension SignUpViewController: UITableViewDelegate {
         prepareGenderPickerView(for: indexPath)
     }
     
-    
-    // MARK: - Tasks
     func prepareGenderPickerView(for indexPath: IndexPath) {
         let row = indexPath.row
         if row == inputTypes.firstIndex(of: .gender) {
@@ -290,8 +287,6 @@ extension SignUpViewController: UITextFieldDelegate {
         inputData[textField.tag] = textField.text ?? ""
     }
     
-    
-    // MARK: - Key board observer
     @objc func keyboardWillShow(_ notification: NSNotification) {
         if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             keyboardHeight = keyboardRect.height
