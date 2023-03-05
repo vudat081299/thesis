@@ -53,7 +53,7 @@ class ViewController: UIViewController {
             notificationCenter.addObserver(self, selector: #selector(websocketReceivedUserPackage(_:)), name: .WebsocketReceivedUserPackage, object: nil)
         }
         func prepareNavigationViewController() {
-            title = "Explore"
+            title = "Khám phá"
             self.navigationController?.navigationBar.prefersLargeTitles = true
             self.navigationController?.navigationBar.sizeToFit()
             self.navigationController?.navigationItem.largeTitleDisplayMode = .always
@@ -232,6 +232,7 @@ extension ViewController: UICollectionViewDelegate {
         let userProfileViewController = UserProfileViewController()
         let user = userViewModel[indexPath.section].user
         userProfileViewController.user = user
+        userProfileViewController.title = user.name
         navigationController?.pushViewController(userProfileViewController, animated: true)
     }
 }

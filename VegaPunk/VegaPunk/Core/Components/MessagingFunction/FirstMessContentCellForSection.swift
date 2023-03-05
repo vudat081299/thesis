@@ -33,11 +33,11 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
         creationDate.text = ""
         timeLabel.text = ""
         
-        contentImageContainerScrollView.contentOffset = CGPoint(x: 100, y: 100)
-        contentImageContainerScrollView.delegate = self
-        contentImageContainerScrollView.minimumZoomScale = 1.0
-        contentImageContainerScrollView.maximumZoomScale = 3.0
-        contentImageContainerScrollView.zoomScale = 1.0
+//        contentImageContainerScrollView.contentOffset = CGPoint(x: 100, y: 100)
+//        contentImageContainerScrollView.delegate = self
+//        contentImageContainerScrollView.minimumZoomScale = 1.0
+//        contentImageContainerScrollView.maximumZoomScale = 3.0
+//        contentImageContainerScrollView.zoomScale = 1.0
     }
     
     override func prepareForReuse() {
@@ -47,12 +47,7 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
         heightContentImageCS.constant = 0
         contentImageContainerScrollView.zoomScale = 1.0
         senderName.textColor = .systemOrange
-        
-        contentImageView.image = nil
-        contentTextLabel.text = ""
-        senderName.text = ""
-        creationDate.text = ""
-        timeLabel.text = ""
+        resetCell()
     }
     
     override var isHighlighted: Bool {
@@ -71,20 +66,33 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
         return contentImageView
     }
     
+    func resetCell() {
+        contentImageView.image = nil
+        contentTextLabel.text = ""
+        senderName.text = ""
+        creationDate.text = ""
+        timeLabel.text = ""
+    }
+    
     
     // MARK: - Tasks
     func prepare(_ message: ChatBoxMessage) {
+        resetCell()
+        timeLabel.text = message.createdAt.toDate().dayTime
         if message.mediaType == .file {
-            contentImageContainerScrollView.backgroundColor = .systemGray2
-            contentImageContainerScrollView.border(16)
-            heightContentImageCS.constant = 120
+            let placeholderImage = UIImage()
+            let options = ImageLoadingOptions(
+                placeholder: placeholderImage.withTintColor(.systemGray2),
+                transition: .fadeIn(duration: 0.5)
+            )
+            heightContentImageCS.constant = 240
             contentTextLabel.text = ""
             let query = QueryBuilder.queryInfomation(.downloadFile)
             let url = (query?.genUrl())! + message.content!
-            Nuke.loadImage(with: URL(string: url)!, into: contentImageView)
+            guard let imageURL = URL(string: url) else { return }
+            Nuke.loadImage(with: imageURL, options: options, into: contentImageView)
         } else {
             contentTextLabel.text = message.content
         }
-        timeLabel.text = message.createdAt.toDate().dayTime
     }
 }

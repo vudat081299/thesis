@@ -124,6 +124,10 @@
 		84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84B950C229916F88009EBBB8 /* ChatBoxAvatarView.xib */; };
 		84B950C529918820009EBBB8 /* ReusableUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B950C429918820009EBBB8 /* ReusableUIView.swift */; };
 		84CDE8DB298985360067C512 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CDE8DA298985360067C512 /* Messages.swift */; };
+		84CF908F29B46607002F71CE /* ManagingChatBoxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF908D29B46607002F71CE /* ManagingChatBoxViewController.swift */; };
+		84CF909029B46607002F71CE /* ManagingChatBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84CF908E29B46607002F71CE /* ManagingChatBoxViewController.xib */; };
+		84CF909329B46A63002F71CE /* ChatBoxMemberTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF909129B46A63002F71CE /* ChatBoxMemberTableViewCell.swift */; };
+		84CF909429B46A63002F71CE /* ChatBoxMemberTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84CF909229B46A63002F71CE /* ChatBoxMemberTableViewCell.xib */; };
 		C4DF90EA29A3712A00C565A3 /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF90E929A3712A00C565A3 /* Int.swift */; };
 /* End PBXBuildFile section */
 
@@ -262,6 +266,10 @@
 		84B950C229916F88009EBBB8 /* ChatBoxAvatarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatBoxAvatarView.xib; sourceTree = "<group>"; };
 		84B950C429918820009EBBB8 /* ReusableUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableUIView.swift; sourceTree = "<group>"; };
 		84CDE8DA298985360067C512 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
+		84CF908D29B46607002F71CE /* ManagingChatBoxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagingChatBoxViewController.swift; sourceTree = "<group>"; };
+		84CF908E29B46607002F71CE /* ManagingChatBoxViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ManagingChatBoxViewController.xib; sourceTree = "<group>"; };
+		84CF909129B46A63002F71CE /* ChatBoxMemberTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBoxMemberTableViewCell.swift; sourceTree = "<group>"; };
+		84CF909229B46A63002F71CE /* ChatBoxMemberTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatBoxMemberTableViewCell.xib; sourceTree = "<group>"; };
 		C4DF90E929A3712A00C565A3 /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -387,6 +395,10 @@
 		84A2C41529929D4E00EE8CD8 /* Messaging */ = {
 			isa = PBXGroup;
 			children = (
+				84CF909129B46A63002F71CE /* ChatBoxMemberTableViewCell.swift */,
+				84CF909229B46A63002F71CE /* ChatBoxMemberTableViewCell.xib */,
+				84CF908D29B46607002F71CE /* ManagingChatBoxViewController.swift */,
+				84CF908E29B46607002F71CE /* ManagingChatBoxViewController.xib */,
 				84A2C4272995617A00EE8CD8 /* MessagingViewController.swift */,
 				84A2C4282995617B00EE8CD8 /* MessagingViewController.xib */,
 				84A2C41629929D8700EE8CD8 /* SampleData.swift */,
@@ -857,6 +869,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84A938E9296AAABD008ED0DC /* TextInputCell.xib in Resources */,
+				84CF909429B46A63002F71CE /* ChatBoxMemberTableViewCell.xib in Resources */,
 				84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */,
 				8438E43829A320FA009D20CC /* ProfileAvatarTableViewCell.xib in Resources */,
 				84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */,
@@ -879,6 +892,7 @@
 				84A93922296B65C0008ED0DC /* UserCollectionViewCell.xib in Resources */,
 				8438E43429A31E74009D20CC /* UserProfileViewController.xib in Resources */,
 				8481DE6229A0C1BF002C36CD /* VideoViewController.xib in Resources */,
+				84CF909029B46607002F71CE /* ManagingChatBoxViewController.xib in Resources */,
 				84A938F5296AAABE008ED0DC /* HeaderSessionChat.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -928,6 +942,7 @@
 				84A93912296AD43B008ED0DC /* ResourceRequest.swift in Sources */,
 				8481DE6629A0C1BF002C36CD /* WebSocketProvider.swift in Sources */,
 				84A938F3296AAABE008ED0DC /* HeaderSessionChat.swift in Sources */,
+				84CF908F29B46607002F71CE /* ManagingChatBoxViewController.swift in Sources */,
 				84A827742990188D00753846 /* UUID.swift in Sources */,
 				84A938FC296AAABE008ED0DC /* NVActivityIndicatorAnimationBallPulseSync.swift in Sources */,
 				84A938EB296AAABD008ED0DC /* UserView.swift in Sources */,
@@ -958,6 +973,7 @@
 				8438E43729A320FA009D20CC /* ProfileAvatarTableViewCell.swift in Sources */,
 				84A938F7296AAABE008ED0DC /* NVActivityIndicatorPresenter.swift in Sources */,
 				84A938FE296AAABE008ED0DC /* GradientView.swift in Sources */,
+				84CF909329B46A63002F71CE /* ChatBoxMemberTableViewCell.swift in Sources */,
 				84A938DA296AAABD008ED0DC /* URLSession.swift in Sources */,
 				84A938E1296AAABD008ED0DC /* Time.swift in Sources */,
 				84A938D3296AAABD008ED0DC /* UIView.swift in Sources */,

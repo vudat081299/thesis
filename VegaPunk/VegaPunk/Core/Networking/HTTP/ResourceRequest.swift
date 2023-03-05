@@ -257,6 +257,59 @@ class RequestEngine {
             }
     }
     
+    static func add(member mappingId: UUID, into chatBoxId: UUID, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil, completion: (() -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(.addMemberIntoChatBox,
+                                                       ["chatBoxId": chatBoxId.uuidString]),
+              let url = URL(string: query.genUrl()),
+              let bearerTokenHeaders = bearerTokenHeaders else { return }
+        
+        let mappingIds = [mappingId.uuidString]
+        var parameters: Parameters = [:]
+        parameters["mappingIds"] = mappingIds
+        AF.request(
+            url,
+            method: query.httpMethod,
+            parameters: parameters,
+            headers: bearerTokenHeaders)
+            .responseData { response in
+                switch response.result {
+                case .success:
+                    print("Add member into chat box successful!")
+                    if let onSuccess = onSuccess { onSuccess() }
+                    break
+                case let .failure(error):
+                    print(error)
+                    if let onFailure = onFailure { onFailure() }
+                    break
+                }
+                if let completion = completion { completion() }
+            }
+    }
+    static func delete(member mappingId: UUID, from chatBoxId: UUID, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil, completion: (() -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(.deleteMemberFromChatBox,
+                                                       ["chatBoxId": chatBoxId.uuidString,
+                                                        "mappingId": mappingId.uuidString]),
+              let url = URL(string: query.genUrl()),
+              let bearerTokenHeaders = bearerTokenHeaders else { return }
+        AF.request(
+            url,
+            method: query.httpMethod,
+            headers: bearerTokenHeaders)
+            .responseData { response in
+                switch response.result {
+                case .success:
+                    print("Delete member from chat box successful!")
+                    if let onSuccess = onSuccess { onSuccess() }
+                    break
+                case let .failure(error):
+                    print(error)
+                    if let onFailure = onFailure { onFailure() }
+                    break
+                }
+                if let completion = completion { completion() }
+            }
+    }
+    
     
     
     // MARK: - Messages

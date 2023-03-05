@@ -47,6 +47,7 @@ In a real app that you publish on the App Store, you would provide a user experi
                                         <rect key="frame" x="0.0" y="0.0" width="525" height="0.0"/>
                                     </imageView>
                                 </subviews>
+                                <color key="backgroundColor" systemColor="systemGray3Color"/>
                                 <constraints>
                                     <constraint firstItem="oSS-sk-q12" firstAttribute="top" secondItem="RGl-wg-zWf" secondAttribute="top" id="AJp-iy-z11"/>
                                     <constraint firstItem="oSS-sk-q12" firstAttribute="centerY" secondItem="RGl-wg-zWf" secondAttribute="centerY" id="CBa-pK-UhP"/>
@@ -92,6 +93,9 @@ In a real app that you publish on the App Store, you would provide a user experi
         </collectionViewCell>
     </objects>
     <resources>
+        <systemColor name="systemGray3Color">
+            <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemGrayColor">
             <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

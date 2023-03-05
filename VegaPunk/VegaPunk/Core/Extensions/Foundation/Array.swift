@@ -143,6 +143,15 @@ extension Array where Element == User {
     func getUser(with mappingId: UUID) -> User? {
         return self.first { $0.mappingId == mappingId }
     }
+    func getOtherUsers() -> [User] {
+        let userUUIDs = self.map { $0.mappingId }
+        return Friend.retrieve().friends.filter {
+            !userUUIDs.contains($0.mappingId)
+        }
+    }
+    func sortWithJoin() -> [User] {
+        self.sorted(by: >)
+    }
 }
 
 

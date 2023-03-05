@@ -16,13 +16,16 @@ struct ChatBoxesController: RouteCollection {
         chatBoxesRoute.get(":chatBoxId", "mappings", use: getMappingsHandler)
         chatBoxesRoute.get(":chatBoxId", "messages", use: getMessagesHandler)
         
+        
         /// Auth
         let tokenAuthMiddleware = Token.authenticator()
         let guardAuthMiddleware = User.guardMiddleware()
         let tokenAuthGroup = chatBoxesRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         tokenAuthGroup.post(use: createHandler)
+        tokenAuthGroup.post(":chatBoxId", "members", use: addMembersIntoChatBoxesHandler)
         tokenAuthGroup.delete(":chatBoxId", use: deleteChatBoxHandler)
+        tokenAuthGroup.delete(":chatBoxId", "members", ":mappingId", use: deleteMemberFromChatBoxHandler)
     }
     
     
@@ -31,6 +34,22 @@ struct ChatBoxesController: RouteCollection {
         let chatBox = try req.content.decode(ChatBox.self)
         try await chatBox.save(on: req.db)
         return chatBox
+    }
+    func addMembersIntoChatBoxesHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        struct ResolveAddingMembersIntoChatBox: Codable {
+            let mappingIds: [UUID]
+        }
+        guard let chatBoxId = req.parameters.get("chatBoxId") else {
+            throw Abort(.notFound)
+        }
+        let resolvedModel = try req.content.decode(ResolveAddingMembersIntoChatBox.self)
+        return ChatBox.find(UUID(uuidString: chatBoxId), on: req.db).unwrap(or: Abort(.notFound)).flatMap { chatBox in
+            resolvedModel.mappingIds.map { mappingId in
+                Mapping.find(mappingId, on: req.db)
+                    .unwrap(or: Abort(.notFound))
+                    .flatMap { $0.$chatBoxes.attach(chatBox, on: req.db) }
+            }.flatten(on: req.eventLoop).transform(to: .created)
+        }
     }
     
     
@@ -64,6 +83,16 @@ struct ChatBoxesController: RouteCollection {
             throw Abort(.notFound)
         }
         try await chatBox.delete(on: req.db)
+        return .noContent
+    }
+    func deleteMemberFromChatBoxHandler(_ req: Request) async throws -> HTTPStatus {
+        guard let chatBoxQuery = try await ChatBox.find(req.parameters.get("chatBoxId"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        guard let mappingQuery = try await Mapping.find(req.parameters.get("mappingId"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        try await mappingQuery.$chatBoxes.detach(chatBoxQuery, on: req.db)
         return .noContent
     }
 }

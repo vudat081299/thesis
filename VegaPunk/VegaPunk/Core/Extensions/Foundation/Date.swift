@@ -81,4 +81,11 @@ extension Date {
         let timeString = dateFormatter.string(from: self)
         return timeString
     }
+    var second: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "ss"
+        dateFormatter.calendar = Calendar(identifier: .gregorian)
+        let timeString = dateFormatter.string(from: self)
+        return timeString
+    }
 }

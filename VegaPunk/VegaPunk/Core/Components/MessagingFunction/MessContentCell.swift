@@ -28,11 +28,12 @@ class MessContentCell: UICollectionViewCell, UIScrollViewDelegate {
         contentTextLabel.text = ""
         timeLabel.text = ""
         
-        contentImageContainerScrollView.contentOffset = CGPoint(x: 100, y: 100)
-        contentImageContainerScrollView.delegate = self
-        contentImageContainerScrollView.minimumZoomScale = 1.0
-        contentImageContainerScrollView.maximumZoomScale = 3.0
-        contentImageContainerScrollView.zoomScale = 1.0
+//        contentImageContainerScrollView.contentOffset = CGPoint(x: 100, y: 100)
+//        contentImageContainerScrollView.delegate = self
+//        contentImageContainerScrollView.minimumZoomScale = 1.0
+//        contentImageContainerScrollView.maximumZoomScale = 3.0
+//        contentImageContainerScrollView.zoomScale = 1.0
+        
     }
     
     override func prepareForReuse() {
@@ -60,18 +61,23 @@ class MessContentCell: UICollectionViewCell, UIScrollViewDelegate {
     
     // MARK: - Tasks
     func prepare(_ message: ChatBoxMessage) {
+        timeLabel.text = message.createdAt.toDate().dayTime
         if message.mediaType == .file {
+            let placeholderImage = UIImage()
+            let options = ImageLoadingOptions(
+                placeholder: placeholderImage.withTintColor(.systemGray2),
+                transition: .fadeIn(duration: 0.5)
+            )
             heightImage.constant = 240
             contentTextLabel.text = ""
             let query = QueryBuilder.queryInfomation(.downloadFile)
             let url = (query?.genUrl())! + message.content!
-            Nuke.loadImage(with: URL(string: url)!, into: contentImageView)
+            guard let imageURL = URL(string: url) else { return }
+            Nuke.loadImage(with: imageURL, options: options, into: contentImageView)
         } else {
             contentTextLabel.text = message.content
         }
-        timeLabel.text = message.createdAt.toDate().dayTime
     }
-    
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return contentImageView
     }

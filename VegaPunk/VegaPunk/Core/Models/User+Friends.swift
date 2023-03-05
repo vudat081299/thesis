@@ -26,6 +26,13 @@ struct User: Codable {
     var password: String?
     var country: String?
     var gender: Gender?
+    
+    static func == (lhs: User, rhs: User) -> Bool {
+        return lhs.id == rhs.id
+    }
+    static func > (lhs: User, rhs: User) -> Bool {
+        return lhs.join == rhs.join
+    }
 }
 
 enum Gender: Int, CaseIterable, Codable {
@@ -40,11 +47,11 @@ enum Gender: Int, CaseIterable, Codable {
     var description: String {
         switch self {
         case .male:
-            return "male"
+            return "Nam"
         case .female:
-            return "female"
+            return "Nữ"
         case .other:
-            return "other"
+            return "Khác"
         }
     }
 }

@@ -139,6 +139,22 @@ class ChatBoxViewController: UIViewController {
     func getMembersInChatBox(with mappingIds: [UUID]) -> [User] {
         return friends.filter { mappingIds.contains($0.mappingId!) }
     }
+    
+    
+    // MARK: - APIs
+    func leave(from chatBoxId: UUID) {
+        RequestEngine.delete(member: (user.data?.mappingId)!, from: chatBoxId, completion: { [self] in
+            DispatchQueue.main.async { [self] in
+                chatBoxViewModel = chatBoxViewModel.filter { $0.chatBox.id != chatBoxId }
+                tableView.reloadData()
+            }
+            update()
+        })
+    }
+    
+    func update() {
+        RequestEngine.getAllMappingPivots()
+    }
 }
 
 
@@ -168,5 +184,22 @@ extension ChatBoxViewController: UITableViewDelegate, UITableViewDataSource {
         messagingViewController.tabBarController?.tabBar.isHidden = true
         messagingViewController.navigationController?.modalPresentationStyle = .fullScreen
         navigationController?.pushViewController(messagingViewController, animated: true)
+    }
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let delete = UIContextualAction(style: .destructive,
+                                        title: "Rời nhóm") { [weak self] (action, view, completionHandler) in
+            guard let self = self else { return }
+            let alert = UIAlertController(title: "Rời khỏi nhóm chat", message: "Bạn có muốn rời khỏi nhóm chat?", preferredStyle: .alert)
+            let cancel = UIAlertAction(title: "Huỷ", style: .default, handler: nil)
+            let leave = UIAlertAction(title: "Rời nhóm", style: .destructive) { _ in
+                self.leave(from: self.chatBoxViewModel[indexPath.row].chatBox.id)
+            }
+            alert.addAction(cancel)
+            alert.addAction(leave)
+            alert.preferredAction = cancel
+            self.present(alert, animated: true, completion: nil)
+            completionHandler(true)
+        }
+        return UISwipeActionsConfiguration(actions: [delete])
     }
 }

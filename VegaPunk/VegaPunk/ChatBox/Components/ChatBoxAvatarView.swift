@@ -41,18 +41,19 @@ class ChatBoxAvatarView: ReusableUIView {
         label.isHidden = true
         avatar.contentMode = .scaleAspectFill
         containerView.backgroundColor = .white
+        
+        let contentModes = ImageLoadingOptions.ContentModes(
+          success: .scaleAspectFill,
+          failure: .scaleAspectFill,
+          placeholder: .scaleAspectFill)
+        
+        let placeholderImage = UIImage(systemName: "person.circle")
+        ImageLoadingOptions.shared.contentModes = contentModes
+        ImageLoadingOptions.shared.placeholder = placeholderImage?.withTintColor(.systemGray2)
+        ImageLoadingOptions.shared.transition = .fadeIn(duration: 0.5)
     }
     
-    func prepare(with avatarFileId: String? = nil, type: TypeAvatar) {
-        let placeholderImage = UIImage(systemName: "person.circle")
-        let options = ImageLoadingOptions(
-            placeholder: placeholderImage?.withTintColor(.systemGray2),
-            transition: .fadeIn(duration: 0.5)
-        )
-        let urlString = (QueryBuilder.queryInfomation(.downloadFile)?.genUrl())! + (avatarFileId ?? "")
-        let url = URL(string: urlString)!
-        Nuke.loadImage(with: url, options: options, into: avatar)
-        
+    func prepare(with avatarFileId: String?, type: TypeAvatar) {
 //        containerView.roundedBorder()
 //        image.roundedBorder()
         switch type {
@@ -65,5 +66,15 @@ class ChatBoxAvatarView: ReusableUIView {
             avatar.border(14)
             break
         }
+        
+        var pixelSize: CGFloat { return 160 }
+        var resizedImageProcessors: [ImageProcessing] {
+            let imageSize = CGSize(width: pixelSize, height: pixelSize)
+            return [ImageProcessors.Resize(size: imageSize, contentMode: .aspectFill)]
+        }
+        let urlString = (QueryBuilder.queryInfomation(.downloadFile)?.genUrl())! + (avatarFileId ?? "")
+        let imageUrl = URL(string: urlString)!
+        let request = ImageRequest(url: imageUrl, processors: resizedImageProcessors)
+        Nuke.loadImage(with: request, into: avatar)
     }
 }

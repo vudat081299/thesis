@@ -28,10 +28,11 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
     
     
     // MARK: - Table view data.
-    let sectionHeaders = ["Update your profile"]
+    let sectionHeaders = ["Cập nhật thông tin cá nhân"]
+    let sectionHeadersForProfileViewer = "Thông tin người dùng"
     let rowLabels = [
-        "Avatar", "Name",
-        "Gender", "Phone", "Email", "Birth", "Bio", "Country"
+        "Avatar", "Họ & tên",
+        "Giới tính", "Số điện thoại", "Email", "Ngày sinh", "Giới thiệu", "Quốc gia"
     ]
     let placeHolders = [
         "Optional", "Optional",
@@ -116,6 +117,7 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - @objc
     @objc func signOut() {
+        user = nil
         resetApplicationMetadata()
         configureApplication()
         appState = .unauthorized
@@ -170,8 +172,9 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
 extension UserProfileViewController {
     func update(_ user: User) {
         var user = user
+        navigationItem.rightBarButtonItem?.isEnabled = false
         if let image = pickedImage {
-            RequestEngine.upload(image.pngData()!) { [self] fileId in
+            RequestEngine.upload(image.resized(to: 360).pngData()!) { [self] fileId in
                 pickedImage = nil
                 user.avatar = fileId
                 RequestEngine.updateUser(user) {
@@ -185,16 +188,22 @@ extension UserProfileViewController {
         }
         
         func updatedSuccess() {
-            SoundFeedBack.success()
-            DispatchQueue.main.async {
-                self.navigationItem.rightBarButtonItem?.tintColor = .systemGreen
-                self.navigationItem.rightBarButtonItem?.image = UIImage(systemName: "checkmark.circle.fill")
+            DispatchQueue.main.async { [self] in
+                SoundFeedBack.success()
+                if let userData = AuthenticatedUser.retrieve()?.data {
+                    self.user = userData
+                }
+                prepareData()
+                tableView.reloadData()
+                navigationItem.rightBarButtonItem?.tintColor = .systemGreen
+                navigationItem.rightBarButtonItem?.image = UIImage(systemName: "checkmark.circle.fill")
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.navigationItem.rightBarButtonItem?.tintColor = .link
-                self.navigationItem.rightBarButtonItem?.image = nil
-                self.navigationItem.rightBarButtonItem?.title = "Update"
-                self.navigationController?.popViewController(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+                navigationItem.rightBarButtonItem?.tintColor = .link
+                navigationItem.rightBarButtonItem?.image = nil
+                navigationItem.rightBarButtonItem?.title = "Cập nhật"
+                navigationItem.rightBarButtonItem?.isEnabled = true
+                navigationController?.popViewController(animated: true)
             }
         }
     }
@@ -204,7 +213,6 @@ extension UserProfileViewController {
 // MARK: - Navigation
 extension UserProfileViewController {
     func prepareNavigation() {
-        title = "Profile"
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationController?.navigationBar.sizeToFit()
         self.navigationController?.navigationItem.largeTitleDisplayMode = .always
@@ -216,12 +224,12 @@ extension UserProfileViewController {
         if !isUserInteractionEnabled { return }
         // BarButtonItem.
         let rightBarItem: UIBarButtonItem = {
-            let bt = UIBarButtonItem(title: "Update", style: .plain, target: self, action: #selector(rightBarItemAction))
+            let bt = UIBarButtonItem(title: "Cập nhật", style: .plain, target: self, action: #selector(rightBarItemAction))
             return bt
         }()
         navigationItem.rightBarButtonItem = rightBarItem
         let leftBarButtonItem: UIBarButtonItem = {
-            let bt = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(signOut))
+            let bt = UIBarButtonItem(title: "Đăng xuất", style: .plain, target: self, action: #selector(signOut))
             bt.tintColor = .systemRed
             return bt
         }()
@@ -263,6 +271,7 @@ extension UserProfileViewController: UITableViewDataSource {
         return 1
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if !isUserInteractionEnabled { return sectionHeadersForProfileViewer }
         return sectionHeaders[section]
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -335,7 +344,7 @@ extension UserProfileViewController: UITableViewDelegate {
     func prepareGenderPickerView(for indexPath: IndexPath) {
         let row = indexPath.row
         if row == inputTypes.firstIndex(of: .gender) {
-            let alert = UIAlertController(title: "Pick your gender", message: "", preferredStyle: .actionSheet)
+            let alert = UIAlertController(title: "Chọn giới tính của bạn", message: "", preferredStyle: .actionSheet)
             Gender.allCases.forEach { gender in
                 let action = UIAlertAction(title: gender.description.Capitalized, style: .default) { _ in
                     self.reloadGender(indexPath, value: gender.rawValue)
@@ -373,6 +382,9 @@ extension UserProfileViewController: UITextFieldDelegate {
                 textField.text = text
             }
         } else if textField.tag == inputTypes[.number] {
+            if string.count == 0 {
+                return true
+            }
             guard let _ = Int(string) else { return false }
         } else {
             text += string

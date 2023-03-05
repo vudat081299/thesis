@@ -21,6 +21,7 @@
                 <outlet property="pickedImage" destination="So8-SW-QjP" id="qB5-QX-PNP"/>
                 <outlet property="pickedImageContainer" destination="pXf-ys-5hT" id="z6m-4m-4lr"/>
                 <outlet property="removeSendingImageButton" destination="OfE-o7-4Cg" id="PkX-ZL-V7e"/>
+                <outlet property="sendMessageButton" destination="03b-FQ-xed" id="NUb-xB-4Pq"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
                 <outlet property="widthTextField" destination="WWd-43-xuo" id="wFP-3P-1bw"/>
             </connections>
@@ -106,7 +107,7 @@
                                             <constraint firstAttribute="height" constant="50" id="IxZ-uz-7Tb"/>
                                             <constraint firstAttribute="width" constant="50" id="N5G-z4-hXX"/>
                                         </constraints>
-                                        <color key="tintColor" systemColor="systemGray2Color"/>
+                                        <color key="tintColor" systemColor="systemBlueColor"/>
                                         <state key="normal">
                                             <imageReference key="image" image="photo.on.rectangle.angled" catalog="system" symbolScale="large"/>
                                         </state>
@@ -171,7 +172,7 @@
                                                     <constraint firstAttribute="width" constant="50" id="34g-5n-1xT"/>
                                                     <constraint firstAttribute="height" constant="50" id="UOQ-1y-Agw"/>
                                                 </constraints>
-                                                <color key="tintColor" systemColor="systemGray2Color"/>
+                                                <color key="tintColor" systemColor="systemBlueColor"/>
                                                 <state key="normal">
                                                     <imageReference key="image" image="paperplane.fill" catalog="system" symbolScale="large"/>
                                                 </state>
@@ -235,6 +236,9 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

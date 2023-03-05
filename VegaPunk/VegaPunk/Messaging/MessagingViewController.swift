@@ -21,6 +21,7 @@ class MessagingViewController: UIViewController {
     //
     let notificationCenter = NotificationCenter.default
     let imagePicker = UIImagePickerController()
+    let managingChatBoxViewController = ManagingChatBoxViewController()
     
     //
     var dataSource: UICollectionViewDiffableDataSource<Int, ChatBoxMessage>! = nil
@@ -45,6 +46,7 @@ class MessagingViewController: UIViewController {
     @IBOutlet weak var chatTextField: UITextField!
     @IBOutlet weak var pickedImage: UIImageView!
     @IBOutlet weak var removeSendingImageButton: UIButton!
+    @IBOutlet weak var sendMessageButton: UIButton!
     
     // Constraints
     @IBOutlet weak var bottomSpaceCollectionView: NSLayoutConstraint!
@@ -117,8 +119,8 @@ class MessagingViewController: UIViewController {
         super.viewWillAppear(animated)
         
         // Prepare data
-        fetch()
         user = AuthenticatedUser.retrieve()?.data
+        fetch()
         
         // Prepare view
         tabBarController?.tabBar.isHidden = true
@@ -148,24 +150,21 @@ class MessagingViewController: UIViewController {
     /// - Note: This method must call after collection view is set up because the reload collection view method is called in this function.
     /// - Usage: Fetch data for messaging view controller. It's destination is transform fetched data to `[[Message]]`.
     func fetch() {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
-            let chatBox = self.extractedChatBox.chatBox
-            self.members = self.extractedChatBox.members.retrieveUsers()
-            
-            // fetch from local
+        let chatBox = self.extractedChatBox.chatBox
+        self.members = self.extractedChatBox.members.retrieveUsers()
+        
+        // fetch from local
+        setUp(for: chatBox.id)
+        
+        // fetch from server
+        var time: String!
+        if self.messageViewModel.count > 0 {
+            time = self.messageViewModel.last?.last?.createdAt
+        }
+        if time == nil { time = "0" }
+        RequestEngine.fetchMessages(from: time, in: chatBox.id) { resolveMessages in
+            if (resolveMessages.count == 0) { return }
             setUp(for: chatBox.id)
-            
-            // fetch from server
-            var time: String!
-            if self.messageViewModel.count > 0 {
-                time = self.messageViewModel.last?.last?.createdAt
-            }
-            if time == nil { time = "0" }
-            RequestEngine.fetchMessages(from: time, in: chatBox.id) { resolveMessages in
-                if (resolveMessages.count == 0) { return }
-                setUp(for: chatBox.id)
-            }
         }
         func setUp(for chatBoxId: UUID) {
             self.messageViewModel.retrieve(from: chatBoxId)
@@ -252,10 +251,12 @@ class MessagingViewController: UIViewController {
     @IBAction func sendMessage(_ sender: UIButton) {
         FeedBackTapEngine.tapped(style: .medium)
         if pickedImage.image != nil {
-            RequestEngine.upload((pickedImage.image?.pngData())!) { [self] fileId in
+            sendMessageButton.isEnabled = false
+            RequestEngine.upload((pickedImage.image?.resized(to: 720).pngData())!) { [self] fileId in
                 previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .file, content: fileId))
                 NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
                 hidePickedImageContainer()
+                sendMessageButton.isEnabled = true
             }
         } else {
             if (chatTextField.text == nil || chatTextField.text?.count == 0) { return }
@@ -263,10 +264,6 @@ class MessagingViewController: UIViewController {
             chatTextField.text = ""
             NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
         }
-        
-        
-        
-        
     }
     @IBAction func pickImage(_ sender: UIButton) {
         FeedBackTapEngine.tapped(style: .medium)
@@ -283,9 +280,17 @@ class MessagingViewController: UIViewController {
 
 // MARK: - NavigationBar
 extension MessagingViewController {
-    @objc func rightBarItemAction() {
+    @objc func callVideoAction() {
         FeedBackTapEngine.tapped(style: .medium)
         present(buildMainViewController(), animated: true)
+    }
+    @objc func manageChatBoxAction() {
+        FeedBackTapEngine.tapped(style: .medium)
+        managingChatBoxViewController.users[0] = members.sortWithJoin()
+        managingChatBoxViewController.users[1] = members.getOtherUsers().sortWithJoin()
+        managingChatBoxViewController.chatBoxId = extractedChatBox.chatBox.id
+        managingChatBoxViewController.navigationController?.modalPresentationStyle = .fullScreen
+        navigationController?.pushViewController(managingChatBoxViewController, animated: true)
     }
     func setUpNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
@@ -295,11 +300,16 @@ extension MessagingViewController {
 //        self.navigationController?.modalPresentationStyle = .fullScreen
         
         /// Call video BarButtonItem.
-        let rightBarItem: UIBarButtonItem = {
-            let bt = UIBarButtonItem(image: UIImage(systemName: "video.circle.fill"), style: .plain, target: self, action: #selector(rightBarItemAction))
+        let callVideoButton: UIBarButtonItem = {
+            let bt = UIBarButtonItem(image: UIImage(systemName: "video.circle.fill"), style: .plain, target: self, action: #selector(callVideoAction))
             return bt
         }()
-        navigationItem.rightBarButtonItem = rightBarItem
+        let addMemberButton: UIBarButtonItem = {
+            let bt = UIBarButtonItem(image: UIImage(systemName: "plus.bubble.fill"), style: .plain, target: self, action: #selector(manageChatBoxAction))
+            return bt
+        }()
+        navigationItem.rightBarButtonItems = [addMemberButton, callVideoButton]
+        
     }
     func setTitle() {
         if members.count == 0 {

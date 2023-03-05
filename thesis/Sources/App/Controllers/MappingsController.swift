@@ -27,7 +27,7 @@ struct MappingsController: RouteCollection {
         
         tokenAuthGroup.post(use: createHandler)
         tokenAuthGroup.post("chatBox", "create", use: addchatBoxesHandler)
-        tokenAuthGroup.post("add", "members", "chatBox", use: addMembersIntoChatBoxesHandler)
+        tokenAuthGroup.post("add", "members", ":chatBoxId", use: addMembersIntoChatBoxesHandler)
         
         tokenAuthGroup.put(":mappingId", use: updateHandler)
         tokenAuthGroup.delete(":mappingId", "chatBoxes", ":chatBoxId", use: deleteChatBoxesHandler)
@@ -95,11 +95,13 @@ struct MappingsController: RouteCollection {
     // MARK: - Post <methods>
     func addMembersIntoChatBoxesHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
         struct ResolveAddingMembersIntoChatBox: Codable {
-            let chatBoxID: UUID
             let mappingIds: [UUID]
         }
+        guard let chatBoxId = req.parameters.get("chatBoxId") else {
+            throw Abort(.notFound)
+        }
         let resolvedModel = try req.content.decode(ResolveAddingMembersIntoChatBox.self)
-        return ChatBox.find(resolvedModel.chatBoxID, on: req.db).unwrap(or: Abort(.notFound)).flatMap { chatBox in
+        return ChatBox.find(UUID(uuidString: chatBoxId), on: req.db).unwrap(or: Abort(.notFound)).flatMap { chatBox in
             resolvedModel.mappingIds.map { mappingId in
                 Mapping.find(mappingId, on: req.db)
                     .unwrap(or: Abort(.notFound))

@@ -42,6 +42,8 @@ enum Route: CaseIterable {
     case createChatBox /// Different: this api is processed in MappingsController on Server
     case getMemberInChatBox
     case getMessagesOfChatBox
+    case addMemberIntoChatBox
+    case deleteMemberFromChatBox
 //    case createChatBox2 /// Different: this api is processed in ChatBoxesController on Server
     case removeChatBox
     case createMessage
@@ -93,6 +95,14 @@ struct QueryBuilder {
         case .getAllMappingPivots: return QueryInformation(url: pivotRoute!, decodableType: [MappingChatBoxPivot.Resolve].self)
         case .uploadFile: return QueryInformation(httpMethod: .post, url: fileRoute!, decodableType: String.self)
         case .downloadFile: return QueryInformation(httpMethod: .post, url: fileRoute!, decodableType: String.self)
+            
+        case .addMemberIntoChatBox:
+            guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
+            return QueryInformation(httpMethod: .post, url: chatBoxRoute! + chatBoxId + "/members")
+        case .deleteMemberFromChatBox:
+            guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
+            guard let mappingId = parammeters["mappingId"] else { return nil }
+            return QueryInformation(httpMethod: .delete, url: chatBoxRoute! + chatBoxId + "/members/" + mappingId)
         }
     }
 }

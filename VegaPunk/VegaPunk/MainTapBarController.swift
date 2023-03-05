@@ -7,6 +7,7 @@
 
 import UIKit
 import Starscream
+import Nuke
 
 let imageUrl = "http://\(configureIp):8080/api/files/63e28ee8c6b2f7c2a220cc04"
 
@@ -21,8 +22,8 @@ struct ViewControllerData {
     static var viewControllerDatas: [ViewControllerData] = {
         let array = [
 //            ViewControllerData(title: "Profile", iconNormal: "person", selectedIcon: "person.fill", viewController: UINavigationController(rootViewController: ViewController())),
-            ViewControllerData(title: "Chat box", iconNormal: "message", selectedIcon: "message.fill", viewController: UINavigationController(rootViewController: ChatBoxViewController())),
-            ViewControllerData(title: "Profile", iconNormal: "person", selectedIcon: "person.fill", viewController: UINavigationController(rootViewController: UserProfileViewController())),
+            ViewControllerData(title: "Nhắn tin", iconNormal: "message", selectedIcon: "message.fill", viewController: UINavigationController(rootViewController: ChatBoxViewController())),
+            ViewControllerData(title: "Thông tin cá nhân", iconNormal: "person", selectedIcon: "person.fill", viewController: UINavigationController(rootViewController: UserProfileViewController())),
         ]
         var dataList: [ViewControllerData] = []
         array.forEach {
@@ -56,6 +57,14 @@ class MainTabBarController: UITabBarController {
         }
         connectWebSocket()
         notificationCenter.addObserver(self, selector: #selector(send(_:)), name: .WebsocketSendMessagePackage, object: nil)
+        
+        DataLoader.sharedUrlCache.diskCapacity = 0
+        let pipeline = ImagePipeline {
+            let dataCache = try? DataCache(name: "com.raywenderlich.Far-Out-Photos.datacache")
+            dataCache?.sizeLimit = 200 * 1024 * 1024
+            $0.dataCache = dataCache
+        }
+        ImagePipeline.shared = pipeline
     }
     
     override func viewWillAppear(_ animated: Bool) {
