@@ -11,6 +11,8 @@ import Nuke
 class HeaderSessionChat: UICollectionReusableView {
     static let reuseIdentifier = "HeaderSessionChat"
     
+    @IBOutlet weak var avatarLayer: UIView!
+    @IBOutlet weak var avatarContainer: UIView!
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var constraint: NSLayoutConstraint!
     
@@ -18,8 +20,11 @@ class HeaderSessionChat: UICollectionReusableView {
         super.awakeFromNib()
         // Initialization code
         
-        avatar.clipsToBounds = true
-        avatar.layer.cornerRadius = 8
+        avatar.tintColor = .systemGray3
+        avatarContainer.border()
+//        avatarContainer.dropShadow()
+        avatarLayer.border()
+        avatarLayer.dropShadow()
         self.clipsToBounds = false
         
         avatar.contentMode = .scaleAspectFill

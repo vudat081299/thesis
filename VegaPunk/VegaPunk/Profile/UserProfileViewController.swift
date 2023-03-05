@@ -35,8 +35,8 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
         "Giới tính", "Số điện thoại", "Email", "Ngày sinh", "Giới thiệu", "Quốc gia"
     ]
     let placeHolders = [
-        "Optional", "Optional",
-        "Optional", "Optional", "Optional", "dd/mm/yyyy", "Optional", "Optional"
+        "Không bắt buộc", "Không bắt buộc",
+        "Không bắt buộc", "Bắt buộc", "Bắt buộc", "dd/mm/yyyy", "Không bắt buộc", "Không bắt buộc"
     ]
     let inputTypes: [CellCategory] = [
         .imagePicker, .text,
@@ -130,7 +130,7 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
         let requiredIndex = [1, 3, 4]
         for (index, value) in inputData.enumerated() {
             if requiredIndex.contains(index) && (value == nil || value == "") {
-                AlertNotification.notify(message: "Please fill in required field!", on: self)
+                AlertNotification.notify(message: "Hãy nhập những thông tin bắt buộc!", on: self)
                 return false
             }
             fillDataToSubmitForm()

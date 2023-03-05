@@ -45,7 +45,9 @@ struct ChatBoxesController: RouteCollection {
         let resolvedModel = try req.content.decode(ResolveAddingMembersIntoChatBox.self)
         return ChatBox.find(UUID(uuidString: chatBoxId), on: req.db).unwrap(or: Abort(.notFound)).flatMap { chatBox in
             resolvedModel.mappingIds.map { mappingId in
-                Mapping.find(mappingId, on: req.db)
+                let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: nil, sender: nil, chatBoxId: chatBox.id, mediaType: nil, content: nil))
+                webSocketManager.send(to: resolvedModel.mappingIds, package: package)
+                return Mapping.find(mappingId, on: req.db)
                     .unwrap(or: Abort(.notFound))
                     .flatMap { $0.$chatBoxes.attach(chatBox, on: req.db) }
             }.flatten(on: req.eventLoop).transform(to: .created)
@@ -86,6 +88,7 @@ struct ChatBoxesController: RouteCollection {
         return .noContent
     }
     func deleteMemberFromChatBoxHandler(_ req: Request) async throws -> HTTPStatus {
+        let user = try req.auth.require(User.self)
         guard let chatBoxQuery = try await ChatBox.find(req.parameters.get("chatBoxId"), on: req.db) else {
             throw Abort(.notFound)
         }
@@ -93,6 +96,24 @@ struct ChatBoxesController: RouteCollection {
             throw Abort(.notFound)
         }
         try await mappingQuery.$chatBoxes.detach(chatBoxQuery, on: req.db)
+        
+        
+//        let deletedUser = try await User.query(on: req.db).filter(\.$id == mappingQuery.$user.id).all()
+//        let deletedUser = try await User.query(on: req.db).filter(\.$id == mappingQuery.$user.id).all()
+//        let message = Message(sender: user.mappingId!, mediaType: MediaType.notify.rawValue, content: "\(user.name) đã xoá @\(deletedUser.username) khỏi nhóm!", chatBoxId: chatBoxQuery.id)
+//        try await message.save(on: req.db)
+//
+//        for mappingId in resolvedModel.mappingIds {
+//            guard let mapping = try await Mapping.find(mappingId, on: req.db) else {
+//                throw Abort(.notFound)
+//            }
+//            try await mapping.$chatBoxes.attach(chatBox, on: req.db)
+//        }
+//        let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: message.createdAt, sender: user.mappingId, chatBoxId: chatBox.id, mediaType: .text, content: message.content))
+        
+        
+        let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: nil, sender: nil, chatBoxId: chatBoxQuery.id, mediaType: nil, content: nil))
+        webSocketManager.send(to: [mappingQuery.id], package: package)
         return .noContent
     }
 }

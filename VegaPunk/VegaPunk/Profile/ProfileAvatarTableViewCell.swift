@@ -18,6 +18,7 @@ class ProfileAvatarTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         avatarImage.contentMode = .scaleAspectFill
+        avatarImage.tintColor = .systemGray3
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -17,20 +18,35 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vdu-mk-hmc">
                     <rect key="frame" x="0.0" y="0.0" width="355" height="50"/>
                     <subviews>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pencil.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="4Ve-rZ-V4m">
-                            <rect key="frame" x="15" y="10.5" width="35" height="34"/>
-                            <color key="tintColor" systemColor="systemGray3Color"/>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MlP-pC-N8N">
+                            <rect key="frame" x="15" y="10" width="35" height="35"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                        </view>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CYu-vS-IAw">
+                            <rect key="frame" x="15" y="10" width="35" height="35"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pencil.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="4Ve-rZ-V4m">
+                                    <rect key="frame" x="0.0" y="0.5" width="35" height="34"/>
+                                    <color key="tintColor" systemColor="systemGray3Color"/>
+                                </imageView>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="35" id="4ZT-4d-ytM"/>
-                                <constraint firstAttribute="width" constant="35" id="yRH-7u-gNU"/>
+                                <constraint firstAttribute="width" constant="35" id="1eX-fU-s6D"/>
+                                <constraint firstAttribute="height" constant="35" id="N4R-6l-P5u"/>
+                                <constraint firstItem="4Ve-rZ-V4m" firstAttribute="top" secondItem="CYu-vS-IAw" secondAttribute="top" id="Y49-n1-e2d"/>
+                                <constraint firstItem="4Ve-rZ-V4m" firstAttribute="leading" secondItem="CYu-vS-IAw" secondAttribute="leading" id="bjN-1D-a7c"/>
+                                <constraint firstAttribute="bottom" secondItem="4Ve-rZ-V4m" secondAttribute="bottom" id="ebK-Lq-XWH"/>
+                                <constraint firstAttribute="trailing" secondItem="4Ve-rZ-V4m" secondAttribute="trailing" id="yKM-2v-Snv"/>
                             </constraints>
-                        </imageView>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="4Ve-rZ-V4m" firstAttribute="leading" secondItem="Vdu-mk-hmc" secondAttribute="leading" constant="15" id="bcg-d7-L9v"/>
-                        <constraint firstItem="4Ve-rZ-V4m" firstAttribute="top" secondItem="Vdu-mk-hmc" secondAttribute="top" constant="10" id="dYh-4X-kks"/>
-                        <constraint firstAttribute="bottom" secondItem="4Ve-rZ-V4m" secondAttribute="bottom" constant="5" id="phE-lM-XxP"/>
+                        <constraint firstItem="CYu-vS-IAw" firstAttribute="top" secondItem="Vdu-mk-hmc" secondAttribute="top" constant="10" id="G40-Td-40Q"/>
+                        <constraint firstAttribute="bottom" secondItem="CYu-vS-IAw" secondAttribute="bottom" constant="5" id="enB-rR-a6X"/>
+                        <constraint firstItem="CYu-vS-IAw" firstAttribute="leading" secondItem="Vdu-mk-hmc" secondAttribute="leading" constant="15" id="oOP-n8-J5c"/>
                     </constraints>
                 </view>
             </subviews>
@@ -43,6 +59,8 @@
             </constraints>
             <connections>
                 <outlet property="avatar" destination="4Ve-rZ-V4m" id="48z-ai-MNb"/>
+                <outlet property="avatarContainer" destination="CYu-vS-IAw" id="aLd-lV-f81"/>
+                <outlet property="avatarLayer" destination="MlP-pC-N8N" id="o62-Ie-fuG"/>
                 <outlet property="constraint" destination="ZQV-F6-Fay" id="snH-vW-42R"/>
             </connections>
             <point key="canvasLocation" x="-23.913043478260871" y="122.87946428571428"/>
@@ -50,6 +68,9 @@
     </objects>
     <resources>
         <image name="pencil.circle.fill" catalog="system" width="128" height="123"/>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemGray3Color">
             <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

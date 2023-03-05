@@ -60,6 +60,7 @@ class UserCollectionViewCell: UICollectionViewCell {
         avatar.roundedBorder()
         resetCell()
         
+        avatar.tintColor = .systemGray3
         avatar.contentMode = .scaleAspectFill
         
         let contentModes = ImageLoadingOptions.ContentModes(

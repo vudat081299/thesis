@@ -23,6 +23,7 @@ class MessContentCell: UICollectionViewCell, UIScrollViewDelegate {
         // Initialization code
         contentImageView.image = nil
         contentImageView.contentMode = .scaleAspectFit
+        contentImageView.tintColor = .systemGray3
         constraint.constant = 0
         heightImage.constant = 0
         contentTextLabel.text = ""

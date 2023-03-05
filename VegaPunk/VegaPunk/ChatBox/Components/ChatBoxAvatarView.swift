@@ -40,6 +40,7 @@ class ChatBoxAvatarView: ReusableUIView {
     func configure() {
         label.isHidden = true
         avatar.contentMode = .scaleAspectFill
+        avatar.tintColor = .systemGray3
         containerView.backgroundColor = .white
         
         let contentModes = ImageLoadingOptions.ContentModes(
