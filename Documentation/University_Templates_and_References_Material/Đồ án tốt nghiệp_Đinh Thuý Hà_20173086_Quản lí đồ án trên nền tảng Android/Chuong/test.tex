@@ -1,0 +1,38 @@
+\documentclass[../Main.tex]{subfiles}
+\pagenumbering{roman}
+\begin{document}
+
+
+\subsection{Đặc tả use case Lọc danh sách phân công đồ án}
+\section{Kiểm thử} 
+\begin{table}[H]
+\centering
+\bgroup
+\renewcommand{\arraystretch}{1.5}%
+\begin{tabular}{|L{0.06\linewidth}|L{0.15\linewidth}|L{0.3\linewidth}L{0.29\linewidth}|L{0.05\linewidth}|}
+
+\hline
+\textbf{STT} & \textbf{Chức năng} & \multicolumn{1}{l|}{\textbf{Đầu vào}} & \textbf{Đầu ra} & \textbf{\begin{tabular}[c]{@{}l@{}}Kết \\ quả\end{tabular}} \\ \hline
+
+\multirow{5}{*}{\linewidth} & \multirow{5}{*}{Đăng nhập} & \multicolumn{1}{L{0.3\linewidth}|}{Điền đầy đủ, hợp lệ thông tin và tài khoản trùng khớp với trong  cơ sở dữ liệu với role\_id = 0} & Đăng nhập thành công và chuyển đến trang chủ của quản trị viên & \multirow{5}{*}{Đạt} \\ \cline{3-4}
+1 &  & \multicolumn{1}{L{0.3\linewidth}|}{Điền đầy đủ, hợp lệ thông tin và tài khoản trùng khớp với trong cơ sở dữ liệu với role\_id = 1} & Đăng nhập thành công và chuyển đến trang chủ của giảng viên &  \\ \cline{3-4}
+ &  & \multicolumn{1}{L{0.3\linewidth}|}{Điền đầy đủ, hợp lệ thông tin và tài khoản trùng khớp với trong cơ sở dữ liệu với role\_id = 2} & Đăng nhập thành công và chuyển đến trang chủ của sinh viên &  \\ \cline{3-4}
+ &  & \multicolumn{1}{L{0.3\linewidth}|}{Điền thiếu một hoặc nhiều trường trong form} & Hiển thị thông báo lỗi &  \\ \cline{3-4}
+ &  & \multicolumn{1}{L{0.3\linewidth}|}{Nhập sai thông tin tài  khoản hoặc mật khẩu} & Hiển thị thông báo lỗi &  \\ \hline
+2 & Đăng xuất & \multicolumn{1}{L{0.3\linewidth}|}{Chọn Đăng xuất} & Đăng xuất ra khỏi hệ thống và chuyển đến màn hình đăng nhập & Đạt \\ \hline
+
+3 & Xem chi tiết công việc & \multicolumn{1}{L{0.3\linewidth}|}{Chọn một công việc} & Chuyển đến màn hình chi tiết công việc, có đầy đủ các thông tin của công việc & Đạt \\ \hline
+
+4 & Tạo công việc& \multicolumn{1}{L{0.3\linewidth}|}{Chọn button cập nhật ảnh bìa và tải ảnh lên} & Hiển thị bản xem  trước của ảnh bìa khi người dùng tải ảnh lên  sau đó cập nhật lại ảnh bìa và hiển thị cập nhật đó ra trang cá nhân & Đạt \\ \hline
+5 & Chỉnh sửa công việc & \multicolumn{1}{L{0.3\linewidth}|}{Điền thông tin vào các trường cần cập nhật} & Cập nhật thông tin thành công và hiển thị thông tin đó lên màn hình& Đạt \\ \hline
+
+6 & Bình luận công việc & \multicolumn{1}{L{0.3\linewidth}|}{Điền nội dung bình luận, có thể đính kèm file} & Hiển thị bình luận vừa được thêm trên màn hình& Đạt \\ \hline
+\end{tabular}
+\egroup
+
+\end{table}
+\newpage
+
+
+
+\end{document}

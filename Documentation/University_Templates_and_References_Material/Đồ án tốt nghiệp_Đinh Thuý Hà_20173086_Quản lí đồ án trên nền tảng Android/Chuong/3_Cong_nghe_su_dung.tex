@@ -1,0 +1,79 @@
+\documentclass[../Main.tex]{subfiles}
+\begin{document}
+\section{Ngôn ngữ lập trình Kotlin}
+Kotlin là một ngôn ngữ lập trình được giới thiệu vào năm 2011 bởi JetBrains\cite{Kotlin}. Từ lúc được giới thiệu cho đến khi ra mắt phiên bản 1.0, JetBrains luôn chú trọng đến tính tương hợp của Kotlin với Java. Sau này Google đã tích hợp trực tiếp ngôn ngữ Kotlin vào Android Studio phiên bản 3.0. Với những ưu điểm vượt trội của mình Kotlin ngày càng được nhiều người sử dụng. Phiên bản Kotlin mới nhất tính đến hiện tại là 1.7.
+
+Một trong những thế mạnh lớn nhất của Kotlin như là một ứng viên để thay thế cho Java là khả năng tương tác rất tốt giữa Java-Kotlin, thậm chí có thể dùng cả hai ngôn ngữ Java và Kotlin trong cùng một dự án, tất cả mọi thứ vẫn sẽ được biến dịch như bình thường. Vì Kotlin là hoàn toàn tương thích với Java nên cũng có thể sử dụng phần lớn các thư viện của Java vào trong dự án Kotlin. Kotlin được thiết kế để các nhà phát triển Java có thể dễ dàng tiếp cận. Những người đã học qua code Java sẽ cảm thấy rằng các cú pháp của Kotlin đều rất quen thuộc. Nếu so sánh Kotlin với Java hay bất kì một ngôn ngữ nào khác bạn sẽ thấy Kotlin sẽ gọn gàng hơn nhiều, Kotlin đặc biệt tốt trong việc giảm số lượng code mà bạn cần phải viết. Ngoài ra, Kotlin được thiết kế để có thể thực thi trên đa nền tảng (multi-platform) từ back-end đến front-end. Điều này cho phép các nhà phát triển chỉ cần học Kotlin là có thể xây đựng các ứng dụng full-stack.
+
+Với tất cả những ưu điểm trên, em đã chọn Kotlin làm ngôn ngữ lập trình chính để xây dựng ứng dụng Android cho front-end và Spring Boot cho back-end của đề tài này.
+
+\section{Hệ quản trị cơ sở dữ liệu MySQL}
+MySQL là một hệ quản trị cơ sở dữ liệu mã nguồn mở được ưa chuộng hàng đầu, được phát triển, phân phối và hỗ trợ bởi tập đoàn Oracle.
+MySQL được đánh giá là một hệ quản trị cơ sở dữ liệu có tốc độ cao, ổn định, dễ dùng, có khả năng thay đổi mô hình phù hợp với điều kiện công việc, độ bảo mật cao, đa tính năng, có khả năng mở rộng và mạnh mẽ.
+
+Về nguyên tắc MySQL hoạt động dựa trên mô hình client-server. Cốt lõi của MySQL là máy chủ MySQL, xử lí tất cả các hướng dẫn cơ sở dữ liệu hoặc các lệnh. Máy chủ MySQL có sẵn như một chương trình riêng biệt để sử dụng trong môi trường client-server. MySQL hoạt động cùng một số chương trình tiện ích hỗ trợ quản trị cơ sở dữ liệu MySQL. Các lệnh được gửi để MySQL server thông qua máy khách được cài đặt trên máy tính. 
+
+Với những ưu điểm vượt trội sự kết hợp của MySQL với ngôn ngữ lập trình Kotlin là giải pháp lựa chọn hàng đầu trong việc xây dựng back-end.
+
+\section{Spring Boot framework}
+Spring là một framework giúp cho các nhà phát triển có thể xây dựng hệ thống và chạy trên máy ảo JVM một cách thuận tiện, đơn giản, nhanh chóng nhất. Spring là một mã nguồn mở có số lượng người dùng rất cao \cite{Spring}. 
+
+Spring boot là một mô-đun nằm trong Spring nó cung cấp các tính năng phát triển ứng dụng nhanh để tạo và phát triển nhanh chóng các dự án độc lập với Spring \cite{SpringBoot}. Spring Boot loại bỏ các cấu hình phức tạp của Spring. Nó giúp lập trình viên đơn giản hoá quá trình lập ứng dụng và chỉ cần tập trung vào việc phát triển business cho ứng dụng.
+Sử dụng Spring Boot sẽ mang đến nhiều lợi ích nổi bật: hội tụ đầy đủ các tính năng của Spring, đơn giản hoá cấu hình, xây dựng các ứng dụng độc lập hỗ trợ java-jar với trình khởi động phụ thuộc, cung cấp nhiều plugin, giảm thiểu thời gian phát triển, tăng thời gian phát triển chung cho dự án, cung cấp công cụ Command Line Interface cho việc phát triển và test ứng dụng nhanh chóng từ Command Line, dễ dàng triển khai vì các ứng dụng máy chủ được nhúng trực tiếp vào ứng dụng để tránh khó triển khai đến phiên bản sản xuất mà không cần tải xuống file WAR.
+
+Với những ưu điểm trên em đã lựa chọn xây dựng Backend của hệ thống dựa trên Spring boot.
+\section{Bộ công cụ Jetpack Compose}
+Jetpack Compose là bộ công cụ hiện đại để xây dựng giao diện người dùng Android \cite{Compose}. Công cụ này đơn giản hoá và tăng tốc độ phát triển với ít mã hơn. Việc này sẽ ảnh hưởng đến tất cả các giai đoạn phát triển : có ít mã để kiểm tra với ít bug hơn; đối với người đọc thì có ít mã để đọc, hiểu, nhận xét, và bảo trì. Compose sử dụng API khai báo (declarative), điều đó có nghĩa rằng tất cả những gì nhà phát triển làm là mô tả giao diện người dùng. Compose sẽ xử lí phần còn lại. API rất trực quan - dế tìm hiểu và sử dụng. Với Compose, nhà phát triển sẽ tạo các thành phần nhỏ được xem như các thành phần (component) không gắn cụ thể với bất kì một dữ liệu hay hành động nào (stateless). Điều đó giúp dễ dàng có thể sử dụng lại, mở rộng, tuỳ biến. Compose có khả năng tương thích ngược với các ứng dụng Android đã phát triển theo công nghệ cũ. Nhà phát triển có thể gọi Compose từ Views hay Views từ Compose. Hầu hết các thư viện như Navigation, ViewModel, Kotlin Coroutines đều tích hợp tốt với Compose. Android Studio cũng hỗ trợ xem trước giao diện người dùng được code bằng Compose. Một điều làm cho các nhà phát triển ưu tiên dùng dùng Compose để xây dựng giao diện là Compose mặc định sử dụng thư viện Material Design để thiết kế giao diện giúp các nhà phát triển tạo nên một ứng dụng có giao diện đẹp, tinh tế.
+
+Ứng dụng sẽ sử dụng Jetpack Compose để xây dựng giao diện người dùng.  
+\section{Kotlin Coroutines}
+Coroutines không phải là một khái niệm mới và được sử dụng trong rất nhiều ngôn ngữ khác nhau. 
+
+Coroutines \cite{Coroutines} cho phép dừng một tính toán mà không cần chiếm giữ (blocking) luồng (thread). Coroutines về cơ bản có thể hiểu nó như một "light-weight" thread nhưng nó không phải thread mà chỉ hoạt động như một thread. Một sự khác biệt quan trọng là tại một thời điểm số thread sẽ là hạn chế do chúng rất tốn kém để duy trì, được kiểm soát bởi hệ thống, còn đối với coroutines sẽ là vô hạn, hàng nghìn coroutines có thể được bắt đầu cùng lúc. Coroutines dễ sử dụng hơn, nhưng có một vài quy tắc. Xuất phát từ ý tưởng cơ bản là các đoạn code có thể bị hoãn lại mà không chặn thread. Sự khác biệt là việc chặn một thread là không thể làm bất cứ điều gì khác, trong khi hoãn lại có thể làm những việc khác trong khi chờ đợi sự hoàn thành đoạn code bị hoãn lại. Coroutines được triển khai ở mức thấp nhất có thể. Đồng thời, một cấu trúc coroutines cấp cao hơn được cung cấp trong thư viện coroutines Kotlin. 
+
+Trong đồ án của mình em sử dụng Coroutines để xử lí bất đồng bộ ở các tác vụ đọc/ ghi, gọi API lấy dữ liệu từ back-end mà không làm ảnh hưởng tới luồng chính (main thread).
+
+\section{Dagger Hilt}
+Trong quá trình xây dựng một ứng dụng Android có rất nhiều thành phần, lớp phức tạp thì việc quản lý các phụ thuộc (dependencies) cho những thành phần này trở thành một bài toán cần được giải quyết. Từ bài toán này, các nhà phát triển đã nghĩ ra một kĩ thuật được gọi là Dependency Injection (DI). Tuy nhiên, để sử dụng kỹ thuật này một cách dễ dàng và hiệu quả thì không phải lập trình viên nào cũng có thể làm tốt. Nắm bắt được điều này, Google đã cho ra đời một Dependency Injection Framework với tên gọi là Dagger. Dagger đối với người mới bắt đầu để tìm hiểu thì không dễ dàng, lượng code sinh ra sau khi compile quá lớn. Dagger-Hilt \cite{Hilt1} được phát hành gần đây trong gói Jetpack và được Google khuyến nghị sử dụng để xây dựng ứng dụng Android. Hilt cho phép sử dụng DI bằng cách cung cấp các container cho tất cả các class Android và tự động quản lí vòng đời của chúng. Được xây dựng dựa trên thư viện DI phổ biến Dagger Hilt được hưởng rất nhiều lợi ích từ độ chính xác của thời gian biên dịch, hiệu xuất thời gian chạy, khả năng mở rộng. Hilt đã trở thành một phần không thể thiếu khi xây dựng một ứng dụng, nó giúp chúng ta: khiến cho code dagger trở nên dễ dàng hơn và đơn giản hơn cho các nhà phát triển, cung cấp bộ ràng buộc khác nhau, chỉ cần quan tâm đến nơi inject dependencies và phần còn lại của tất cả code generations xảy ra bởi chính dagger bằng cách sử dụng các chú thích (annotation) và do đó loại bỏ tất cả các đoạn mã dựng sẵn. 
+
+\section{Retrofit}
+Trước đây để thực hiện các tác vụ trao đổi thông tin qua mạng, các thư viện thường được sử dụng là Volley, AsyncTask, KSOAP,... Tuy nhiên từ khi Retrofit ra đời các thư viện khác như bị lãng quên bởi thời gian thực thi và hiệu năng đáng kinh ngạc.
+Retrofit \cite{Retrofit2} được định nghĩa là một type-safe HTTP client cho Java, Android, Kotlin và được phát triển bởi Square. Retrofit thậm chí còn tốt hơn vì nó siêu nhanh, cung cấp các chức năng tốt hơn, cú pháp đơn giản hơn. Retrofit hỗ trợ các nhà lập trình chuyển đổi API thành Java Interface để dễ dàng kết nối đến một địa chỉ REST trên web, dễ dàng xử lí dữ liệu JSON hoặc XML và sau đó sẽ được phân tích cú pháp thành Plain Old Java Objects (POJOs) một cách tự động. 
+
+Retrofit được xây dựng dựa trên các thư viện và công cụ mạnh mẽ và làm cho quá trình nhận, gửi, tạo các yêu cầu, phản hồi HTTP trở  nên đơn giản hơn. Ngoài ra nếu muốn sử dụng các bộ chuyển đồi từ JSON thành các đối tượng Java thì cần thêm các thư viện chuyển đổi vào trong dự án.
+
+\section{Json Web Token (JWT)}
+Json Web Token \cite{Jwt1} là một chuẩn mở (RFC 7519)  định nghĩa cách để gói gọn và trao đổi thông tin một cách an toàn giữa các bên dưới dạng một đối tượng một đối tượng JSON. Thông tin này có thể được xác minh và tin cậy vì nó có chứa chữ ký số. JWT có thể được ký bằng một mật mã (với thuật toán HMAC) hoặc bằng một cặp public/private key với thuật toán RSA hoặc ECDSA. Một JWT có cấu trúc 3 phần được mã hóa dạng chuỗi Base64 và nối với nhau bằng một ký tự chấm “.”.
+\begin{itemize}
+    \item Header: chứa các thông tin về thuộc tính của JWT ở dạng JSON (thuật toán ký, định dạng, …).
+    \item Payload: chứa các thông tin cần trao đổi giữa các bên ở dạng JSON.
+    \item Signature: chữ ký số của JWT.
+\end{itemize}
+
+Trong quá trình thực hiện đồ án, JWT được sử dụng để xác thực và định quyền người dùng. Mỗi người dùng được cấp một JWT chứa thông tin định danh sau khi đăng nhập thành công. JWT này sẽ được đính kèm vào các truy vấn API, back-end sẽ xác thực JWT và sử dụng thông tin bên trong để định danh được người dùng đang truy vấn. Từ đó có thể định quyền của người dùng đối với truy vấn đang thực hiện và phản hồi một cách an toàn và chính xác.   
+
+\section{Docker}
+Docker \cite{Docker} nền tảng phần mềm cho phép dựng, kiểm thử và triển khai ứng dụng một cách nhanh chóng. Có thể coi Docker như một máy ảo cho phép cài đặt môi trường, cấu hình hệ thống, mọi thứ cần thiết để có thể chạy chương trình.
+
+Có 2 khái niệm chính trong Docker: 
+\begin{itemize}
+    \item Image: Là một ảnh đóng gói của môi trường, chứa tất cả các thành phần (tệp, thư viện, phụ thuộc, cấu hình,...) để có thể khởi chạy ứng dụng.
+    \item Container: Là một thực thể của Image (được tạo ra khi chạy Image). Các container hoạt động độc lập nhau và với hệ điều hành chủ. Có thể khởi tạo hay gỡ bỏ một container rất dễ dàng.
+\end{itemize}
+
+Một ưu điểm lớn của Docker là khả năng chia sẻ. Nhà phát triển có thể dễ dàng tìm thấy các Image được chia sẻ bởi cộng đồng trên Docker Hub. Điều này giúp giảm bớt thời gian tạo Image so với cách thông thường, tăng tốc độ phát triển phần mềm.
+
+Trong đồ án của mình em dùng Docker thiết lập môi trường và chạy các ứng dụng back-end: Spring Boot, MySQL, Minio.
+
+\section{Minio Object Storage}
+Minio \cite{Minio} là một máy chủ lưu trữ phân tán hiệu năng cao, được thiết kế cho
+cơ sở hạ tầng đám mây riêng với quy mô lớn. Minio được thiết kế tương tự như AWS S3 nhưng thay vì sử dụng hạ tầng của nhà cung cấp dịch vụ thì các lập trình viên có thể lựa chọn tự triển khai và cấu hình máy chủ Minio. Minio được sử dụng để lưu trữ các loại dữ liệu như ảnh, video, tệp tin,... với khả năng phân quyền và lưu trữ quy mô lớn. Việc thiết lập máy chủ Minio khá đơn giản, đặc biệt là khi sử dụng Docker Image của Minio.
+
+Với những khả năng nên trên, em đã sử dụng Minio làm server lưu trữ và truy xuất  dữ liệu người dùng.
+ 
+\section{Azure Cloud}
+Microsoft Azure \cite{Azure} là nền tảng tính toán đám mây được xây dựng bởi Microsoft. Azure cung cấp các giải pháp tích hợp toàn diện cho việc xây dựng, triển khai ứng dụng đám mây. Tuy ra đời muộn hơn các nền tảng đám mây khác như AWS nhưng Azure đang dần chiếm lĩnh thị phần, khẳng định vị thế “ông lớn” công nghệ. Ngoài ra với các gói ưu đãi cho sinh viên trải nghiệm dịch vụ miễn phí cũng là một điểm cộng lớn cho nền tảng này. 
+
+Trong đồ án của em, toàn bộ hệ thống back-end được triển khai trên dịch vụ Virtual Machine của Azure.
+
+\end{document}

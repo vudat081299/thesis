@@ -1,0 +1,99 @@
+\documentclass[../DoAn.tex]{subfiles}
+\begin{document}
+
+\section{Ngôn ngữ lập trình Swift}
+Swift là một ngôn ngữ lập trình trực hướng đối tượng dành cho iOS, iPadOS, macOS, tvOS và watchOS. Là kết quả của nghiên cứu mới nhất về ngôn ngữ lập trình, kết hợp với kinh nghiệm hàng chục năm xây dựng nền tảng của Apple và cộng đồng mã nguồn mở. Phiên bản Swift mới nhất tính đến hiện tại là 5.7\cite{Swift}. 
+
+Swift có các ưu điểm là cú pháp ngắn gọn nhưng vẫn diễn đạt rõ ràng, tốc độ sử lý nhanh. Swift được thiết kế giúp lập trình viên  loại bỏ những lỗi lập trình phổ biến bằng cách áp dụng các mẫu lập trình hiện đại, loại bỏ toàn bộ các lớp mã không an toàn:
+\begin{itemize}
+    \item Các biến luôn được khởi tạo trước khi sử dụng.
+    \item Các kiểu dữ liệu như mảng và số nguyên luôn được kiểm tra xem có bị tràn không.
+    \item Bộ nhớ được quản lý tự động và thực thi quyền truy cập độc quyền vào bộ bảo vệ bộ nhớ để chống lại nhiều lỗi lập trình.
+\end{itemize}
+
+Một trong những lợi thế lớn của Swift trong phát triển ứng dụng di động là khả năng tương tác tốt giữa Swift - Objective C, thậm chí có thể dùng cả 2 ngôn ngữ Swift và Objective C trong cùng một dự án, trình biên dịch XCode vẫn chạy bình thường. Ngoài ra Swift được thiết kế để thực thi trên đa nền tảng từ BackEnd đến FrontEnd. Điều này giúp cho những lập trình viên đã quen với ngôn ngữ Swift có thể xây dựng các ứng dụng full-stack.
+
+Với tất cả những ưu điểm trên và kinh nghiệm phát triển phần mềm bằng Swift sẵn có của bản thân, em lựa chọn Swift là ngôn ngữ lập trình chính để xây dựng phần mềm trên hệ điều hành iOS cho đề tài này.
+
+
+\section{Vapor}
+Vapor là một web framework được viết bằng ngôn ngữ Swift, cung cấp cho nhà phát triển khả năng xây dựng websites, xây dựng back-ends cho ứng dụng iOS, APIs và HTTP servers bằng Swift, có thể cài đặt Vapor trên các hệ điều hành MacOS và Ubuntu\cite{Vapor}. 
+
+Những ưu điểm khi sử dụng Vapor để xây dựng back-end:
+\begin{itemize}
+    \item Vapor được viết bằng ngôn ngữ Swift nên cú pháp ngắn gọn và dễ hiểu, tốc độ xử lý nhanh.
+    \item Từ phiên bản Swift 5.7 được Apple hỗ trợ cú pháp bất đồng bộ nên Vapor càng trở nên mạnh mẽ khi phát triển back-end.
+    \item Tương thích tốt với hệ quản trị cơ sở dữ liệu PostgreSQL, MySQL và MongoDB.
+    \item Tích hợp ORM framework, giúp câu truy vấn cơ sở dữ liệu ngắn gọn, dễ đọc và dễ hiểu hơn.
+\end{itemize}
+
+Với nhiều ưu điểm thừa kế từ Swift và tài liệu dành cho nhà phát triển từ Vapor dễ tìm kiếm, dễ hiểu, em lựa chọn Vapor để xây dựng phần back-end.
+
+
+\section{WebRTC}
+WebRTC là một tập hợp các hàm lập trình dùng cho việc liên lạc thời gian thực bằng video, âm thanh cũng như các loại dữ liệu khác. WebRTC có thể giúp 2 client gọi điện video ngay trong trình duyệt mà không cần đăng kí tài khoản, cũng không cần cài thêm plugin gì phức tạp, ngoài ra chúng còn được xài để phát triển game chơi trực tiếp trong trình duyệt và rất nhiều loại ứng dụng khác\cite{WebRTC}.
+
+Em sử dụng WebRTC để phát triển tính năng gọi điện video thời gian thực trên phần mềm iOS của mình.
+
+
+\section{WebSocket}
+WebSoket là công nghệ hỗ trợ giao tiếp hai chiều giữa client và server bằng cách sử dụng một TCP socket để tạo một kết nối hiệu quả và ít tốn kém. Mặc dù được thiết kế để chuyên sử dụng cho các ứng dụng web, nhà phát triển vẫn có thể đưa chúng vào bất kì loại ứng dụng nào\cite{WebSocket}.
+
+WebSocket cung cấp khả năng giao tiếp hai chiều hiệu quả, header gọn nhẹ nên sử dụng ít lưu lượng hơn giao thức HTTP truyền thống, có độ trễ thấp và dễ xử lý lỗi. Vì vậy, em lựa chọn webSocket để xây dựng tính năng nhắn tin thời gian thực của đề tài.
+
+
+\section{Hệ quản trị cơ sở dữ liệu PostgreSQL}
+PostgreSQL là một hệ quản trị cơ sở dữ liệu mã nguồn mở được ưa chuộng hàng đầu, được phát triển, phân phối và hỗ trợ bởi phòng khoa học máy tính tại đại học California. PostgreSQL được thiết kế để chạy trên các nền tảng tương tự UNIX. Tuy nhiên, PostgreSQL sau đó cũng được điều chỉnh linh động để có thể chạy được trên nhiều nền tảng khác nhau như Mac OS X, Solaris và Windows\cite{PostgreSQL}.
+
+PostgreSQL không yêu cầu quá nhiều công tác bảo trì vì có tính ổn định cao. Do đó, nếu phát triển các ứng dụng dựa trên PostgreSQL, chi phí sở sẽ thấp hơn so với các hệ thống quản trị dữ liệu khác.
+
+PostgreSQL được đánh giá là một hệ quản trị cơ sở dữ liệu có tốc độ cao, ổn định, dễ dùng, có khả năng thay đổi mô hình phù hợp với điều kiện công việc, độ bảo mật cao, đa tính năng, có khả năng mở rộng và mạnh mẽ.
+
+Về nguyên tắc PostgreSQL hoạt động dựa trên mô hình client-server. Cốt lõi của PostgreSQL là máy chủ PostgreSQL, xử lí tất cả các hướng dẫn cơ sở dữ liệu hoặc các lệnh. Máy chủ PostgreSQL có sẵn như một chương trình riêng biệt để sử dụng trong môi trường client-server. PostgreSQL hoạt động cùng một số chương trình tiện ích hỗ trợ quản trị cơ sở dữ liệu PostgreSQL. Các lệnh được gửi để PostgreSQL server thông qua máy khách được cài đặt trên máy tính. 
+
+Với những ưu điểm vượt trội, sự kết hợp của ngôn ngữ lập trình Swift với tính ổn định của PostgreSQL trên nền tảng MacOS, em lựa chọn PostgreSQL để xây dựng back-end.
+
+
+\section{MongoDB}
+MongoDB là một hệ quản trị cơ sở dữ liệu mã nguồn mở, là CSDL thuộc NoSql và được hàng triệu người sử dụng.
+MongoDB là một hệ quản trị cơ sở dữ liệu hướng tài liệu (document), các dữ liệu được lưu trữ trong document kiểu JSON thay vì dạng bảng như CSDL quan hệ nên truy vấn sẽ rất nhanh\cite{MongoDB}.
+Với CSDL quan hệ chúng ta có khái niệm bảng, các cơ sở dữ liệu quan hệ như PostgreSQL sử dụng các bảng để lưu dữ liệu thì với MongoDB chúng ta sẽ dùng khái niệm là collection thay vì bảng.
+So với RDBMS thì trong MongoDB collection ứng với bảng, còn document sẽ ứng với các hàng của bảng, MongoDB sẽ dùng các document thay cho hàng trong RDBMS.
+Các collection trong MongoDB được cấu trúc rất linh hoạt, cho phép các dữ liệu lưu trữ không cần tuân theo một cấu trúc nhất định.
+Thông tin liên quan được lưu trữ cùng nhau để truy cập truy vấn nhanh thông qua ngôn ngữ truy vấn MongoDB.
+
+Do vậy em sử dụng MongoDB để xây dựng tính năng lưu trữ các dữ liệu ảnh, video trên back-end.
+
+
+\section{Docker}
+\cite{Docker} nền tảng phần mềm cho phép dựng, kiểm thử và triển khai ứng dụng một cách nhanh chóng. Có thể coi Docker như một máy ảo cho phép cài đặt môi trường, cấu hình hệ thống, mọi thứ cần thiết để có thể chạy chương trình\cite{Docker}.
+
+Có 2 khái niệm chính trong Docker: 
+\begin{itemize}
+    \item Image: Là một ảnh đóng gói của môi trường, chứa tất cả các thành phần (tệp, thư viện, phụ thuộc, cấu hình,...) để có thể khởi chạy ứng dụng.
+    \item Container: Là một thực thể của Image (được tạo ra khi chạy Image). Các container hoạt động độc lập nhau và với hệ điều hành chủ. Có thể khởi tạo hay gỡ bỏ một container rất dễ dàng.
+\end{itemize}
+
+Những ưu điểm khi sử dụng Docker làm môi trường cài đặt server:
+\begin{itemize}
+    \item Tính đồng nhất: Khi một ứng dụng được cài đặt hoặc phát triển trên nhiều thiết bị khác nhau sẽ không bị sai khác về mặt môi trường.
+    \item Khả năng chia sẻ: Nhà phát triển có thể dễ dàng tìm thấy các Image được chia sẻ bởi cộng đồng trên Docker Hub. Điều này giúp giảm bớt thời gian tạo Image so với cách thông thường, tăng tốc độ phát triển phần mềm.
+\end{itemize}
+
+Trong quá trình xây dựng đồ án của mình, em dùng Docker thiết lập môi trường và chạy các ứng dụng back-end: Vapor, PostgreSQL, MongoDB.
+
+
+% Chương này có độ dài không quá 10 trang. Nếu cần trình bày dài hơn, sinh viên đưa vào phần phụ lục. Chú ý đây là kiến thức đã có sẵn; SV sau khi tìm hiểu được thì phân tích và tóm tắt lại. Sinh viên không trình bày dài dòng, chi tiết. 
+
+% Với đồ án ứng dụng, sinh viên để tên chương là “Công nghệ sử dụng”. Trong chương này, sinh viên giới thiệu về các công nghệ, nền tảng sử dụng trong đồ án. Sinh viên cũng có thể trình bày thêm nền tảng lý thuyết nào đó nếu cần dùng tới.
+
+% Với đồ án nghiên cứu, sinh viên đổi tên chương thành “Cơ sở lý thuyết”. Khi đó, nội dung cần trình bày bao gồm: Kiến thức nền tảng, cơ sở lý thuyết, các thuật toán, phương pháp nghiên cứu, v.v.
+
+% Với từng công nghệ/nền tảng/lý thuyết được trình bày, sinh viên phải phân tích rõ công nghệ/nền tảng/lý thuyết đó dùng để để giải quyết vấn đề/yêu cầu cụ thể nào ở Chương 2. Hơn nữa, với từng vấn đề/yêu cầu, sinh viên phải liệt kê danh sách các công nghệ/hướng tiếp cận tương tự có thể dùng làm lựa chọn thay thế, rồi giải thích rõ sự lựa chọn của mình.
+
+% Lưu ý: Nội dung ĐATN phải có tính chất liên kết, liền mạch, và nhất quán. Vì vậy, các công nghệ/thuật toán trình bày trong chương này phải khớp với nội dung giới thiệu của sinh viên ở phần trước đó. 
+
+% Trong chương này, để tăng tính khoa học và độ tin cậy, sinh viên nên chỉ rõ nguồn kiến thức mình thu thập được ở tài liệu nào, đồng thời đưa tài liệu đó vào trong danh sách tài liệu tham khảo rồi tạo các tham chiếu chéo (xem hướng dẫn ở phụ lục A.7).
+
+
+\end{document}
