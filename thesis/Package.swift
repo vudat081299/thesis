@@ -14,6 +14,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-mongo-driver.git", from: "1.0.0"),
+        .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.6.0"),
 //        .package(url: "https://github.com/mongodb/mongodb-vapor", .upToNextMajor(from: "1.1.0")),
     ],
     targets: [
@@ -26,6 +27,7 @@ let package = Package(
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "JWT", package: "jwt"),
                 .product(name: "FluentMongoDriver", package: "fluent-mongo-driver"),
+                .product(name: "CryptoSwift", package: "CryptoSwift"),
 //                .product(name: "MongoDBVapor", package: "mongodb-vapor"),
             ],
             swiftSettings: [

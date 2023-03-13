@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CryptoSwift
 
 enum WebSocketPackageType: Int, Codable {
     case message, chatBox, user
@@ -38,8 +39,19 @@ struct WebSocketPackage: Codable {
     let type: WebSocketPackageType
     let message: WebSocketPackageMessage
     
-    func convertToMessage() -> ChatBoxMessage {
-        return ChatBoxMessage(id: message.id!, createdAt: message.createdAt!, sender: message.sender!, chatBoxId: message.chatBoxId!, mediaType: message.mediaType ?? .text , content: message.content!)
+    func convertToMessage() -> ChatBoxMessage? {
+        do {
+            let aes = try AES(key: key, blockMode: CBC(iv: iv), padding: .pkcs7)
+            let decrypted = try aes.decrypt(message.content!.transformToArrayUInt8())
+            if let plainText = String(bytes: decrypted, encoding: .utf8) {
+                return ChatBoxMessage(id: message.id!, createdAt: message.createdAt!, sender: message.sender!, chatBoxId: message.chatBoxId!, mediaType: message.mediaType ?? .text , content: plainText)
+            } else {
+                return nil
+            }
+        } catch {
+            return nil
+        }
+        
     }
     func json() throws -> String {
         guard let jsonString = try String(data: JSONEncoder().encode(self), encoding: .utf8) else { throw WebSocketError.cannotParsePackageToJsonString }

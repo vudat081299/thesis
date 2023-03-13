@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8429224629BF6A5F002BD44A /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8429224529BF6A5F002BD44A /* CryptoSwift */; };
+		8429224A29BF6AC5002BD44A /* payment_success.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 8429224829BF6AC5002BD44A /* payment_success.m4a */; };
+		8429224B29BF6AC5002BD44A /* payment_failure.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 8429224929BF6AC5002BD44A /* payment_failure.m4a */; };
 		8438E43329A31E74009D20CC /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438E43129A31E74009D20CC /* UserProfileViewController.swift */; };
 		8438E43429A31E74009D20CC /* UserProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8438E43229A31E74009D20CC /* UserProfileViewController.xib */; };
 		8438E43729A320FA009D20CC /* ProfileAvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438E43529A320FA009D20CC /* ProfileAvatarTableViewCell.swift */; };
@@ -44,8 +47,6 @@
 		84A827742990188D00753846 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A827732990188D00753846 /* UUID.swift */; };
 		84A8AFE82998CC1E00D9A6D3 /* NSNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */; };
 		84A8AFEC299BE63000D9A6D3 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */; };
-		84A8AFF0299BF73700D9A6D3 /* payment_success.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */; };
-		84A8AFF1299BF73700D9A6D3 /* payment_failure.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 84A8AFEF299BF73700D9A6D3 /* payment_failure.m4a */; };
 		84A93841296AAA0C008ED0DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93840296AAA0C008ED0DC /* AppDelegate.swift */; };
 		84A93843296AAA0C008ED0DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93842296AAA0C008ED0DC /* SceneDelegate.swift */; };
 		84A93845296AAA0C008ED0DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A93844296AAA0C008ED0DC /* ViewController.swift */; };
@@ -149,6 +150,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8429224829BF6AC5002BD44A /* payment_success.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_success.m4a; sourceTree = "<group>"; };
+		8429224929BF6AC5002BD44A /* payment_failure.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_failure.m4a; sourceTree = "<group>"; };
 		8438E43129A31E74009D20CC /* UserProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
 		8438E43229A31E74009D20CC /* UserProfileViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UserProfileViewController.xib; sourceTree = "<group>"; };
 		8438E43529A320FA009D20CC /* ProfileAvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAvatarTableViewCell.swift; sourceTree = "<group>"; };
@@ -183,8 +186,6 @@
 		84A827732990188D00753846 /* UUID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUID.swift; sourceTree = "<group>"; };
 		84A8AFE72998CC1E00D9A6D3 /* NSNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSNotification.swift; sourceTree = "<group>"; };
 		84A8AFEB299BE63000D9A6D3 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
-		84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_success.m4a; sourceTree = "<group>"; };
-		84A8AFEF299BF73700D9A6D3 /* payment_failure.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = payment_failure.m4a; sourceTree = "<group>"; };
 		84A9383D296AAA0C008ED0DC /* VegaPunk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VegaPunk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84A93840296AAA0C008ED0DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84A93842296AAA0C008ED0DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -281,6 +282,7 @@
 				84A2C41C2992A79400EE8CD8 /* Nuke in Frameworks */,
 				8481DE4129A0BDDD002C36CD /* WebRTC in Frameworks */,
 				84A93910296AD3F8008ED0DC /* Alamofire in Frameworks */,
+				8429224629BF6A5F002BD44A /* CryptoSwift in Frameworks */,
 				8481DE3B29A0BCC5002C36CD /* Starscream in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -302,6 +304,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8429224729BF6AC5002BD44A /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				8429224829BF6AC5002BD44A /* payment_success.m4a */,
+				8429224929BF6AC5002BD44A /* payment_failure.m4a */,
+			);
+			path = Sound;
+			sourceTree = "<group>";
+		};
 		8438E43029A31DE2009D20CC /* Profile */ = {
 			isa = PBXGroup;
 			children = (
@@ -406,16 +417,6 @@
 			path = Messaging;
 			sourceTree = "<group>";
 		};
-		84A8AFED299BF73700D9A6D3 /* Sound */ = {
-			isa = PBXGroup;
-			children = (
-				84A8AFEE299BF73700D9A6D3 /* payment_success.m4a */,
-				84A8AFEF299BF73700D9A6D3 /* payment_failure.m4a */,
-			);
-			name = Sound;
-			path = "../../References/Message App/Message App/Sound";
-			sourceTree = "<group>";
-		};
 		84A93834296AAA0C008ED0DC = {
 			isa = PBXGroup;
 			children = (
@@ -439,7 +440,7 @@
 		84A9383F296AAA0C008ED0DC /* VegaPunk */ = {
 			isa = PBXGroup;
 			children = (
-				84A8AFED299BF73700D9A6D3 /* Sound */,
+				8429224729BF6AC5002BD44A /* Sound */,
 				84A93851296AAA0F008ED0DC /* Info.plist */,
 				84A93840296AAA0C008ED0DC /* AppDelegate.swift */,
 				84A9390C296ABDB1008ED0DC /* MainTapBarController.swift */,
@@ -773,6 +774,7 @@
 				84A2C41B2992A79400EE8CD8 /* Nuke */,
 				8481DE3A29A0BCC5002C36CD /* Starscream */,
 				8481DE4029A0BDDD002C36CD /* WebRTC */,
+				8429224529BF6A5F002BD44A /* CryptoSwift */,
 			);
 			productName = VegaPunk;
 			productReference = 84A9383D296AAA0C008ED0DC /* VegaPunk.app */;
@@ -851,6 +853,7 @@
 				84A2C41A2992A79400EE8CD8 /* XCRemoteSwiftPackageReference "Nuke" */,
 				8481DE3929A0BCC5002C36CD /* XCRemoteSwiftPackageReference "Starscream" */,
 				8481DE3F29A0BDDD002C36CD /* XCRemoteSwiftPackageReference "WebRTC" */,
+				8429224429BF6A5F002BD44A /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 			);
 			productRefGroup = 84A9383E296AAA0C008ED0DC /* Products */;
 			projectDirPath = "";
@@ -871,11 +874,12 @@
 				84A938E9296AAABD008ED0DC /* TextInputCell.xib in Resources */,
 				84CF909429B46A63002F71CE /* ChatBoxMemberTableViewCell.xib in Resources */,
 				84B950C329916F88009EBBB8 /* ChatBoxAvatarView.xib in Resources */,
+				8429224A29BF6AC5002BD44A /* payment_success.m4a in Resources */,
 				8438E43829A320FA009D20CC /* ProfileAvatarTableViewCell.xib in Resources */,
 				84A938E8296AAABD008ED0DC /* SignupDatePickerInputTableViewCell.xib in Resources */,
 				84A2C42A2995617B00EE8CD8 /* MessagingViewController.xib in Resources */,
 				84A938ED296AAABD008ED0DC /* CustomListCell.xib in Resources */,
-				84A8AFF0299BF73700D9A6D3 /* payment_success.m4a in Resources */,
+				8429224B29BF6AC5002BD44A /* payment_failure.m4a in Resources */,
 				84A938F0296AAABE008ED0DC /* MessContentCell.xib in Resources */,
 				84A938F2296AAABE008ED0DC /* FirstMessContentCellForSection.xib in Resources */,
 				84A93900296AAABE008ED0DC /* SuccessRequestServerView.xib in Resources */,
@@ -883,7 +887,6 @@
 				84A2C4222994FB5D00EE8CD8 /* FooterMessage.xib in Resources */,
 				84A9384D296AAA0F008ED0DC /* Assets.xcassets in Resources */,
 				84A9390A296AAB63008ED0DC /* UserAccess.storyboard in Resources */,
-				84A8AFF1299BF73700D9A6D3 /* payment_failure.m4a in Resources */,
 				84A8276E298FACB800753846 /* ChatBoxViewController.xib in Resources */,
 				84A93848296AAA0C008ED0DC /* Main.storyboard in Resources */,
 				84A938EC296AAABD008ED0DC /* UserView.xib in Resources */,
@@ -1352,6 +1355,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8429224429BF6A5F002BD44A /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		8481DE3929A0BCC5002C36CD /* XCRemoteSwiftPackageReference "Starscream" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/daltoniam/Starscream";
@@ -1387,6 +1398,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8429224529BF6A5F002BD44A /* CryptoSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8429224429BF6A5F002BD44A /* XCRemoteSwiftPackageReference "CryptoSwift" */;
+			productName = CryptoSwift;
+		};
 		8481DE3A29A0BCC5002C36CD /* Starscream */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8481DE3929A0BCC5002C36CD /* XCRemoteSwiftPackageReference "Starscream" */;

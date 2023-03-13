@@ -24,17 +24,17 @@
                             <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         </view>
                         <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CYu-vS-IAw">
-                            <rect key="frame" x="15" y="10" width="35" height="35"/>
+                            <rect key="frame" x="15" y="10" width="36" height="36"/>
                             <subviews>
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pencil.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="4Ve-rZ-V4m">
-                                    <rect key="frame" x="0.0" y="0.5" width="35" height="34"/>
+                                    <rect key="frame" x="0.0" y="0.5" width="36" height="35"/>
                                     <color key="tintColor" systemColor="systemGray3Color"/>
                                 </imageView>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="35" id="1eX-fU-s6D"/>
-                                <constraint firstAttribute="height" constant="35" id="N4R-6l-P5u"/>
+                                <constraint firstAttribute="width" constant="36" id="1eX-fU-s6D"/>
+                                <constraint firstAttribute="height" constant="36" id="N4R-6l-P5u"/>
                                 <constraint firstItem="4Ve-rZ-V4m" firstAttribute="top" secondItem="CYu-vS-IAw" secondAttribute="top" id="Y49-n1-e2d"/>
                                 <constraint firstItem="4Ve-rZ-V4m" firstAttribute="leading" secondItem="CYu-vS-IAw" secondAttribute="leading" id="bjN-1D-a7c"/>
                                 <constraint firstAttribute="bottom" secondItem="4Ve-rZ-V4m" secondAttribute="bottom" id="ebK-Lq-XWH"/>
@@ -45,7 +45,7 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="CYu-vS-IAw" firstAttribute="top" secondItem="Vdu-mk-hmc" secondAttribute="top" constant="10" id="G40-Td-40Q"/>
-                        <constraint firstAttribute="bottom" secondItem="CYu-vS-IAw" secondAttribute="bottom" constant="5" id="enB-rR-a6X"/>
+                        <constraint firstAttribute="bottom" secondItem="CYu-vS-IAw" secondAttribute="bottom" constant="4" id="enB-rR-a6X"/>
                         <constraint firstItem="CYu-vS-IAw" firstAttribute="leading" secondItem="Vdu-mk-hmc" secondAttribute="leading" constant="15" id="oOP-n8-J5c"/>
                     </constraints>
                 </view>

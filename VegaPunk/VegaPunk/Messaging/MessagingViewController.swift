@@ -5,10 +5,15 @@
 //  Created by Vũ Quý Đạt  on 21/04/2021.
 //
 
+let iv = "4ca00ff4c898d61e1edbf1800618fb28".transformToArrayUInt8()
+let key = "140b41b22a29beb4061bda66b6747e14".transformToArrayUInt8()
+
+
 
 // postgresql://vapor_username:vapor_password@localhost
 import UIKit
 import LocalAuthentication
+import CryptoSwift
 
 class MessagingViewController: UIViewController {
     
@@ -253,16 +258,31 @@ class MessagingViewController: UIViewController {
         if pickedImage.image != nil {
             sendMessageButton.isEnabled = false
             RequestEngine.upload((pickedImage.image?.resized(to: 720).pngData())!) { [self] fileId in
-                previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .file, content: fileId))
-                NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
-                hidePickedImageContainer()
-                sendMessageButton.isEnabled = true
+                do {
+                    let aes = try AES(key: key, blockMode: CBC(iv: iv), padding: .pkcs7)
+                    let encrypted = try aes.encrypt(fileId.bytes)
+                    let cipherText = encrypted.transformToHex()
+                    
+                    previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .file, content: cipherText))
+                    NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
+                    hidePickedImageContainer()
+                    sendMessageButton.isEnabled = true
+                } catch {
+                    
+                }
             }
         } else {
             if (chatTextField.text == nil || chatTextField.text?.count == 0) { return }
-            previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
-            chatTextField.text = ""
-            NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
+            do {
+                let aes = try AES(key: key, blockMode: CBC(iv: iv), padding: .pkcs7)
+                let encrypted = try aes.encrypt(chatTextField.text!.bytes)
+                let cipherText = encrypted.transformToHex()
+                previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: cipherText))
+                chatTextField.text = ""
+                NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
+            } catch {
+                
+            }
         }
     }
     @IBAction func pickImage(_ sender: UIButton) {
@@ -588,3 +608,60 @@ extension MessagingViewController {
         }
     }
 }
+
+extension String {
+    func transformToArrayUInt8() -> [UInt8] {
+        var result: Array<UInt8> = []
+        let utf8 = Array<UInt8>(self.utf8)
+        let skip0x = self.hasPrefix("0x") ? 2 : 0
+        for idx in stride(from: utf8.startIndex.advanced(by: skip0x), to: utf8.endIndex, by: utf8.startIndex.advanced(by: 2)) {
+            let byteHex = "\(UnicodeScalar(utf8[idx]))\(UnicodeScalar(utf8[idx.advanced(by: 1)]))"
+            if let byte = UInt8(byteHex, radix: 16) {
+                result.append(byte)
+            }
+        }
+        return result
+    }
+    func transformToArrayUInt8ByTrimmingIV() -> [UInt8] {
+        let trimedIVCipherText = self[self.index(self.startIndex, offsetBy: 32)..<self.endIndex]
+        return String(trimedIVCipherText).transformToArrayUInt8()
+    }
+    func ivFromFullCipherText() -> String {
+        return String(self[self.startIndex..<self.index(self.startIndex, offsetBy: 32)])
+    }
+    func cipherTextFromFullCipherText() -> String {
+        let trimedIVCipherText = self[self.index(self.startIndex, offsetBy: 32)..<self.endIndex]
+        return String(trimedIVCipherText)
+    }
+}
+
+extension Array where Element == UInt8 {
+    public init(customHex: String) {
+        self.init()
+        let utf8 = Array<Element>(customHex.utf8)
+        let skip0x = customHex.hasPrefix("0x") ? 2 : 0
+        for idx in stride(from: utf8.startIndex.advanced(by: skip0x), to: utf8.endIndex, by: utf8.startIndex.advanced(by: 2)) {
+            let byteHex = "\(UnicodeScalar(utf8[idx]))\(UnicodeScalar(utf8[idx.advanced(by: 1)]))"
+            if let byte = UInt8(byteHex, radix: 16) {
+                self.append(byte)
+            }
+        }
+    }
+    
+    func transformToHex() -> String {
+        let hexValueTable = ["0", "1", "2", "3",
+                             "4", "5", "6", "7",
+                             "8", "9", "a", "b",
+                             "c", "d", "e", "f"]
+        var hexString = ""
+        for number in self {
+            let decimal = Int(number)
+            let firstHex = decimal / 16
+            let secondHex = decimal % 16
+            hexString += hexValueTable[firstHex]
+            hexString += hexValueTable[secondHex]
+        }
+        return hexString
+    }
+}
+

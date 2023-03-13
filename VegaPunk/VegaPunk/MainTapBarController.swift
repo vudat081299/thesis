@@ -131,8 +131,10 @@ extension MainTabBarController: WebSocketDelegate {
             }
             switch webSocketPackage.type {
             case .message:
-                Messages([webSocketPackage.convertToMessage()]).store()
-                NotificationCenter.default.post(name: .WebsocketReceivedMessagePackage, object: nil)
+                if let message = webSocketPackage.convertToMessage() {
+                    Messages([message]).store()
+                    NotificationCenter.default.post(name: .WebsocketReceivedMessagePackage, object: nil)
+                }
                 break
             case .chatBox:
                 NotificationCenter.default.post(name: .WebsocketReceivedChatBoxPackage, object: nil)
