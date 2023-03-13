@@ -22,28 +22,27 @@ final class Message: Model {
     var createdAt: String?
     
     @Field(key: "sender")
-    /// mappingId of user
-    var sender: UUID
+    var sender: UUID?
     
     @Field(key: "mediaType")
-    var mediaType: String
+    var mediaType: String?
     
     @Field(key: "content")
-    var content: String
+    var content: String?
     
-    @Parent(key: "chatBoxId")
-    var chatBox: ChatBox
+    @Parent(key: "chatboxId")
+    var chatbox: Chatbox
     
     //
     init() {}
     
-    init(id: UUID? = nil, sender: UUID, mediaType: String?, content: String, chatBoxId: ChatBox.IDValue) {
+    init(id: UUID? = nil, sender: UUID?, mediaType: String?, content: String?, chatBoxId: Chatbox.IDValue) {
         self.id = id
         self.createdAt = Date().milliStampString
         self.sender = sender
         self.mediaType = mediaType ?? MediaType.text.rawValue
         self.content = content
-        self.$chatBox.id = chatBoxId
+        self.$chatbox.id = chatBoxId
     }
     
     init?(id: UUID? = nil, _ package: WebSocketPackage) {
@@ -59,7 +58,7 @@ final class Message: Model {
         self.sender = packageMessageSender
         self.mediaType = packageMessageMediaType.rawValue
         self.content = packageMessageContent
-        self.$chatBox.id = packageMessageChatBoxId
+        self.$chatbox.id = packageMessageChatBoxId
     }
 }
 
@@ -67,7 +66,7 @@ extension Message: Content {}
 extension Message {
     // Confuse
     func convertToWebSocketPackage() -> WebSocketPackage {
-        return WebSocketPackage(type: .message, message: WebSocketPackageMessage(id: self.id, createdAt: createdAt, sender: sender, chatBoxId: self.$chatBox.id, mediaType: MediaType(rawValue: mediaType), content: content))
+        return WebSocketPackage(type: .message, message: WebSocketPackageMessage(id: self.id, createdAt: createdAt, sender: sender, chatBoxId: self.$chatbox.id, mediaType: MediaType(rawValue: mediaType ?? "text"), content: content))
     }
 }
 

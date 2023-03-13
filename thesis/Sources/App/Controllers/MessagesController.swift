@@ -13,13 +13,8 @@ struct MessagesController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let messagesRoutes = routes.grouped("api", "messages")
         
-        messagesRoutes.get(use: index)
-        messagesRoutes.delete("remove", "all", use: deleteAllHandler)
-        messagesRoutes.get(":chatBoxId", "time", use: getLastestUpdateTime)
-        messagesRoutes.get("messages", ":chatBoxId", ":time", use: getMessagesFromTime)
-        
         /// WebSocket
-        messagesRoutes.webSocket("listen", ":mappingId", onUpgrade: webSocketHandler)
+        messagesRoutes.webSocket("listen", ":userId", onUpgrade: webSocketHandler)
         
         /// Auth
         let tokenAuthMiddleware = Token.authenticator()
@@ -27,6 +22,10 @@ struct MessagesController: RouteCollection {
         let tokenAuthGroup = messagesRoutes.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         tokenAuthGroup.post(use: createHandler)
+        tokenAuthGroup.get(use: index)
+        tokenAuthGroup.get(":chatBoxId", "time", use: getLastestUpdateTime)
+        tokenAuthGroup.get("messages", ":chatBoxId", ":time", use: getMessagesFromTime)
+        tokenAuthGroup.delete("remove", "all", use: deleteAllHandler)
     }
     
     
@@ -37,10 +36,10 @@ struct MessagesController: RouteCollection {
             throw Abort(.notAcceptable)
         }
         try await message.save(on: req.db)
-        guard let chatBox = try await ChatBox.find(message.chatBox.id, on: req.db) else {
+        guard let chatbox = try await Chatbox.find(message.chatbox.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        let mappings = try await chatBox.$mappings.get(on: req.db)
+        let mappings = try await chatbox.$users.get(on: req.db)
         webSocketManager.send(to: mappings, message: message)
         return message
     }
@@ -57,7 +56,7 @@ struct MessagesController: RouteCollection {
         }
         guard let lastestUpdateTime = try await Message
             .query(on: req.db)
-            .filter(\.$chatBox.$id == chatBoxUUID)
+            .filter(\.$chatbox.$id == chatBoxUUID)
             .max(\.$createdAt) else {
             throw Abort(.notFound)
         }
@@ -72,11 +71,10 @@ struct MessagesController: RouteCollection {
             throw Abort(.notFound)
         }
         return try await Message.query(on: req.db)
-            .filter(\.$chatBox.$id == chatBoxUUID)
+            .filter(\.$chatbox.$id == chatBoxUUID)
             .filter(\.$createdAt > timestamp)
             .all()
     }
-    
     
     
     // MARK: - Delete
@@ -102,13 +100,13 @@ struct MessagesController: RouteCollection {
      }
      */
     func webSocketHandler(_ req: Request, _ ws: WebSocket) {
-        guard let mappingId = req.parameters.get("mappingId", as: UUID.self) else { return }
-        webSocketManager.add(ws: ws, to: mappingId.uuidString)
+        guard let userId = req.parameters.get("userId", as: UUID.self) else { return }
+        webSocketManager.add(ws: ws, to: userId.uuidString)
         ws.onClose.whenComplete { result in
             // Succeeded or failed to close.
             switch result {
             case .success:
-                webSocketManager.removeSession(of: mappingId.uuidString)
+                webSocketManager.removeSession(of: userId.uuidString)
                 print("close ws successful!")
                 break
                 
@@ -130,95 +128,18 @@ struct MessagesController: RouteCollection {
                     return
                 }
                 let _ = message.save(on: req.db).flatMap {
-                    ChatBox.find(message.$chatBox.id, on: req.db)
+                    Chatbox.find(message.$chatbox.id, on: req.db)
                         .unwrap(or: Abort(.notFound))
                         .map { chatBox in
-                            chatBox.$mappings.get(on: req.db).map { mappings in
+                            chatBox.$users.get(on: req.db).map { mappings in
                                 webSocketManager.send(to: mappings, message: message)
                             }
                         }
                 }
                 break
-//            case .chatBox:
-//                break
-//            case .user:
-//                break
             default:
                 break
             }
         }
     }
-    
-    
-    
-//    func webSocketHandler(_ req: Request, _ ws: WebSocket) async {
-//        ws.onText() { ws, text async in
-//            guard let data = text.data(using: .utf8),
-//                  let resolvedMessage = try? JSONDecoder().decode(ResolveMessage.self, from: data) else {
-//                return
-//            }
-//            let message = Message(resolvedMessage)
-//            try? await message.save(on: req.db)
-//            if let chatBox = try? await ChatBox.find(resolvedMessage.chatBoxID, on: req.db),
-//               let mappings = try? await chatBox.$mappings.get(on: req.db) {
-//                webSocketManager.mess(to: mappings, message: resolvedMessage)
-//            }
-//
-//        }
-////        ws.onText() { onTextHandler($0, $1) }
-////
-////        func onTextHandler(_ ws: WebSocket, _ text: String) async {
-////            guard let data = text.data(using: .utf8),
-////                  let resolvedMessage = try? JSONDecoder().decode(ResolveMessage.self, from: data) else {
-////                      return
-////                  }
-////            let message = Message(resolvedMessage)
-////            await message.save(on: req.db)
-////            let _ = ChatBox.find(resolvedMessage.chatBoxID, on: req.db)
-////                .unwrap(or: Abort(.notFound))
-////                .map { chatBox in
-////                    chatBox.$mappings.get(on: req.db).map { mappings in
-////                        webSocketManager.mess(to: mappings, message: resolvedMessage)
-////                    }
-////                }
-////        }
-//    }
-    
-    
-//    func addchatBoxesHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
-//        struct ResolveCreateMappingChatBox: Codable {
-//            let mappingIds: [UUID]
-//        }
-//
-//        let updateUserData = try req.content.decode(ResolveCreateMappingChatBox.self)
-//        let chatBox = ChatBox(name: "Friend")
-//
-//        return chatBox.create(on: req.db).flatMap {
-//            updateUserData.mappingIds.map { mappingId in
-//                Mapping.find(mappingId, on: req.db)
-//                    .unwrap(or: Abort(.notFound))
-//                    .flatMap { $0.$chatBoxes.attach(chatBox, on: req.db) }
-//            }.flatten(on: req.eventLoop).transform(to: .created)
-//        }
-//    }
-    
-    
-    
-    // MARK: - WebSocket
-//    app.webSocket("echo") { req, ws in
-//        // Connected WebSocket.
-//        print(ws)
-//        
-//        // Echoes received messages.
-//        ws.onText { ws, text in
-//        }
-//    }
-//    
-//    // Create first web socket conection.
-//    app.webSocket("connect", ":userID") { req, ws in
-//        guard let userID = req.parameters.get("userID") else {
-//            return
-//        }
-//        webSocketPerUserManager.add(ws: ws, to: userID)
-//    }
 }

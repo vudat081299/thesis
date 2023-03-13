@@ -106,6 +106,7 @@ extension AuthenticatedUser: Storing {
             }
             if let data = data {
                 user.data = data
+                user.data?.mappingId = data.id
             }
             if let networkConfig = networkConfig {
                 user.networkConfig = networkConfig

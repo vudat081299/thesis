@@ -17,11 +17,11 @@ struct MappingChatBoxPivot: Codable {
     
     struct Resolve: Codable {
         let id: UUID
-        let mapping: ResolveUUID
-        let chatBox: ResolveUUID
+        let user: ResolveUUID
+        let chatbox: ResolveUUID
         
         func flatten() -> MappingChatBoxPivot {
-            MappingChatBoxPivot(id: id, mappingId: mapping.id, chatBoxId: chatBox.id)
+            MappingChatBoxPivot(id: id, mappingId: user.id, chatBoxId: chatbox.id)
         }
     }
 }

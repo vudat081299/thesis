@@ -13,30 +13,30 @@ final class WebSocketManager {
     
     
     // MARK: - Session manager
-    func add(ws: WebSocket, to mappingId: String) {
-        dictionary[mappingId] = ws
-        print("Add new WebSocket connection user ID: \(mappingId)!")
+    func add(ws: WebSocket, to userId: String) {
+        dictionary[userId] = ws
+        print("Add new WebSocket connection user ID: \(userId)!")
     }
     
-    func removeSession(of mappingId: String) {
-        if dictionary[mappingId] != nil {
-            dictionary.removeValue(forKey: mappingId)
+    func removeSession(of userId: String) {
+        if dictionary[userId] != nil {
+            dictionary.removeValue(forKey: userId)
         }
     }
     
     
     // MARK: -
-    func send(to userMapping: [Mapping], message: Message) {
-        userMapping.forEach { mapping in
-            if let mappingId = mapping.id,
-               let ws = dictionary[mappingId.uuidString] {
+    func send(to user: [User], message: Message) {
+        user.forEach { user in
+            if let userId = user.id,
+               let ws = dictionary[userId.uuidString] {
                 ws.send(message.convertToWebSocketPackage())
             }
         }
     }
-    func send(to mappingIds: [UUID?], package: WebSocketPackage) {
-        mappingIds.forEach { mappingId in
-            if let mappingId = mappingId, let ws = dictionary[mappingId.uuidString] {
+    func send(to userIds: [UUID?], package: WebSocketPackage) {
+        userIds.forEach { userId in
+            if let userId = userId, let ws = dictionary[userId.uuidString] {
                 ws.send(package)
             }
         }

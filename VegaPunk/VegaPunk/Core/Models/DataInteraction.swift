@@ -24,10 +24,10 @@ class DataInteraction {
             leave(dispatchGroup)
         }, onSuccess: nil)
         
-        dispatchGroup.enter() // <--
-        RequestEngine.getAllMappings ({
-            leave(dispatchGroup)
-        }, onSuccess: nil)
+//        dispatchGroup.enter() // <--
+//        RequestEngine.getAllMappings ({
+//            leave(dispatchGroup)
+//        }, onSuccess: nil)
         
         dispatchGroup.enter() // <--
         RequestEngine.getAllMappingPivots ({
@@ -60,10 +60,10 @@ class DataInteraction {
             leave(dispatchGroup)
         }, onSuccess: nil)
         
-        dispatchGroup.enter() // <--
-        RequestEngine.getAllMappings ({
-            leave(dispatchGroup)
-        }, onSuccess: nil)
+//        dispatchGroup.enter() // <--
+//        RequestEngine.getAllMappings ({
+//            leave(dispatchGroup)
+//        }, onSuccess: nil)
         
         // Call handler when all tasks is finished
         dispatchGroup.notify(queue: .main) {

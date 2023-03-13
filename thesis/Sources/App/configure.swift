@@ -74,9 +74,8 @@ public func configure(_ app: Application) throws {
     
     app.migrations.add(CreateTodo())
     app.migrations.add(CreateUser())
-    app.migrations.add(CreateMapping())
     app.migrations.add(CreateChatBox())
-    app.migrations.add(CreateMapppingChatBoxPivot())
+    app.migrations.add(CreateChatboxMembers())
     app.migrations.add(CreateMessage())
     app.migrations.add(CreateToken())
     app.migrations.add(CreateAdminUser())

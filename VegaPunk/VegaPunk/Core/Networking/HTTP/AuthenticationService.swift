@@ -18,7 +18,7 @@ class Auth {
             .responseDecodable(of: User.self) { response in
                 switch response.result {
                 case .success(let user):
-                    if (user.mappingId != nil) {
+                    if (user.id != nil) {
                         print("Request success: file - \(#file), class - \(self), func - \(#function), line: \(#line) \n \(user)")
                         AuthenticatedUser.store(data: user)
                         ConcurrencyInteraction.mainQueueAsync(onSuccess)

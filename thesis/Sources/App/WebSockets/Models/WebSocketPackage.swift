@@ -15,7 +15,7 @@ struct WebSocketPackageMessage: Codable {
     // message
     let id: UUID?
     let createdAt: String?
-    let sender: UUID? // mappingId
+    let sender: UUID?
     let chatBoxId: UUID?
     let mediaType: MediaType?
     let content: String?

@@ -9,22 +9,22 @@ import Fluent
 import Vapor
 
 final class ChatboxMembers: Model, Content {
-    static let schema = "mapping-chatbox-pivot"
+    static let schema = "chatbox-members"
     
     @ID
     var id: UUID?
     
-    @Parent(key: "mappingId")
-    var mapping: Mapping
+    @Parent(key: "userId")
+    var user: User
     
-    @Parent(key: "chatBoxId")
-    var chatBox: Chatbox
+    @Parent(key: "chatboxId")
+    var chatbox: Chatbox
     
     init() {}
     
-    init(id: UUID? = nil, mapping: Mapping, chatBox: Chatbox) throws {
+    init(id: UUID? = nil, user: User, chatbox: Chatbox) throws {
         self.id = id
-        self.$mapping.id = try mapping.requireID()
-        self.$chatBox.id = try chatBox.requireID()
+        self.$user.id = try user.requireID()
+        self.$chatbox.id = try chatbox.requireID()
     }
 }

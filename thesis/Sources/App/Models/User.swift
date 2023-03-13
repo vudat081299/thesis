@@ -32,7 +32,6 @@ import Vapor
 final class User: Model, Content {
     static let schema = "users"
     
-    var mappingId: UUID?
     var token: Token?
     
     @ID
@@ -71,8 +70,8 @@ final class User: Model, Content {
     @Field(key: "bio")
     var bio: String?
     
-    @Children(for: \.$user)
-    var mappings: [Mapping]
+    @Siblings(through: ChatboxMembers.self, from: \.$user, to: \.$chatbox)
+    var chatboxes: [Chatbox]
     
     @OptionalField(key: "siwaIdentifier")
     var siwaIdentifier: String?
@@ -126,7 +125,6 @@ final class User: Model, Content {
     
     final class Public: Content {
         var id: UUID?
-        var mappingId: UUID?
         var token: Token?
         var name: String
         var username: String
@@ -140,9 +138,8 @@ final class User: Model, Content {
         var join: String?
         var bio: String?
         
-        init(id: UUID?, mappingId: UUID? = nil, token: Token? = nil, name: String, username: String, email: String?, phone: String?, avatar: String? = nil, gender: Gender? = nil, birth: String? = nil, country: String? = nil, join: String? = nil, bio: String? = nil) {
+        init(id: UUID?, token: Token? = nil, name: String, username: String, email: String?, phone: String?, avatar: String? = nil, gender: Gender? = nil, birth: String? = nil, country: String? = nil, join: String? = nil, bio: String? = nil) {
             self.id = id
-            self.mappingId = mappingId
             self.token = token
             self.name = name
             self.username = username
@@ -161,7 +158,7 @@ final class User: Model, Content {
 
 extension User {
     func convertToPublic() -> User.Public {
-        return User.Public(id: id, mappingId: mappingId, token: token, name: name, username: username, email: email, phone: phone, avatar: avatar, gender: gender, birth: birth, country: country, join: join, bio: bio)
+        return User.Public(id: id, token: token, name: name, username: username, email: email, phone: phone, avatar: avatar, gender: gender, birth: birth, country: country, join: join, bio: bio)
     }
 }
 

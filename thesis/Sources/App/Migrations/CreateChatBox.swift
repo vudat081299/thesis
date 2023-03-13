@@ -9,7 +9,7 @@ import Fluent
 
 struct CreateChatBox: AsyncMigration {
   func prepare(on database: Database) async throws {
-      try await database.schema("chatBoxes")
+      try await database.schema("chatboxes")
       .id()
       .field("name", .string)
       .field("avatar", .string)
@@ -17,6 +17,6 @@ struct CreateChatBox: AsyncMigration {
   }
   
   func revert(on database: Database) async throws {
-      try await database.schema("chatBoxes").delete()
+      try await database.schema("chatboxes").delete()
   }
 }

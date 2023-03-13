@@ -33,7 +33,7 @@ struct CreateToken: AsyncMigration {
         try await database.schema("tokens")
             .id()
             .field("value", .string, .required)
-            .field("userID", .uuid, .required, .references("users", "id", onDelete: .cascade))
+            .field("userId", .uuid, .required, .references("users", "id", onDelete: .cascade))
             .create()
     }
     

@@ -38,7 +38,7 @@ final class Token: Model, Content {
   @Field(key: "value")
   var value: String
 
-  @Parent(key: "userID")
+  @Parent(key: "userId")
   var user: User
 
   init() {}

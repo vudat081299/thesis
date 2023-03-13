@@ -8,8 +8,8 @@
 import Fluent
 import Vapor
 
-final class ChatBox: Model, Content {
-    static let schema = "chatBoxes"
+final class Chatbox: Model, Content {
+    static let schema = "chatboxes"
     
     @ID
     var id: UUID?
@@ -20,11 +20,11 @@ final class ChatBox: Model, Content {
     @OptionalField(key: "avatar")
     var avatar: String?
     
-    @Children(for: \.$chatBox)
+    @Children(for: \.$chatbox)
     var messages: [Message]
     
-    @Siblings(through: MappingChatBoxPivot.self, from: \.$chatBox, to: \.$mapping)
-    var mappings: [Mapping]
+    @Siblings(through: ChatboxMembers.self, from: \.$chatbox, to: \.$user)
+    var users: [User]
     
     init() {}
     
@@ -37,19 +37,19 @@ final class ChatBox: Model, Content {
     }
 }
 
-extension ChatBox {
-    static func addChatBox(_ name: String, to mapping: Mapping, on req: Request) -> EventLoopFuture<Void> {
-        ChatBox.query(on: req.db)
+extension Chatbox {
+    static func addChatbox(_ name: String, to user: User, on req: Request) -> EventLoopFuture<Void> {
+        Chatbox.query(on: req.db)
             .filter(\.$name == name)
             .first()
             .flatMap { foundChatBox in
                 if let existingChatBox = foundChatBox {
-                    return mapping.$chatBoxes
+                    return user.$chatboxes
                         .attach(existingChatBox, on: req.db)
                 } else {
-                    let chatBox = ChatBox(name: name)
+                    let chatBox = Chatbox(name: name)
                     return chatBox.save(on: req.db).flatMap {
-                        mapping.$chatBoxes
+                        user.$chatboxes
                             .attach(chatBox, on: req.db)
                     }
                 }

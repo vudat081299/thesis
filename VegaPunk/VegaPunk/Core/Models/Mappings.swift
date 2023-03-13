@@ -31,12 +31,11 @@ struct Mapping: Codable {
 struct Mappings {
     var mappings: [Mapping] = []
     
-    init(_ mappings: [Mapping] = []) {
-        self.mappings = mappings
+    init(_ users: [User] = []) {
+        self.mappings = users.map { Mapping(id: $0.id, userId: $0.id) }
     }
-    
-    init(resolves: [Mapping.Resolve]) {
-        self.mappings = resolves.map { $0.flatten() }
+    init(mappings: [Mapping]) {
+        self.mappings = mappings
     }
 }
 
@@ -82,7 +81,7 @@ extension Mappings: Codable {
             let mapping = Mapping(id: mappingUUID, userId: userId)
             mappings.append(mapping)
         }
-        self.init(mappings)
+        self.init(mappings: mappings)
     }
 }
 

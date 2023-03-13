@@ -138,7 +138,7 @@ extension Array where Element == ChatBoxMessage {
 // MARK: - Friend
 extension Array where Element == User {
     func clean() -> Friend {
-        return Friend(self.filter { $0.mappingId != nil })
+        return Friend(self.filter { $0.username != "admin" })
     }
     func getUser(with mappingId: UUID) -> User? {
         return self.first { $0.mappingId == mappingId }

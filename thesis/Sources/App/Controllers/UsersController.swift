@@ -34,18 +34,17 @@ struct UsersController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let usersRoute = routes.grouped("api", "users")
         
-        usersRoute.get(use: getAllHandler)
-        usersRoute.get(":userId", use: getHandler)
-        usersRoute.get(":userId", "mapping", use: getMappingsHandler)
-        usersRoute.get("lastestUpdate", use: lastestUpdateTime)
-        usersRoute.get("from", ":time", use: getUsersFromTime)
+//        usersRoute.get(use: getAllHandler)
+//        usersRoute.get(":userId", use: getHandler)
+//        usersRoute.get(":userId", "mapping", use: getMappingsHandler)
+//        usersRoute.get("lastestUpdate", use: lastestUpdateTime)
+//        usersRoute.get("from", ":time", use: getUsersFromTime)
         usersRoute.post("siwa", use: signInWithApple)
         usersRoute.post(use: createHandler)
         
         /// Basic Auth
         let basicAuthMiddleware = User.authenticator()
         let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware)
-        
         basicAuthGroup.post("login", use: loginHandler)
         
         /// Auth
@@ -54,6 +53,15 @@ struct UsersController: RouteCollection {
         let tokenAuthGroup = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         tokenAuthGroup.put(use: updateHandler)
+        tokenAuthGroup.get(use: getAllHandler)
+        tokenAuthGroup.get(":userId", use: getHandler)
+//        tokenAuthGroup.get(":userId", "mapping", use: getMappingsHandler) // Deprecated
+        tokenAuthGroup.get("lastestUpdate", use: lastestUpdateTime)
+        tokenAuthGroup.get("from", ":time", use: getUsersFromTime)
+        
+        
+        tokenAuthGroup.get(":userId", "chatBoxes", use: getchatBoxesHandler)
+        tokenAuthGroup.post("chatBox", "create", use: addchatBoxesHandler)
     }
     
     
@@ -63,11 +71,9 @@ struct UsersController: RouteCollection {
         newUser.password = try Bcrypt.hash(newUser.password)
         newUser.join = Date().milliStampString
         try await newUser.save(on: req.db)
-        try await Mapping(userID: newUser.requireID()).save(on: req.db)
-        
-        let mappings = try await Mapping.query(on: req.db).all()
-        let mappingIds = mappings.map { $0.id }
-        webSocketManager.send(to: mappingIds, package: WebSocketPackage(type: .user, message: WebSocketPackageMessage(id: nil, createdAt: newUser.join, sender: nil, chatBoxId: nil, mediaType: nil, content: nil)))
+        let otherUsers = try await User.query(on: req.db).all().filter { try $0.id != newUser.requireID() }
+        let userIds = otherUsers.map { $0.id }
+        webSocketManager.send(to: userIds, package: WebSocketPackage(type: .user, message: WebSocketPackageMessage(id: nil, createdAt: newUser.join, sender: nil, chatBoxId: nil, mediaType: nil, content: nil)))
         return newUser.convertToPublic()
     }
     
@@ -75,28 +81,15 @@ struct UsersController: RouteCollection {
     // MARK: - Get
     func getAllHandler(_ req: Request) async throws -> [User.Public] {
         let users = try await User.query(on: req.db).all()
-//        let mappings = try await Mapping.query(on: req.db).all()
-        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
-        let filledMappingIdUsers: [User] = users.map { publicUser in
-            publicUser.mappingId = mappings[publicUser.id!]
-            return publicUser
-        }
-        return filledMappingIdUsers.convertToPublic()
+        return users.convertToPublic()
     }
     func getHandler(_ req: Request) async throws -> User.Public {
         guard let user = try await User.find(req.parameters.get("userId"), on: req.db) else {
            throw Abort(.notFound)
         }
-        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
-        user.mappingId = mappings[user.id!]
         return user.convertToPublic()
     }
-    func getMappingsHandler(_ req: Request) async throws -> [Mapping] {
-        guard let user = try await User.find(req.parameters.get("userId"), on: req.db) else {
-            return []
-        }
-        return try await user.$mappings.get(on: req.db)
-    }
+    
     func lastestUpdateTime(req: Request) async throws -> String {
         guard let lastestUpdateTime = try await User.query(on: req.db).max(\.$join) else {
             throw Abort(.notFound)
@@ -108,12 +101,13 @@ struct UsersController: RouteCollection {
             throw Abort(.badRequest)
         }
         let users = try await User.query(on: req.db).filter(\.$join > timestamp).all()
-        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
-        let filledMappingIdUsers: [User] = users.map { user in
-            user.mappingId = mappings[user.id!]
-            return user
-        }
-        return filledMappingIdUsers.convertToPublic()
+        return users.convertToPublic()
+    }
+    
+    /// Rewrite
+    func getchatBoxesHandler(_ req: Request) async throws -> [Chatbox] {
+        let user = try req.auth.require(User.self)
+        return try await user.$chatboxes.query(on: req.db).all()
     }
     
     
@@ -123,8 +117,6 @@ struct UsersController: RouteCollection {
         let token = try Token.generate(for: user)
         try await token.save(on: req.db)
         user.token = token
-        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
-        user.mappingId = mappings[user.id!]
         return user.convertToPublic()
     }
     func signInWithApple(_ req: Request) throws -> EventLoopFuture<Token> {
@@ -161,6 +153,29 @@ struct UsersController: RouteCollection {
         }
     }
     
+    /// Rewrite
+    func addchatBoxesHandler(_ req: Request) async throws -> HTTPStatus {
+        struct ResolveCreateMappingChatBox: Codable {
+            let mappingIds: [UUID]
+        }
+        let user = try req.auth.require(User.self)
+        let resolvedModel = try req.content.decode(ResolveCreateMappingChatBox.self)
+        let chatbox = Chatbox(name: "New group!")
+        try await chatbox.save(on: req.db)
+        let message = Message(sender: user.id, mediaType: MediaType.notify.rawValue, content: "👋 Hi! I just create this chat box, I'm @\(user.username)!", chatBoxId: chatbox.id!)
+        try await message.save(on: req.db)
+        
+        for userId in resolvedModel.mappingIds {
+            guard let user = try await User.find(userId, on: req.db) else {
+                throw Abort(.notFound)
+            }
+            try await user.$chatboxes.attach(chatbox, on: req.db)
+        }
+        let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: message.createdAt, sender: user.id, chatBoxId: chatbox.id, mediaType: .text, content: message.content))
+        webSocketManager.send(to: resolvedModel.mappingIds, package: package)
+        return .created
+    }
+    
     
     // MARK: - Update
     func updateHandler(_ req: Request) async throws -> User.Public {
@@ -182,8 +197,6 @@ struct UsersController: RouteCollection {
         if let bio = updateUserData.bio { user.bio = bio }
         print("handler 😀😀😀: \(#function), line: \(#line), \(String(describing: user.country))")
         try await user.save(on: req.db)
-        let mappings = try await Dictionary(uniqueKeysWithValues: Mapping.query(on: req.db).all().map { ($0.$user.id, $0.id!) })
-        user.mappingId = mappings[user.id!]
         return user.convertToPublic()
     }
     
