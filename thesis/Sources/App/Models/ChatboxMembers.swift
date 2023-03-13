@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-final class MappingChatBoxPivot: Model, Content {
+final class ChatboxMembers: Model, Content {
     static let schema = "mapping-chatbox-pivot"
     
     @ID
@@ -18,11 +18,11 @@ final class MappingChatBoxPivot: Model, Content {
     var mapping: Mapping
     
     @Parent(key: "chatBoxId")
-    var chatBox: ChatBox
+    var chatBox: Chatbox
     
     init() {}
     
-    init(id: UUID? = nil, mapping: Mapping, chatBox: ChatBox) throws {
+    init(id: UUID? = nil, mapping: Mapping, chatBox: Chatbox) throws {
         self.id = id
         self.$mapping.id = try mapping.requireID()
         self.$chatBox.id = try chatBox.requireID()
