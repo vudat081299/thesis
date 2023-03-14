@@ -9,6 +9,10 @@
 // postgresql://vapor_username:vapor_password@localhost
 import UIKit
 import LocalAuthentication
+import CryptoSwift
+
+let iv = "4ca00ff4c898d61e1edbf1800618fb28".transformToArrayUInt8()
+let key = "140b41b22a29beb4061bda66b6747e14".transformToArrayUInt8()
 
 class MessagingViewController: UIViewController {
     
@@ -272,16 +276,32 @@ class MessagingViewController: UIViewController {
         if pickedImage.image != nil {
             sendMessageButton.isEnabled = false
             RequestEngine.upload((pickedImage.image?.resized(to: 720).pngData())!) { [self] fileId in
-                previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.id, chatboxId: extractedChatBox.chatBox.id, mediaType: .file, content: fileId))
-                NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": previousSendingPackage!])
-                hidePickedImageContainer()
-                sendMessageButton.isEnabled = true
+                do {
+                    let aes = try AES(key: key, blockMode: CBC(iv: iv), padding: .pkcs7)
+                    let encrypted = try aes.encrypt(fileId.bytes)
+                    let cipherText = encrypted.transformToHex()
+                    
+                    previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.id, chatboxId: extractedChatBox.chatBox.id, mediaType: .file, content: cipherText))
+                    NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": previousSendingPackage!])
+                    hidePickedImageContainer()
+                    sendMessageButton.isEnabled = true
+                } catch {
+                    
+                }
             }
         } else {
             if (chatTextField.text == nil || chatTextField.text?.count == 0) { return }
-            previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.id, chatboxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
-            chatTextField.text = ""
-            NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": previousSendingPackage!])
+            do {
+                let aes = try AES(key: key, blockMode: CBC(iv: iv), padding: .pkcs7)
+                let encrypted = try aes.encrypt(chatTextField.text!.bytes)
+                let cipherText = encrypted.transformToHex()
+                
+                previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.id, chatboxId: extractedChatBox.chatBox.id, mediaType: .text, content: cipherText))
+                chatTextField.text = ""
+                NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": previousSendingPackage!])
+            } catch {
+                
+            }
         }
     }
     @IBAction func pickImage(_ sender: UIButton) {

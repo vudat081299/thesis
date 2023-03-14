@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CryptoSwift
 
 
 // MARK: - Definition
@@ -33,8 +34,17 @@ struct ChatboxMessage: Hashable {
         let mediaType: MediaType
         let content: String?
         
-        func flatten() -> ChatboxMessage {
-            ChatboxMessage(id: id, createdAt: createdAt, sender: sender, chatboxId: chatbox.id, mediaType: mediaType, content: content)
+        func flatten(_ aes: AES) -> ChatboxMessage {
+            do {
+                let decrypted = try aes.decrypt(content!.transformToArrayUInt8())
+                if let plainText = String(bytes: decrypted, encoding: .utf8) {
+                    return ChatboxMessage(id: id, createdAt: createdAt, sender: sender, chatboxId: chatbox.id, mediaType: mediaType, content: plainText)
+                } else {
+                    return ChatboxMessage(id: id, createdAt: createdAt, sender: sender, chatboxId: chatbox.id, mediaType: mediaType, content: "Fail to load!")
+                }
+            } catch {
+                return ChatboxMessage(id: id, createdAt: createdAt, sender: sender, chatboxId: chatbox.id, mediaType: mediaType, content: "Fail to load!")
+            }
         }
     }
     
@@ -122,7 +132,12 @@ struct Messages {
     }
     
     init(_ resolveMessages: [ChatboxMessage.Resolve]) {
-        self.messages = resolveMessages.map { $0.flatten() }
+        do {
+            let aes = try AES(key: key, blockMode: CBC(iv: iv), padding: .pkcs7)
+            self.messages = resolveMessages.map { $0.flatten(aes) }
+        } catch {
+            
+        }
     }
 }
 

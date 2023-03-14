@@ -216,6 +216,36 @@ extension Array where Element == [ChatboxMessage] {
 }
 
 
+// MARK: - UInt8
+extension Array where Element == UInt8 {
+    public init(customHex: String) {
+        self.init()
+        let utf8 = Array<Element>(customHex.utf8)
+        let skip0x = customHex.hasPrefix("0x") ? 2 : 0
+        for idx in stride(from: utf8.startIndex.advanced(by: skip0x), to: utf8.endIndex, by: utf8.startIndex.advanced(by: 2)) {
+            let byteHex = "\(UnicodeScalar(utf8[idx]))\(UnicodeScalar(utf8[idx.advanced(by: 1)]))"
+            if let byte = UInt8(byteHex, radix: 16) {
+                self.append(byte)
+            }
+        }
+    }
+    
+    func transformToHex() -> String {
+        let hexValueTable = ["0", "1", "2", "3",
+                             "4", "5", "6", "7",
+                             "8", "9", "a", "b",
+                             "c", "d", "e", "f"]
+        var hexString = ""
+        for number in self {
+            let decimal = Int(number)
+            let firstHex = decimal / 16
+            let secondHex = decimal % 16
+            hexString += hexValueTable[firstHex]
+            hexString += hexValueTable[secondHex]
+        }
+        return hexString
+    }
+}
 
 
 

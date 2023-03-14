@@ -78,3 +78,31 @@ extension String {
         return firstLetter + remainingLetters
     }
 }
+
+
+// MARK: -
+extension String {
+    func transformToArrayUInt8() -> [UInt8] {
+        var result: Array<UInt8> = []
+        let utf8 = Array<UInt8>(self.utf8)
+        let skip0x = self.hasPrefix("0x") ? 2 : 0
+        for idx in stride(from: utf8.startIndex.advanced(by: skip0x), to: utf8.endIndex, by: utf8.startIndex.advanced(by: 2)) {
+            let byteHex = "\(UnicodeScalar(utf8[idx]))\(UnicodeScalar(utf8[idx.advanced(by: 1)]))" // Crash when exceed, check this!
+            if let byte = UInt8(byteHex, radix: 16) {
+                result.append(byte)
+            }
+        }
+        return result
+    }
+    func transformToArrayUInt8ByTrimmingIV() -> [UInt8] {
+        let trimedIVCipherText = self[self.index(self.startIndex, offsetBy: 32)..<self.endIndex]
+        return String(trimedIVCipherText).transformToArrayUInt8()
+    }
+    func ivFromFullCipherText() -> String {
+        return String(self[self.startIndex..<self.index(self.startIndex, offsetBy: 32)])
+    }
+    func cipherTextFromFullCipherText() -> String {
+        let trimedIVCipherText = self[self.index(self.startIndex, offsetBy: 32)..<self.endIndex]
+        return String(trimedIVCipherText)
+    }
+}

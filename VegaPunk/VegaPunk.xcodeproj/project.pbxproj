@@ -29,6 +29,7 @@
 		8481DE6929A0C1BF002C36CD /* WebRTCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8481DE5B29A0C1BF002C36CD /* WebRTCClient.swift */; };
 		8481DE6A29A0C1BF002C36CD /* RTCMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8481DE5C29A0C1BF002C36CD /* RTCMessage.swift */; };
 		8481DE6B29A0C1BF002C36CD /* SignalingClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8481DE5D29A0C1BF002C36CD /* SignalingClient.swift */; };
+		848716E529C107E30093F3BF /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 848716E429C107E30093F3BF /* CryptoSwift */; };
 		84A2C41829929D8800EE8CD8 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2C41629929D8700EE8CD8 /* SampleData.swift */; };
 		84A2C41C2992A79400EE8CD8 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 84A2C41B2992A79400EE8CD8 /* Nuke */; };
 		84A2C41E2992E1A700EE8CD8 /* UserDefaults+Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2C41D2992E1A700EE8CD8 /* UserDefaults+Keys.swift */; };
@@ -281,6 +282,7 @@
 				84A2C41C2992A79400EE8CD8 /* Nuke in Frameworks */,
 				8481DE4129A0BDDD002C36CD /* WebRTC in Frameworks */,
 				84A93910296AD3F8008ED0DC /* Alamofire in Frameworks */,
+				848716E529C107E30093F3BF /* CryptoSwift in Frameworks */,
 				8481DE3B29A0BCC5002C36CD /* Starscream in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -772,6 +774,7 @@
 				84A2C41B2992A79400EE8CD8 /* Nuke */,
 				8481DE3A29A0BCC5002C36CD /* Starscream */,
 				8481DE4029A0BDDD002C36CD /* WebRTC */,
+				848716E429C107E30093F3BF /* CryptoSwift */,
 			);
 			productName = VegaPunk;
 			productReference = 84A9383D296AAA0C008ED0DC /* VegaPunk.app */;
@@ -850,6 +853,7 @@
 				84A2C41A2992A79400EE8CD8 /* XCRemoteSwiftPackageReference "Nuke" */,
 				8481DE3929A0BCC5002C36CD /* XCRemoteSwiftPackageReference "Starscream" */,
 				8481DE3F29A0BDDD002C36CD /* XCRemoteSwiftPackageReference "WebRTC" */,
+				848716E329C107E30093F3BF /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 			);
 			productRefGroup = 84A9383E296AAA0C008ED0DC /* Products */;
 			projectDirPath = "";
@@ -1367,6 +1371,14 @@
 				version = 108.0.0;
 			};
 		};
+		848716E329C107E30093F3BF /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		84A2C41A2992A79400EE8CD8 /* XCRemoteSwiftPackageReference "Nuke" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kean/Nuke.git";
@@ -1395,6 +1407,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8481DE3F29A0BDDD002C36CD /* XCRemoteSwiftPackageReference "WebRTC" */;
 			productName = WebRTC;
+		};
+		848716E429C107E30093F3BF /* CryptoSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 848716E329C107E30093F3BF /* XCRemoteSwiftPackageReference "CryptoSwift" */;
+			productName = CryptoSwift;
 		};
 		84A2C41B2992A79400EE8CD8 /* Nuke */ = {
 			isa = XCSwiftPackageProductDependency;
