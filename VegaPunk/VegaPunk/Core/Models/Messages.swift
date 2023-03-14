@@ -14,14 +14,14 @@ enum MediaType: String, Codable {
 }
 
 /**
- This is a structure of `ChatBox` table on `Database`
+ This is a structure of `Chatbox` table on `Database`
  - `createdAt`: this is a millisecond timestamp - 13 bits of Date()
  */
-struct ChatBoxMessage: Hashable {
+struct ChatboxMessage: Hashable {
     let id: UUID
     let createdAt: String
     let sender: UUID?
-    let chatBoxId: UUID
+    let chatboxId: UUID
     let mediaType: MediaType
     let content: String?
     
@@ -29,25 +29,25 @@ struct ChatBoxMessage: Hashable {
         let id: UUID
         let createdAt: String
         let sender: UUID?
-        let chatBox: ResolveUUID
+        let chatbox: ResolveUUID
         let mediaType: MediaType
         let content: String?
         
-        func flatten() -> ChatBoxMessage {
-            ChatBoxMessage(id: id, createdAt: createdAt, sender: sender, chatBoxId: chatBox.id, mediaType: mediaType, content: content)
+        func flatten() -> ChatboxMessage {
+            ChatboxMessage(id: id, createdAt: createdAt, sender: sender, chatboxId: chatbox.id, mediaType: mediaType, content: content)
         }
     }
     
-    static func == (lhs: ChatBoxMessage, rhs: ChatBoxMessage) -> Bool {
+    static func == (lhs: ChatboxMessage, rhs: ChatboxMessage) -> Bool {
         return lhs.id == rhs.id
     }
-    static func < (lhs: ChatBoxMessage, rhs: ChatBoxMessage) -> Bool {
+    static func < (lhs: ChatboxMessage, rhs: ChatboxMessage) -> Bool {
         if lhs.createdAt == rhs.createdAt {
             return lhs.id.uuidString < rhs.id.uuidString
         }
         return lhs.createdAt < rhs.createdAt
     }
-    static func > (lhs: ChatBoxMessage, rhs: ChatBoxMessage) -> Bool {
+    static func > (lhs: ChatboxMessage, rhs: ChatboxMessage) -> Bool {
         if lhs.createdAt == rhs.createdAt {
             return lhs.id.uuidString > rhs.id.uuidString
         }
@@ -57,7 +57,7 @@ struct ChatBoxMessage: Hashable {
 
 
 // MARK: - Apply Codable
-extension ChatBoxMessage: Codable {
+extension ChatboxMessage: Codable {
     enum Key: String, CodingKey {
         case id
         case createdAt
@@ -74,7 +74,7 @@ extension ChatBoxMessage: Codable {
         id = try container.decode(UUID.self, forKey: .id)
         createdAt = try container.decode(String.self, forKey: .createdAt)
         sender = try container.decode(UUID?.self, forKey: .sender)
-        chatBoxId = try container.decode(UUID.self, forKey: .chatBoxId)
+        chatboxId = try container.decode(UUID.self, forKey: .chatBoxId)
         mediaType = try container.decode(MediaType.self, forKey: .mediaType)
         content = try container.decode(String?.self, forKey: .content)
     }
@@ -84,7 +84,7 @@ extension ChatBoxMessage: Codable {
         try container.encode(id, forKey: .id)
         try container.encode(createdAt, forKey: .createdAt)
         try container.encode(sender, forKey: .sender)
-        try container.encode(chatBoxId, forKey: .chatBoxId)
+        try container.encode(chatboxId, forKey: .chatBoxId)
         try container.encode(mediaType, forKey: .mediaType)
         try container.encode(content, forKey: .content)
     }
@@ -93,15 +93,15 @@ extension ChatBoxMessage: Codable {
     func store(_ domain: UserDefaults.Keys = .lastestMessage) {
         do {
             let userData = try PropertyListEncoder().encode(self)
-            UserDefaults.standard.set(userData, forKey: domain.genKey(self.chatBoxId.uuidString))
+            UserDefaults.standard.set(userData, forKey: domain.genKey(self.chatboxId.uuidString))
         } catch {
             print("Error when saving AuthenticatedUser object!")
         }
     }
-    static func retrieve(_ domain: UserDefaults.Keys = .lastestMessage, with chatBoxId: UUID) -> ChatBoxMessage? {
+    static func retrieve(_ domain: UserDefaults.Keys = .lastestMessage, with chatBoxId: UUID) -> ChatboxMessage? {
         if let data = UserDefaults.standard.data(forKey: domain.genKey(chatBoxId.uuidString)) {
             do {
-                let message = try PropertyListDecoder().decode(ChatBoxMessage?.self, from: data)
+                let message = try PropertyListDecoder().decode(ChatboxMessage?.self, from: data)
                 return message
             } catch {
                 print("Retrieve AuthenticatedUser object failed!")
@@ -115,13 +115,13 @@ extension ChatBoxMessage: Codable {
 }
 
 struct Messages {
-    var messages: [ChatBoxMessage] = []
+    var messages: [ChatboxMessage] = []
     
-    init(_ messages: [ChatBoxMessage] = []) {
+    init(_ messages: [ChatboxMessage] = []) {
         self.messages = messages
     }
     
-    init(_ resolveMessages: [ChatBoxMessage.Resolve]) {
+    init(_ resolveMessages: [ChatboxMessage.Resolve]) {
         self.messages = resolveMessages.map { $0.flatten() }
     }
 }
@@ -141,7 +141,7 @@ extension Messages: Codable {
         static let id = MessageKey(stringValue: "id")
         static let createdAt = MessageKey(stringValue: "createdAt")
         static let sender = MessageKey(stringValue: "sender")
-        static let chatBoxId = MessageKey(stringValue: "chatBoxId")
+        static let chatBoxId = MessageKey(stringValue: "chatboxId")
         static let mediaType = MessageKey(stringValue: "mediaType")
         static let content = MessageKey(stringValue: "content")
     }
@@ -157,14 +157,14 @@ extension Messages: Codable {
             // The rest of the keys use static names defined in `ProductKey`.
             try productContainer.encode(message.createdAt, forKey: .createdAt)
             try productContainer.encode(message.sender, forKey: .sender)
-            try productContainer.encode(message.chatBoxId, forKey: .chatBoxId)
+            try productContainer.encode(message.chatboxId, forKey: .chatBoxId)
             try productContainer.encode(message.mediaType, forKey: .mediaType)
             try productContainer.encode(message.content, forKey: .content)
         }
     }
     
     public init(from decoder: Decoder) throws {
-        var messages = [ChatBoxMessage]()
+        var messages = [ChatboxMessage]()
         let container = try decoder.container(keyedBy: MessageKey.self)
         for key in container.allKeys {
             // Note how the `key` in the loop above is used immediately to access a nested container.
@@ -185,7 +185,7 @@ extension Messages: Codable {
                   let senderUUID = UUID(uuidString: sender),
                   let chatBoxId = UUID(uuidString: chatBoxId)
             else { continue }
-            let message = ChatBoxMessage(id: messageUUID, createdAt: createdAt, sender: senderUUID, chatBoxId: chatBoxId, mediaType: MediaType(rawValue: mediaType)!, content: content)
+            let message = ChatboxMessage(id: messageUUID, createdAt: createdAt, sender: senderUUID, chatboxId: chatBoxId, mediaType: MediaType(rawValue: mediaType)!, content: content)
             messages.append(message)
         }
         self.init(messages)
@@ -198,8 +198,8 @@ extension Messages {
     /// Fetch from server.
     /// - Note: Fetch messages from user's chatBoxes and store them.
     static func fetch() {
-        if let mappingId = AuthenticatedUser.retrieve()?.data?.mappingId {
-            MappingChatBoxPivots.retrieve().pivots[mappingId].forEach {
+        if let userId = AuthenticatedUser.retrieve()?.data?.id {
+            ChatboxMembers.retrieve().chatboxMembers[userId].forEach {
                 RequestEngine.getMessagesOfChatBox($0, onSuccess: { messages in
                     Messages(messages).store()
                 })
@@ -268,7 +268,7 @@ extension Messages {
     var count: Int {
         return messages.count
     }
-    subscript(index: Int) -> ChatBoxMessage {
+    subscript(index: Int) -> ChatboxMessage {
         get {
             // Return an appropriate subscript value here.
             return messages[index]

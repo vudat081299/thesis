@@ -36,13 +36,13 @@ final class Message: Model {
     //
     init() {}
     
-    init(id: UUID? = nil, sender: UUID?, mediaType: String?, content: String?, chatBoxId: Chatbox.IDValue) {
+    init(id: UUID? = nil, sender: UUID?, mediaType: String?, content: String?, chatboxId: Chatbox.IDValue) {
         self.id = id
         self.createdAt = Date().milliStampString
         self.sender = sender
         self.mediaType = mediaType ?? MediaType.text.rawValue
         self.content = content
-        self.$chatbox.id = chatBoxId
+        self.$chatbox.id = chatboxId
     }
     
     init?(id: UUID? = nil, _ package: WebSocketPackage) {
@@ -51,7 +51,7 @@ final class Message: Model {
         guard let packageMessageSender = package.message.sender,
               let packageMessageMediaType = package.message.mediaType,
               let packageMessageContent = package.message.content,
-              let packageMessageChatBoxId = package.message.chatBoxId
+              let packageMessageChatBoxId = package.message.chatboxId
         else {
             return nil
         }
@@ -66,7 +66,7 @@ extension Message: Content {}
 extension Message {
     // Confuse
     func convertToWebSocketPackage() -> WebSocketPackage {
-        return WebSocketPackage(type: .message, message: WebSocketPackageMessage(id: self.id, createdAt: createdAt, sender: sender, chatBoxId: self.$chatbox.id, mediaType: MediaType(rawValue: mediaType ?? "text"), content: content))
+        return WebSocketPackage(type: .message, message: WebSocketPackageMessage(id: self.id, createdAt: createdAt, sender: sender, chatboxId: self.$chatbox.id, mediaType: MediaType(rawValue: mediaType ?? "text"), content: content))
     }
 }
 

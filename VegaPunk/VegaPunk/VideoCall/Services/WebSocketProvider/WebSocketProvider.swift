@@ -11,6 +11,7 @@ import Foundation
 protocol WebSocketProvider: AnyObject {
     var delegate: WebSocketProviderDelegate? { get set }
     func connect()
+    func disconnect()
     func send(data: Data)
 }
 

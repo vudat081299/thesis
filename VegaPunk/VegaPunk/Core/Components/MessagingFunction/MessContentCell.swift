@@ -61,7 +61,7 @@ class MessContentCell: UICollectionViewCell, UIScrollViewDelegate {
     
     
     // MARK: - Tasks
-    func prepare(_ message: ChatBoxMessage) {
+    func prepare(_ message: ChatboxMessage) {
         timeLabel.text = message.createdAt.toDate().dayTime
         if message.mediaType == .file {
             let placeholderImage = UIImage()

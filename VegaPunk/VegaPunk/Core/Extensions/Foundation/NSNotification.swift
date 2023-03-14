@@ -11,6 +11,8 @@ extension NSNotification.Name {
     static var WebsocketReceivedMessagePackage: Notification.Name { return .init(rawValue: "WebsocketReceivedMessagePackage") }
     static var WebsocketReceivedChatBoxPackage: Notification.Name { return .init(rawValue: "WebsocketReceivedChatBoxPackage") }
     static var WebsocketReceivedUserPackage: Notification.Name { return .init(rawValue: "WebsocketReceivedUserPackage") }
-    static var WebsocketSendMessagePackage: Notification.Name { return .init(rawValue: "WebsocketSendMessagePackage") }
+    static var WebsocketReceivedCallPackage: Notification.Name { return .init(rawValue: "WebsocketReceivedCallPackage") }
+    
+    static var WebsocketSendPackage: Notification.Name { return .init(rawValue: "WebsocketSendPackage") }
     
 }

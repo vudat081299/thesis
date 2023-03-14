@@ -76,7 +76,7 @@ class FirstMessContentCellForSection: UICollectionViewCell, UIScrollViewDelegate
     
     
     // MARK: - Tasks
-    func prepare(_ message: ChatBoxMessage) {
+    func prepare(_ message: ChatboxMessage) {
         resetCell()
         timeLabel.text = message.createdAt.toDate().dayTime
         if message.mediaType == .file {

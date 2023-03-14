@@ -27,16 +27,15 @@ enum HighLightColor: Int {
 }
 
 struct UserViewModel: Hashable {
-    var mappingId: UUID
     var user: User
-    var chatBox: ChatBox?
+    var chatBox: Chatbox?
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(mappingId)
+        hasher.combine(user.id)
     }
     
     static func == (lhs: UserViewModel, rhs: UserViewModel) -> Bool {
-        return lhs.mappingId == rhs.mappingId
+        return lhs.user.id == rhs.user.id
     }
 }
 

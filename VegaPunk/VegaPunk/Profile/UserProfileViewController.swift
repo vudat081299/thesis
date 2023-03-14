@@ -80,7 +80,7 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
             user = AuthenticatedUser.retrieve()?.data
         }
 //        self.user = user
-        isUserInteractionEnabled = user.mappingId == AuthenticatedUser.retrieve()?.data?.mappingId
+        isUserInteractionEnabled = user.id == AuthenticatedUser.retrieve()?.data?.id
         var userClone = user!
         let gender = userClone.gender?.rawValue.description
         do {
@@ -154,7 +154,7 @@ class UserProfileViewController: UIViewController, UIScrollViewDelegate {
     }
     func resetApplicationMetadata() {
         AuthenticatedUser.remove()
-        ChatBoxes.remove()
+        Chatboxes.remove()
         Mappings.remove()
         Messages.remove()
         Friend.remove()

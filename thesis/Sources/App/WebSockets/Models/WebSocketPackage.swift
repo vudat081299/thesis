@@ -8,7 +8,7 @@
 import Foundation
 
 enum WebSocketPackageType: Int, Codable {
-    case message, chatBox, user
+    case message, chatbox, user, call
 }
 
 struct WebSocketPackageMessage: Codable {
@@ -16,12 +16,12 @@ struct WebSocketPackageMessage: Codable {
     let id: UUID?
     let createdAt: String?
     let sender: UUID?
-    let chatBoxId: UUID?
+    let chatboxId: UUID?
     let mediaType: MediaType?
-    let content: String?
+    var content: String?
 }
 
 struct WebSocketPackage: Codable {
     let type: WebSocketPackageType
-    let message: WebSocketPackageMessage
+    var message: WebSocketPackageMessage
 }

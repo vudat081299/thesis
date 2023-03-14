@@ -41,7 +41,7 @@ class ManagingChatBoxViewController: UIViewController {
     
     // MARK: - APIs
     func add(member user: User, into chatBoxId: UUID) {
-        RequestEngine.add(member: user.mappingId!, into: chatBoxId, completion: { [self] in
+        RequestEngine.add(member: user.id!, into: chatBoxId, completion: { [self] in
             DispatchQueue.main.async { [self] in
                 users[0].append(user)
                 users[1].removeAll { $0 == user }
@@ -51,7 +51,7 @@ class ManagingChatBoxViewController: UIViewController {
         })
     }
     func delete(member user: User, from chatBoxId: UUID) {
-        RequestEngine.delete(member: user.mappingId!, from: chatBoxId, completion: { [self] in
+        RequestEngine.delete(member: user.id!, from: chatBoxId, completion: { [self] in
             DispatchQueue.main.async { [self] in
                 users[0].removeAll { $0 == user }
                 users[1].append(user)

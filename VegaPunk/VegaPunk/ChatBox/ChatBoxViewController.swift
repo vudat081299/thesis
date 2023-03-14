@@ -78,26 +78,26 @@ class ChatBoxViewController: UIViewController {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
             guard let authenticatedUser = AuthenticatedUser.retrieve(),
-                  let mappingId = authenticatedUser.data?.mappingId
+                  let userId = authenticatedUser.data?.id
             else { return }
             self.user = authenticatedUser
             self.friends = Friend.retrieve().friends
             
             // Fetch from local
-            self.setUp(with: mappingId)
+            self.setUp(with: userId)
             
             // Fetch from server
             DataInteraction.newChatBoxFetch() {
-                self.setUp(with: mappingId)
+                self.setUp(with: userId)
             }
             
         }
     }
     func fetchMessage() {
         guard let authenticatedUser = AuthenticatedUser.retrieve(),
-              let mappingId = authenticatedUser.data?.mappingId
+              let userId = authenticatedUser.data?.id
         else { return }
-        setUp(with: mappingId)
+        setUp(with: userId)
     }
     /// Confuse declaration
     func setUp(with mappingId: UUID) {
@@ -110,8 +110,8 @@ class ChatBoxViewController: UIViewController {
         let queue = DispatchQueue(label: "com.vudat081299.Vegapunk")
         queue.async {
             let listChatBoxId1 = self.chatBoxViewModel.map { $0.chatBox.id }
-            let chatBoxes = ChatBoxes.retrieve().chatBoxes
-            let listChatBoxId2 = chatBoxes.map { $0.id }
+            let chatboxes = Chatboxes.retrieve().chatboxes
+            let listChatBoxId2 = chatboxes.map { $0.id }
             var newChatBoxId: UUID?
             for chatBoxId in listChatBoxId2 {
                 if !listChatBoxId1.contains(chatBoxId) {
@@ -136,14 +136,14 @@ class ChatBoxViewController: UIViewController {
     
     
     // MARK: - Mini tasks
-    func getMembersInChatBox(with mappingIds: [UUID]) -> [User] {
-        return friends.filter { mappingIds.contains($0.mappingId!) }
+    func getMembersInChatBox(with userIds: [UUID]) -> [User] {
+        return friends.filter { userIds.contains($0.id!) }
     }
     
     
     // MARK: - APIs
     func leave(from chatBoxId: UUID) {
-        RequestEngine.delete(member: (user.data?.mappingId)!, from: chatBoxId, completion: { [self] in
+        RequestEngine.delete(member: (user.data?.id)!, from: chatBoxId, completion: { [self] in
             DispatchQueue.main.async { [self] in
                 chatBoxViewModel = chatBoxViewModel.filter { $0.chatBox.id != chatBoxId }
                 tableView.reloadData()

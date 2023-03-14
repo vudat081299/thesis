@@ -8,7 +8,7 @@
 import Foundation
 
 enum WebSocketPackageType: Int, Codable {
-    case message, chatBox, user
+    case message, chatbox, user, call
 }
 
 struct WebSocketPackageMessage: Codable {
@@ -16,15 +16,15 @@ struct WebSocketPackageMessage: Codable {
     let id: UUID?
     let createdAt: String?
     let sender: UUID? // mappingId
-    let chatBoxId: UUID?
+    let chatboxId: UUID?
     let mediaType: MediaType?
     let content: String?
     
-    init(id: UUID? = nil, createdAt: String? = nil, sender: UUID? = nil, chatBoxId: UUID? = nil, mediaType: MediaType? = nil, content: String? = nil) {
+    init(id: UUID? = nil, createdAt: String? = nil, sender: UUID? = nil, chatboxId: UUID? = nil, mediaType: MediaType? = nil, content: String? = nil) {
         self.id = id
         self.createdAt = createdAt
         self.sender = sender
-        self.chatBoxId = chatBoxId
+        self.chatboxId = chatboxId
         self.mediaType = mediaType
         self.content = content
     }
@@ -38,8 +38,8 @@ struct WebSocketPackage: Codable {
     let type: WebSocketPackageType
     let message: WebSocketPackageMessage
     
-    func convertToMessage() -> ChatBoxMessage {
-        return ChatBoxMessage(id: message.id!, createdAt: message.createdAt!, sender: message.sender!, chatBoxId: message.chatBoxId!, mediaType: message.mediaType ?? .text , content: message.content!)
+    func convertToMessage() -> ChatboxMessage {
+        return ChatboxMessage(id: message.id!, createdAt: message.createdAt!, sender: message.sender!, chatboxId: message.chatboxId!, mediaType: message.mediaType ?? .text , content: message.content!)
     }
     func json() throws -> String {
         guard let jsonString = try String(data: JSONEncoder().encode(self), encoding: .utf8) else { throw WebSocketError.cannotParsePackageToJsonString }

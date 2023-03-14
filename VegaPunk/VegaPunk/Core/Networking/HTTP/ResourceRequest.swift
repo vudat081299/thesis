@@ -19,33 +19,25 @@ class RequestEngine {
     static func getAllUsers(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.getAllUsers),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        AF.request(query.genUrl(), method: query.httpMethod,
-                   headers: bearerTokenHeaders)
-            .responseDecodable(of: [User].self) { response in
-                switch response.result {
-                case .success(let users):
-                    Friend(users).store()
-                    Mappings(users).store()
-                    if let onSuccess = onSuccess { onSuccess() }
-                    break
-                case .failure:
-                    print("getAllUsers fail!")
-                    break
-                }
-                if let completion = completion { completion() }
+        AF.request(query.genUrl(), method: query.httpMethod, headers: bearerTokenHeaders).responseDecodable(of: [User].self) { response in
+            switch response.result {
+            case .success(let users):
+                Friend(users).store()
+                Mappings(users).store()
+                if let onSuccess = onSuccess { onSuccess() }
+                break
+            case .failure:
+                print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line).")
+                break
             }
+            if let completion = completion { completion() }
+        }
     }
     /// Update my user information
     static func updateUser(_ data: User, completion: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.updateUser),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        AF.request(
-            query.genUrl(),
-            method: query.httpMethod,
-            parameters: data,
-            headers: bearerTokenHeaders
-        )
-        .responseDecodable(of: User.self) { response in
+        AF.request(query.genUrl(), method: query.httpMethod, parameters: data, headers: bearerTokenHeaders).responseDecodable(of: User.self) { response in
             switch response.result {
             case .success(let user):
                 var user = user
@@ -55,6 +47,7 @@ class RequestEngine {
                 if let completion = completion { completion() }
                 break
             case .failure:
+                print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line).")
                 break
             }
         }
@@ -83,56 +76,50 @@ class RequestEngine {
     static func getMyChatBoxes(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.getMyChatBoxes),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        AF.request(query.genUrl(), method: query.httpMethod,
-                   headers: bearerTokenHeaders)
-            .responseDecodable(of: [ChatBox].self) { response in
-                switch response.result {
-                case .success(let chatBoxes):
-                    print(chatBoxes)
-                    ChatBoxes(chatBoxes).store()
-                    if let onSuccess = onSuccess { onSuccess() }
-                    break
-                case .failure:
-                    print("getMyChatBoxes fail!")
-                    break
-                }
-                if let completion = completion { completion() }
+        AF.request(query.genUrl(), method: query.httpMethod, headers: bearerTokenHeaders).responseDecodable(of: [Chatbox].self) { response in
+            switch response.result {
+            case .success(let chatBoxes):
+                Chatboxes(chatBoxes).store()
+                if let onSuccess = onSuccess { onSuccess() }
+                break
+            case .failure:
+                print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line).")
+                break
             }
+            if let completion = completion { completion() }
+        }
     }
-    static func createChatBox(_ friendMappingId: UUID, _ completion: (() -> ())? = nil) {
+    static func createChatBox(_ friendId: UUID, _ completion: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.createChatBox),
               let user = AuthenticatedUser.retrieve(),
               let data = user.data,
-              let mappingId = data.mappingId,
+              let userId = data.id,
               let url = URL(string: query.genUrl()),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        let friendMappingIdString = friendMappingId.uuidString
-        let mappingIdString = mappingId.uuidString
-        let arrayData = [friendMappingIdString, mappingIdString]
+        let friendIdString = friendId.uuidString
+        let userIdString = userId.uuidString
+        let arrayData = [friendIdString, userIdString]
         var parameters: Parameters = [:]
         parameters["mappingIds"] = arrayData
-        AF.request(
-            url,
-            method: query.httpMethod,
-            parameters: parameters,
-            headers: bearerTokenHeaders)
-            .responseData { response in
-                switch response.response?.statusCode {
-                case 201:
-                    print("Create chat box successful!")
-                    if let completion = completion { completion() }
-                    break
-                default:
-                    break
-                }
+        AF.request(url, method: query.httpMethod, parameters: parameters, headers: bearerTokenHeaders).responseData { response in
+            switch response.response?.statusCode {
+            case 201:
+//            switch response.result {
+//            case .success:
+                if let completion = completion { completion() }
+                break
+            default:
+                print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line).")
+                break
             }
+        }
     }
     
     
     
     // MARK: - Chat box
-//    static func getMemberInChatBox(_ chatBoxId: UUID, _ completion: (() -> ())? = nil) {
-//        guard let query = QueryBuilder.queryInfomation(.getMemberInChatBox, ["chatBoxId": chatBoxId.uuidString]) else { return }
+//    static func getMemberInChatBox(_ chatboxId: UUID, _ completion: (() -> ())? = nil) {
+//        guard let query = QueryBuilder.queryInfomation(.getMemberInChatBox, ["chatBoxId": chatboxId.uuidString]) else { return }
 //        AF.request(query.genUrl(), method: query.httpMethod)
 //            .responseDecodable(of: [User].self) { response in
 //                switch response.result {
@@ -142,7 +129,7 @@ class RequestEngine {
 //                    do {
 //                        let encoder = JSONEncoder()
 //                        let data = try encoder.encode(mappings)
-//                        UserDefaults.standard.set(data, forKey: chatBoxId.uuidString + "_Members_SAVE_KEY")
+//                        UserDefaults.standard.set(data, forKey: chatboxId.uuidString + "_Members_SAVE_KEY")
 //                    } catch {
 //                        print("Unable to Encode Array of Mappings (\(error))")
 //                    }
@@ -167,52 +154,39 @@ class RequestEngine {
 //                }
 //            }
 //    }
-    static func getMessagesOfChatBox(_ chatBoxId: UUID, onSuccess: (([ChatBoxMessage.Resolve]) -> ())? = nil, completion: (() -> ())? = nil) {
+    static func getMessagesOfChatBox(_ chatBoxId: UUID, onSuccess: (([ChatboxMessage.Resolve]) -> ())? = nil, completion: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.getMessagesOfChatBox, ["chatBoxId": chatBoxId.uuidString]),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        AF.request(query.genUrl(), method: query.httpMethod,
-                   headers: bearerTokenHeaders)
-            .responseDecodable(of: [ChatBoxMessage.Resolve].self) { response in
+        AF.request(query.genUrl(), method: query.httpMethod, headers: bearerTokenHeaders).responseDecodable(of: [ChatboxMessage.Resolve].self) { response in
                 switch response.result {
                 case .success(let messages):
                     if let onSuccess = onSuccess { onSuccess(messages) }
                     break
                 case .failure:
-                    print("getMessagesOfChatBox fail!")
+                    print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line).")
                     break
                 }
                 if let completion = completion { completion() }
             }
     }
     static func getLastestUpdatedTimeStampChatBox(_ chatBoxId: UUID, _ completion: ((String) -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(
-            .getLastestUpdatedTimeStampChatBox,
-            ["chatBoxId": chatBoxId.uuidString]
-        ),
+        guard let query = QueryBuilder.queryInfomation(.getLastestUpdatedTimeStampChatBox, ["chatBoxId": chatBoxId.uuidString]),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        AF.request(query.genUrl(), method: query.httpMethod,
-                   headers: bearerTokenHeaders)
-            .responseDecodable(of: String.self) { response in
+        AF.request(query.genUrl(), method: query.httpMethod, headers: bearerTokenHeaders).responseDecodable(of: String.self) { response in
                 switch response.result {
                 case .success(let timeStamp):
                     if let completion = completion { completion(timeStamp) }
                     break
                 case .failure:
-                    print("getLastestUpdatedTimeStampChatBox fail!")
+                    print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line).")
                     break
                 }
             }
     }
-    static func fetchMessages(from time: String, in chatBoxId: UUID, _ completion: (([ChatBoxMessage.Resolve]) -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(
-            .getMessagesFromTimeChatBox,
-            ["chatBoxId": chatBoxId.uuidString,
-             "time": time]
-        ),
+    static func fetchMessages(from time: String, in chatBoxId: UUID, _ completion: (([ChatboxMessage.Resolve]) -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(.getMessagesFromTimeChatBox, ["chatBoxId": chatBoxId.uuidString, "time": time]),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        AF.request(query.genUrl(), method: query.httpMethod,
-                   headers: bearerTokenHeaders)
-            .responseDecodable(of: [ChatBoxMessage.Resolve].self) { response in
+        AF.request(query.genUrl(), method: query.httpMethod, headers: bearerTokenHeaders).responseDecodable(of: [ChatboxMessage.Resolve].self) { response in
                 switch response.result {
                 case .success(let resolveMessages):
                     if (resolveMessages.count > 0) {
@@ -221,94 +195,73 @@ class RequestEngine {
                     if let completion = completion { completion(resolveMessages) }
                     break
                 case .failure:
-                    print("\(#function) fail!")
+                    print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line).")
                     break
                 }
             }
     }
     
-    static func add(member mappingId: UUID, into chatBoxId: UUID, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil, completion: (() -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(.addMemberIntoChatBox,
-                                                       ["chatBoxId": chatBoxId.uuidString]),
-              let url = URL(string: query.genUrl()),
+    static func add(member userId: UUID, into chatBoxId: UUID, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil, completion: (() -> ())? = nil) {
+        guard let query = QueryBuilder.queryInfomation(.addMemberIntoChatBox, ["chatBoxId": chatBoxId.uuidString]),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        
-        let mappingIds = [mappingId.uuidString]
+        let userIds = [userId.uuidString]
         var parameters: Parameters = [:]
-        parameters["mappingIds"] = mappingIds
-        AF.request(
-            url,
-            method: query.httpMethod,
-            parameters: parameters,
-            headers: bearerTokenHeaders)
-            .responseData { response in
-                switch response.result {
-                case .success:
-                    print("Add member into chat box successful!")
-                    if let onSuccess = onSuccess { onSuccess() }
-                    break
-                case let .failure(error):
-                    print(error)
-                    if let onFailure = onFailure { onFailure() }
-                    break
-                }
-                if let completion = completion { completion() }
+        parameters["mappingIds"] = userIds
+        AF.request(query.genUrl(), method: query.httpMethod, parameters: parameters, headers: bearerTokenHeaders).responseData { response in
+            switch response.result {
+            case .success:
+                if let onSuccess = onSuccess { onSuccess() }
+                break
+            case let .failure(error):
+                print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line), \(error).")
+                if let onFailure = onFailure { onFailure() }
+                break
             }
+            if let completion = completion { completion() }
+        }
     }
-    static func delete(member mappingId: UUID, from chatBoxId: UUID, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil, completion: (() -> ())? = nil) {
+    static func delete(member userId: UUID, from chatBoxId: UUID, onSuccess: (() -> ())? = nil, onFailure: (() -> ())? = nil, completion: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.deleteMemberFromChatBox,
                                                        ["chatBoxId": chatBoxId.uuidString,
-                                                        "mappingId": mappingId.uuidString]),
-              let url = URL(string: query.genUrl()),
+                                                        "mappingId": userId.uuidString]),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        AF.request(
-            url,
-            method: query.httpMethod,
-            headers: bearerTokenHeaders)
-            .responseData { response in
-                switch response.result {
-                case .success:
-                    print("Delete member from chat box successful!")
-                    if let onSuccess = onSuccess { onSuccess() }
-                    break
-                case let .failure(error):
-                    print(error)
-                    if let onFailure = onFailure { onFailure() }
-                    break
-                }
-                if let completion = completion { completion() }
+        AF.request(query.genUrl(), method: query.httpMethod, headers: bearerTokenHeaders).responseData { response in
+            switch response.result {
+            case .success:
+                if let onSuccess = onSuccess { onSuccess() }
+                break
+            case let .failure(error):
+                print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line), \(error).")
+                if let onFailure = onFailure { onFailure() }
+                break
             }
+            if let completion = completion { completion() }
+        }
     }
     
     
     
     // MARK: - Messages
-    static func createMessage(_ message: ChatBoxMessage, _ completion: (() -> ())? = nil) {
-        guard let query = QueryBuilder.queryInfomation(.createMessage),
-              let url = URL(string: query.genUrl()),
-              let bearerTokenHeaders = bearerTokenHeaders else { return }
-        var parameters: Parameters = [:]
-        parameters["createdAt"] = message.createdAt
-        parameters["sender"] = message.sender
-        parameters["chatBoxId"] = message.chatBoxId
-        parameters["message"] = message.content
-        AF.request(
-            url,
-            method: query.httpMethod,
-            parameters: parameters,
-            headers: bearerTokenHeaders)
-            .responseData { response in
-                switch response.result {
-                case .success:
-                    print("Create chat box successful!")
-                    if let completion = completion { completion() }
-                    break
-                case let .failure(error):
-                    print(error)
-                    break
-                }
-            }
-    }
+//    static func createMessage(_ message: ChatboxMessage, _ completion: (() -> ())? = nil) {
+//        guard let query = QueryBuilder.queryInfomation(.createMessage),
+//              let url = URL(string: query.genUrl()),
+//              let bearerTokenHeaders = bearerTokenHeaders else { return }
+//        var parameters: Parameters = [:]
+//        parameters["createdAt"] = message.createdAt
+//        parameters["sender"] = message.sender
+//        parameters["chatBoxId"] = message.chatboxId
+//        parameters["message"] = message.content
+//        AF.request(url, method: query.httpMethod, parameters: parameters, headers: bearerTokenHeaders).responseData { response in
+//            switch response.result {
+//            case .success:
+//                if let completion = completion { completion() }
+//                break
+//            case let .failure(error):
+//                print(error)
+//                break
+//            }
+//        }
+//    }
     
     
     
@@ -316,20 +269,18 @@ class RequestEngine {
     static func getAllMappingPivots(_ completion: (() -> ())? = nil, onSuccess: (() -> ())? = nil) {
         guard let query = QueryBuilder.queryInfomation(.getAllMappingPivots),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        AF.request(query.genUrl(), method: query.httpMethod,
-                   headers: bearerTokenHeaders)
-            .responseDecodable(of: [MappingChatBoxPivot.Resolve].self) { response in
-                switch response.result {
-                case .success(let pivot):
-                    MappingChatBoxPivots(resolvePivots: pivot).store()
-                    if let onSuccess = onSuccess { onSuccess() }
-                    break
-                case let .failure(error):
-                    print(error)
-                    break
-                }
-                if let completion = completion { completion() }
+        AF.request(query.genUrl(), method: query.httpMethod, headers: bearerTokenHeaders).responseDecodable(of: [ChatboxMember.Resolve].self) { response in
+            switch response.result {
+            case .success(let pivot):
+                ChatboxMembers(resolvePivots: pivot).store()
+                if let onSuccess = onSuccess { onSuccess() }
+                break
+            case let .failure(error):
+                print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line), \(error).")
+                break
             }
+            if let completion = completion { completion() }
+        }
     }
     
     
@@ -338,28 +289,22 @@ class RequestEngine {
         guard let query = QueryBuilder.queryInfomation(.uploadFile),
               let url = URL(string: query.genUrl()),
               let bearerTokenHeaders = bearerTokenHeaders else { return }
-        var parameters: Parameters = [:]
-        let utf8String = String(data: data, encoding: .utf8)
-        parameters["data"] = ""
         AF.upload(multipartFormData: { multipartFormData in
-                    //Parameter for Upload files
+            //Parameter for Upload files
             multipartFormData.append(data, withName: "data")
-                    
-        }, to: url, usingThreshold:UInt64.init(), //URL Here
-                    method: query.httpMethod,
-                    headers: bearerTokenHeaders) //pass header dictionary here
-                  .responseDecodable(of: ResolveId.self) { response in
-                      
-                              switch response.result {
-                              case .success(let object):
-                                  print("Create chat box successful!")
-                                  if let completion = completion { completion(object.id) }
-                                  break
-                              case let .failure(error):
-                                  print(error)
-                                  break
-                              }
-                }
+        }, to: url, usingThreshold: UInt64.init(), // URL Here
+                  method: query.httpMethod,
+                  headers: bearerTokenHeaders) //pass header dictionary here
+        .responseDecodable(of: ResolveId.self) { response in
+            switch response.result {
+            case .success(let object):
+                if let completion = completion { completion(object.id) }
+                break
+            case let .failure(error):
+                print("Request: failure, file - \(#file), class - \(self), func - \(#function), line: \(#line), \(error).")
+                break
+            }
+        }
         
         
         

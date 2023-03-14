@@ -137,6 +137,17 @@ struct MessagesController: RouteCollection {
                         }
                 }
                 break
+            case .call:
+                guard let message = Message(webSocketPackage) else {
+                    return
+                }
+                let _ = Chatbox.find(webSocketPackage.message.chatboxId, on: req.db)
+                    .unwrap(or: Abort(.notFound))
+                    .map { chatBox in
+                        chatBox.$users.get(on: req.db).map { users in
+                            webSocketManager.send(to: users.map { $0.id }, package: webSocketPackage)
+                        }
+                    }
             default:
                 break
             }

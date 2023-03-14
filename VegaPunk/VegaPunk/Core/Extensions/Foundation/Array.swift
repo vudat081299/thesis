@@ -17,35 +17,35 @@ extension Array where Element == Mapping.Resolve {
 
 
 // MARK: - MappingChatBoxPivot
-extension Array where Element == MappingChatBoxPivot {
+extension Array where Element == ChatboxMember {
     
     /// Get all chatBoxIds where a user is a member
-    /// - Returns: List of chatBoxId
-    subscript(mappingId: UUID) -> [UUID] {
+    /// - Returns: List of chatboxId
+    subscript(userId: UUID) -> [UUID] {
         get {
-            return self.filter { $0.mappingId == mappingId }.map { $0.chatBoxId }
+            return self.filter { $0.userId == userId }.map { $0.chatboxId }
         }
     }
     
-    /// Get all mappingIds where are member mappingIds in chatBox
+    /// Get all mappingIds where are member mappingIds in chatbox
     /// - Returns: List of mappingId
-    subscript(mappingId: UUID, chatBoxId: UUID) -> [UUID] {
+    subscript(userId: UUID, chatboxId: UUID) -> [UUID] {
         get {
-            return self.filter { $0.chatBoxId == chatBoxId && $0.mappingId != mappingId }.map { $0.mappingId }
+            return self.filter { $0.chatboxId == chatboxId && $0.userId != userId }.map { $0.userId }
         }
     }
     
     func flattenToChatBoxes() -> [UUID] {
-        self.map { $0.chatBoxId }
+        self.map { $0.chatboxId }
     }
     
-    func hasChatBox(between mappingIds: [UUID]) -> UUID? {
-        let firstSet = Set(self.filter { $0.mappingId == mappingIds[0] }.flattenToChatBoxes())
-        let secondSet = Set(self.filter { $0.mappingId == mappingIds[1] }.flattenToChatBoxes())
+    func hasChatbox(between userIds: [UUID]) -> UUID? {
+        let firstSet = Set(self.filter { $0.userId == userIds[0] }.flattenToChatBoxes())
+        let secondSet = Set(self.filter { $0.userId == userIds[1] }.flattenToChatBoxes())
         let intersection = firstSet.intersection(secondSet)
         for element in intersection {
-            if let authenticatedUserMappingId = AuthenticatedUser.retrieve()?.data?.mappingId! {
-                if self[authenticatedUserMappingId, element].count == 1 {
+            if let authenticatedUserId = AuthenticatedUser.retrieve()?.data?.id! {
+                if self[authenticatedUserId, element].count == 1 {
                     return element
                 }
             }
@@ -55,19 +55,19 @@ extension Array where Element == MappingChatBoxPivot {
 }
 
 
-// MARK: - ChatBox
-extension Array where Element == ChatBox {
-    /// Find ChatBox() with chatBoxId
-    /// - Returns: ChatBox()
-    subscript(chatBoxId: UUID) -> ChatBox? {
+// MARK: - Chatbox
+extension Array where Element == Chatbox {
+    /// Find Chatbox() with chatboxId
+    /// - Returns: Chatbox()
+    subscript(chatBoxId: UUID) -> Chatbox? {
         get {
             return self.filter { $0.id == chatBoxId }.first
         }
     }
     
-    /// Find List ChatBox() with list chatBoxId
-    /// - Returns: [ChatBox]
-    subscript(chatBoxIds: [UUID]) -> [ChatBox] {
+    /// Find List Chatbox() with list chatboxId
+    /// - Returns: [Chatbox]
+    subscript(chatBoxIds: [UUID]) -> [Chatbox] {
         get {
             return self.filter { chatBoxIds.contains($0.id) }
         }
@@ -76,8 +76,8 @@ extension Array where Element == ChatBox {
 
 
 // MARK: - [Message]
-extension Array where Element == [ChatBoxMessage] {
-    mutating func receive(_ messages: [ChatBoxMessage]) {
+extension Array where Element == [ChatboxMessage] {
+    mutating func receive(_ messages: [ChatboxMessage]) {
         messages.forEach { message in
             if count > 0 {
                 if (message.sender == self.last?.last?.sender) {
@@ -94,15 +94,15 @@ extension Array where Element == [ChatBoxMessage] {
 
 
 // MARK: - Message
-extension Array where Element == ChatBoxMessage {
-    func groupByChatBox() -> Dictionary<UUID, [ChatBoxMessage]> {
-        let groupedMessagesByChatBox = Dictionary(grouping: self, by: { $0.chatBoxId })
+extension Array where Element == ChatboxMessage {
+    func groupByChatBox() -> Dictionary<UUID, [ChatboxMessage]> {
+        let groupedMessagesByChatBox = Dictionary(grouping: self, by: { $0.chatboxId })
         return groupedMessagesByChatBox
     }
-    mutating func transformStructure() -> [[ChatBoxMessage]] {
+    mutating func transformStructure() -> [[ChatboxMessage]] {
         self.sort(by: <)
-        var customStructure = [[ChatBoxMessage]]()
-        var element = [ChatBoxMessage]()
+        var customStructure = [[ChatboxMessage]]()
+        var element = [ChatboxMessage]()
         var currentMappingId: UUID?
         self.enumerated().forEach { (index, message) in
             if (currentMappingId != nil && message.sender! == currentMappingId) {
@@ -129,7 +129,7 @@ extension Array where Element == ChatBoxMessage {
             self[0].store()
         }
     }
-    mutating func receive(_ messages: [ChatBoxMessage]) {
+    mutating func receive(_ messages: [ChatboxMessage]) {
         self += messages
     }
 }
@@ -140,13 +140,13 @@ extension Array where Element == User {
     func clean() -> Friend {
         return Friend(self.filter { $0.username != "admin" })
     }
-    func getUser(with mappingId: UUID) -> User? {
-        return self.first { $0.mappingId == mappingId }
+    func getUser(with id: UUID) -> User? {
+        return self.first { $0.id == id }
     }
     func getOtherUsers() -> [User] {
-        let userUUIDs = self.map { $0.mappingId }
+        let userIds = self.map { $0.id }
         return Friend.retrieve().friends.filter {
-            !userUUIDs.contains($0.mappingId)
+            !userIds.contains($0.id)
         }
     }
     func sortWithJoin() -> [User] {
@@ -159,8 +159,8 @@ extension Array where Element == User {
 extension Array where Element == UUID {
     func retrieveUsers() -> [User] {
         Friend.retrieve().friends.filter {
-            if let mappingId = $0.mappingId {
-                return self.contains(mappingId)
+            if let userId = $0.id {
+                return self.contains(userId)
             }
             return false
         }
@@ -175,10 +175,7 @@ extension Array where Element == UserViewModel {
         let mappings = Mappings.retrieve()
         let friends = Friend.retrieve().friends
         friends.forEach {
-            if let friendId = $0.id,
-               let friendMappingId = mappings.mappingId(friendId) {
-                self.append(UserViewModel(mappingId: friendMappingId, user: $0))
-            }
+            self.append(UserViewModel(user: $0))
         }
         self.sort(by: {
             if let join0 = $0.user.join,
@@ -191,15 +188,15 @@ extension Array where Element == UserViewModel {
 }
 extension Array where Element == ChatBoxViewModel {
     mutating func retrieve(with mappingId: UUID, completion: (([ChatBoxViewModel]) -> ())? = nil) {
-        var chatBoxes = ChatBoxes.retrieve().chatBoxes
+        var chatBoxes = Chatboxes.retrieve().chatboxes
         handle()
         func handle() {
             self = []
-            let pivots = MappingChatBoxPivots.retrieve().pivots
+            let pivots = ChatboxMembers.retrieve().chatboxMembers
             let userChatBoxIds = pivots[mappingId]
             chatBoxes = chatBoxes.filter { userChatBoxIds.contains($0.id) }
             chatBoxes.forEach {
-                let lastestMessage = ChatBoxMessage.retrieve(with: $0.id)
+                let lastestMessage = ChatboxMessage.retrieve(with: $0.id)
                 let members = pivots[mappingId, $0.id]
                 self.append(ChatBoxViewModel(chatBox: $0, lastestMessage: lastestMessage, members: members))
             }
@@ -209,7 +206,7 @@ extension Array where Element == ChatBoxViewModel {
     }
 }
 /// Message view model
-extension Array where Element == [ChatBoxMessage] {
+extension Array where Element == [ChatboxMessage] {
     mutating func retrieve(from chatBoxId: UUID) {
         var storedMessaged = Messages.retrieve(with: chatBoxId).messages
         self = storedMessaged.transformStructure()

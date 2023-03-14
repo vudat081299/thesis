@@ -52,13 +52,12 @@ struct UsersController: RouteCollection {
         let guardAuthMiddleware = User.guardMiddleware()
         let tokenAuthGroup = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
-        tokenAuthGroup.put(use: updateHandler)
         tokenAuthGroup.get(use: getAllHandler)
         tokenAuthGroup.get(":userId", use: getHandler)
 //        tokenAuthGroup.get(":userId", "mapping", use: getMappingsHandler) // Deprecated
         tokenAuthGroup.get("lastestUpdate", use: lastestUpdateTime)
         tokenAuthGroup.get("from", ":time", use: getUsersFromTime)
-        
+        tokenAuthGroup.put(use: updateHandler)
         
         tokenAuthGroup.get(":userId", "chatBoxes", use: getchatBoxesHandler)
         tokenAuthGroup.post("chatBox", "create", use: addchatBoxesHandler)
@@ -73,41 +72,8 @@ struct UsersController: RouteCollection {
         try await newUser.save(on: req.db)
         let otherUsers = try await User.query(on: req.db).all().filter { try $0.id != newUser.requireID() }
         let userIds = otherUsers.map { $0.id }
-        webSocketManager.send(to: userIds, package: WebSocketPackage(type: .user, message: WebSocketPackageMessage(id: nil, createdAt: newUser.join, sender: nil, chatBoxId: nil, mediaType: nil, content: nil)))
+        webSocketManager.send(to: userIds, package: WebSocketPackage(type: .user, message: WebSocketPackageMessage(id: nil, createdAt: newUser.join, sender: nil, chatboxId: nil, mediaType: nil, content: nil)))
         return newUser.convertToPublic()
-    }
-    
-    
-    // MARK: - Get
-    func getAllHandler(_ req: Request) async throws -> [User.Public] {
-        let users = try await User.query(on: req.db).all()
-        return users.convertToPublic()
-    }
-    func getHandler(_ req: Request) async throws -> User.Public {
-        guard let user = try await User.find(req.parameters.get("userId"), on: req.db) else {
-           throw Abort(.notFound)
-        }
-        return user.convertToPublic()
-    }
-    
-    func lastestUpdateTime(req: Request) async throws -> String {
-        guard let lastestUpdateTime = try await User.query(on: req.db).max(\.$join) else {
-            throw Abort(.notFound)
-        }
-        return lastestUpdateTime
-    }
-    func getUsersFromTime(req: Request) async throws -> [User.Public] {
-        guard let timestamp = req.parameters.get("time") else {
-            throw Abort(.badRequest)
-        }
-        let users = try await User.query(on: req.db).filter(\.$join > timestamp).all()
-        return users.convertToPublic()
-    }
-    
-    /// Rewrite
-    func getchatBoxesHandler(_ req: Request) async throws -> [Chatbox] {
-        let user = try req.auth.require(User.self)
-        return try await user.$chatboxes.query(on: req.db).all()
     }
     
     
@@ -162,7 +128,7 @@ struct UsersController: RouteCollection {
         let resolvedModel = try req.content.decode(ResolveCreateMappingChatBox.self)
         let chatbox = Chatbox(name: "New group!")
         try await chatbox.save(on: req.db)
-        let message = Message(sender: user.id, mediaType: MediaType.notify.rawValue, content: "👋 Hi! I just create this chat box, I'm @\(user.username)!", chatBoxId: chatbox.id!)
+        let message = Message(sender: user.id, mediaType: MediaType.notify.rawValue, content: "👋 Hi! I just create this chat box, I'm @\(user.username)!", chatboxId: chatbox.id!)
         try await message.save(on: req.db)
         
         for userId in resolvedModel.mappingIds {
@@ -171,9 +137,41 @@ struct UsersController: RouteCollection {
             }
             try await user.$chatboxes.attach(chatbox, on: req.db)
         }
-        let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: message.createdAt, sender: user.id, chatBoxId: chatbox.id, mediaType: .text, content: message.content))
+        let package = WebSocketPackage(type: .chatbox, message: WebSocketPackageMessage(id: nil, createdAt: message.createdAt, sender: user.id, chatboxId: chatbox.id, mediaType: .text, content: message.content))
         webSocketManager.send(to: resolvedModel.mappingIds, package: package)
         return .created
+    }
+    
+    
+    // MARK: - Get
+    func getAllHandler(_ req: Request) async throws -> [User.Public] {
+        let users = try await User.query(on: req.db).all()
+        return users.convertToPublic()
+    }
+    func getHandler(_ req: Request) async throws -> User.Public {
+        guard let user = try await User.find(req.parameters.get("userId"), on: req.db) else {
+           throw Abort(.notFound)
+        }
+        return user.convertToPublic()
+    }
+    func lastestUpdateTime(req: Request) async throws -> String {
+        guard let lastestUpdateTime = try await User.query(on: req.db).max(\.$join) else {
+            throw Abort(.notFound)
+        }
+        return lastestUpdateTime
+    }
+    func getUsersFromTime(req: Request) async throws -> [User.Public] {
+        guard let timestamp = req.parameters.get("time") else {
+            throw Abort(.badRequest)
+        }
+        let users = try await User.query(on: req.db).filter(\.$join > timestamp).all()
+        return users.convertToPublic()
+    }
+    
+    /// Rewrite
+    func getchatBoxesHandler(_ req: Request) async throws -> [Chatbox] {
+        let user = try req.auth.require(User.self)
+        return try await user.$chatboxes.query(on: req.db).all()
     }
     
     

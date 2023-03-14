@@ -10,8 +10,8 @@ import UIKit
 
 // MARK: - Definition
 struct ChatBoxViewModel: Hashable {
-    let chatBox: ChatBox
-    var lastestMessage: ChatBoxMessage?
+    let chatBox: Chatbox
+    var lastestMessage: ChatboxMessage?
     let members: [UUID]
     
     func hash(into hasher: inout Hasher) {
@@ -134,7 +134,7 @@ class ChatBoxTableViewCell: UITableViewCell {
             lastestMesssage.text = lastestMessage.content
             break
         }
-        let lastestSeenMessage = ChatBoxMessage.retrieve(.lastestSeenMessage, with: chatBoxId)
+        let lastestSeenMessage = ChatboxMessage.retrieve(.lastestSeenMessage, with: chatBoxId)
         if lastestSeenMessage == nil ||
             lastestMessage > lastestSeenMessage! {
             lastestMesssage.textColor = .black

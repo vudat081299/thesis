@@ -23,6 +23,10 @@ class StarscreamWebSocket: WebSocketProvider {
         self.socket.connect()
     }
     
+    func disconnect() {
+        self.socket.disconnect()
+    }
+    
     func send(data: Data) {
         self.socket.write(data: data)
     }

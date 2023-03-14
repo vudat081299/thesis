@@ -148,13 +148,13 @@ extension ViewController {
                 completion(false)
                 return
             }
-            if let userMappingId = AuthenticatedUser.retrieve()?.data?.mappingId! {
-                if MappingChatBoxPivots.retrieve().pivots.hasChatBox(between: [userMappingId, cellData.mappingId]) != nil {
+            if let userId = AuthenticatedUser.retrieve()?.data?.id! {
+                if ChatboxMembers.retrieve().chatboxMembers.hasChatbox(between: [userId, cellData.user.id!]) != nil {
                     completion(true)
                     return
                 }
             }
-            RequestEngine.createChatBox(cellData.mappingId) {
+            RequestEngine.createChatBox(cellData.user.id!) {
                 self.fetch()
                 SoundFeedBack.success()
                 self.navigationItem.rightBarButtonItem?.tintColor = .systemGreen
@@ -218,6 +218,7 @@ extension ViewController {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.dataSource.apply(snapshot, animatingDifferences: true)
+            self.collectionView.reloadData()
             self.collectionView.layoutIfNeeded()
         }
     }

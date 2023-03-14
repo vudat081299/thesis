@@ -11,7 +11,11 @@ import AVFoundation
 import WebRTC
 
 class MainViewController: UIViewController {
-
+    
+    var timer: Timer!
+    var RTCstate: RTCIceConnectionState!
+    var user: User!
+    var extractedChatBox: ChatBoxViewModel!
     private let signalClient: SignalingClient
     private let webRTCClient: WebRTCClient
     private lazy var videoViewController = VideoViewController(webRTCClient: self.webRTCClient)
@@ -111,16 +115,54 @@ class MainViewController: UIViewController {
         self.webRTCClient.delegate = self
         self.signalClient.delegate = self
         self.signalClient.connect()
+        
+        self.timer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(timerHanlder), userInfo: nil, repeats: true)
+    }
+    deinit {
+        if self.timer != nil {
+            self.timer.invalidate()
+            self.timer = nil
+        }
+        self.signalClient.disconnect()
+        self.signalClient.delegate = nil
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+//        if self.timer != nil {
+//            self.timer.invalidate()
+//            self.timer = nil
+//        }
     }
     
     @IBAction private func offerDidTap(_ sender: UIButton) {
+        sendOfferAction()
+    }
+    func sendOfferAction() {
         self.webRTCClient.offer { (sdp) in
             self.hasLocalSdp = true
             self.signalClient.send(sdp: sdp)
         }
     }
+    @objc func timerHanlder() {
+        if !self.hasLocalSdp {
+            self.sendOfferAction()
+        }
+        if !self.hasRemoteSdp {
+            let webSocketPackage = WebSocketPackage(type: .call, message: WebSocketPackageMessage(sender: user.id, chatboxId: extractedChatBox.chatBox.id, mediaType: .notify, content: ""))
+            NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": webSocketPackage])
+        }
+        if self.hasLocalSdp && self.hasRemoteSdp && self.RTCstate != .connected {
+            self.sendAnswerAction()
+        }
+        if self.RTCstate == .connected && !videoViewController.isBeingPresented {
+            self.present(videoViewController, animated: true, completion: nil)
+            timer.invalidate()
+        }
+    }
     
     @IBAction private func answerDidTap(_ sender: UIButton) {
+        self.sendAnswerAction()
+    }
+    func sendAnswerAction() {
         self.webRTCClient.answer { (localSdp) in
             self.hasLocalSdp = true
             self.signalClient.send(sdp: localSdp)
@@ -216,6 +258,7 @@ extension MainViewController: WebRTCClientDelegate {
             textColor = .black
         }
         DispatchQueue.main.async {
+            self.RTCstate = state
             self.webRTCStatusLabel?.text = state.description.capitalized
             self.webRTCStatusLabel?.textColor = textColor
         }

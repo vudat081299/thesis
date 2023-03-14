@@ -12,7 +12,6 @@ import Foundation
 /// This is a structure of `User` table on `Database`
 struct User: Codable {
     var id: UUID?
-    var mappingId: UUID?
     var token: Token?
     var name: String?
     var username: String?
@@ -101,7 +100,6 @@ extension Friend: Codable {
             var productContainer = container.nestedContainer(keyedBy: UserKey.self, forKey: userId)
             
             // The rest of the keys use static names defined in `ProductKey`.
-            try productContainer.encode(friend.mappingId, forKey: .mappingId)
             try productContainer.encode(friend.token, forKey: .token)
             try productContainer.encode(friend.name, forKey: .name)
             try productContainer.encode(friend.username, forKey: .username)
@@ -124,7 +122,6 @@ extension Friend: Codable {
         for key in container.allKeys {
             // Note how the `key` in the loop above is used immediately to access a nested container.
             let productContainer = try container.nestedContainer(keyedBy: UserKey.self, forKey: key)
-            let mappingId = try productContainer.decodeIfPresent(UUID.self, forKey: .mappingId)
             let token = try productContainer.decodeIfPresent(Token.self, forKey: .token)
             let name = try productContainer.decodeIfPresent(String.self, forKey: .name)
             let username = try productContainer.decodeIfPresent(String.self, forKey: .username)
@@ -140,7 +137,7 @@ extension Friend: Codable {
             let gender = try productContainer.decodeIfPresent(Gender.self, forKey: .gender)
 
             // The key is used again here and completes the collapse of the nesting that existed in the JSON representation.
-            let friend = User(id: UUID(uuidString: key.stringValue)!, mappingId: mappingId, name: name!, username: username!, email: email, join: join, bio: bio, phone: phone, birth: birth, siwaIdentifier: siwaIdentifier, avatar: avatar, password: password, country: country, gender: gender)
+            let friend = User(id: UUID(uuidString: key.stringValue)!, token: token, name: name!, username: username!, email: email, join: join, bio: bio, phone: phone, birth: birth, siwaIdentifier: siwaIdentifier, avatar: avatar, password: password, country: country, gender: gender)
             friends.append(friend)
         }
         self.init(friends)

@@ -1,5 +1,5 @@
 //
-//  ChatBoxes.swift
+//  Chatboxes.swift
 //  VegaPunk
 //
 //  Created by Dat Vu on 09/01/2023.
@@ -7,29 +7,29 @@
 
 import Foundation
 
-var chatBoxesGlobal = ChatBoxes.retrieve()
+var chatBoxesGlobal = Chatboxes.retrieve()
 
 
 // MARK: - Definition
-/// This is a structure of `ChatBox` table on `Database`
-struct ChatBox: Codable {
+/// This is a structure of `Chatbox` table on `Database`
+struct Chatbox: Codable {
     let id: UUID
     let name: String?
     let avatar: String?
 }
-extension ChatBox: Hashable {} // To use UICollectionViewDiffableDataSource
+extension Chatbox: Hashable {} // To use UICollectionViewDiffableDataSource
 
-struct ChatBoxes {
-    var chatBoxes: [ChatBox] = []
-    init(_ chatBoxes: [ChatBox] = []) {
-        self.chatBoxes = chatBoxes
+struct Chatboxes {
+    var chatboxes: [Chatbox] = []
+    init(_ chatboxes: [Chatbox] = []) {
+        self.chatboxes = chatboxes
     }
 }
 
 
 // MARK: - Apply Codable
-extension ChatBoxes: Codable {
-    struct ChatBoxKey: CodingKey {
+extension Chatboxes: Codable {
+    struct ChatboxKey: CodingKey {
         var stringValue: String
         init?(stringValue: String) {
             self.stringValue = stringValue
@@ -38,18 +38,18 @@ extension ChatBoxes: Codable {
         var intValue: Int? { return nil }
         init?(intValue: Int) { return nil }
 
-        static let id = ChatBoxKey(stringValue: "id")!
-        static let name = ChatBoxKey(stringValue: "name")!
-        static let avatar = ChatBoxKey(stringValue: "avatar")!
+        static let id = ChatboxKey(stringValue: "id")!
+        static let name = ChatboxKey(stringValue: "name")!
+        static let avatar = ChatboxKey(stringValue: "avatar")!
     }
     
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: ChatBoxKey.self)
+        var container = encoder.container(keyedBy: ChatboxKey.self)
         
-        for chatBox in chatBoxes {
+        for chatBox in chatboxes {
             // Any product's `name` can be used as a key name.
-            let chatBoxId = ChatBoxKey(stringValue: chatBox.id.uuidString)!
-            var productContainer = container.nestedContainer(keyedBy: ChatBoxKey.self, forKey: chatBoxId)
+            let chatBoxId = ChatboxKey(stringValue: chatBox.id.uuidString)!
+            var productContainer = container.nestedContainer(keyedBy: ChatboxKey.self, forKey: chatBoxId)
             
             // The rest of the keys use static names defined in `ProductKey`.
             try productContainer.encode(chatBox.name, forKey: .name)
@@ -58,16 +58,16 @@ extension ChatBoxes: Codable {
     }
     
     public init(from decoder: Decoder) throws {
-        var chatBoxes = [ChatBox]()
-        let container = try decoder.container(keyedBy: ChatBoxKey.self)
+        var chatBoxes = [Chatbox]()
+        let container = try decoder.container(keyedBy: ChatboxKey.self)
         for key in container.allKeys {
             // Note how the `key` in the loop above is used immediately to access a nested container.
-            let productContainer = try container.nestedContainer(keyedBy: ChatBoxKey.self, forKey: key)
+            let productContainer = try container.nestedContainer(keyedBy: ChatboxKey.self, forKey: key)
             let name = try productContainer.decodeIfPresent(String.self, forKey: .name)
             let avatar = try productContainer.decodeIfPresent(String.self, forKey: .avatar)
 
             // The key is used again here and completes the collapse of the nesting that existed in the JSON representation.
-            let chatBox = ChatBox(id: UUID(uuidString: key.stringValue)!, name: name, avatar: avatar)
+            let chatBox = Chatbox(id: UUID(uuidString: key.stringValue)!, name: name, avatar: avatar)
             chatBoxes.append(chatBox)
         }
         self.init(chatBoxes)
@@ -76,7 +76,7 @@ extension ChatBoxes: Codable {
 
 
 // MARK: - Data handler
-extension ChatBoxes: Storing {
+extension Chatboxes: Storing {
     func store() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
@@ -90,19 +90,19 @@ extension ChatBoxes: Storing {
             }
         }
     }
-    static func retrieve() -> ChatBoxes {
+    static func retrieve() -> Chatboxes {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let filePath = dir.appendingPathComponent(UserDefaults.FilePaths.chatBoxes.rawValue)
             do {
                 let jsonData = try Data(contentsOf: filePath)
-                let chatBoxes = try JSONDecoder().decode(ChatBoxes.self, from: jsonData)
+                let chatBoxes = try JSONDecoder().decode(Chatboxes.self, from: jsonData)
                 return chatBoxes
             }
             catch {
                 print("Retrieve chatBoxes from file failed! \(error)")
             }
         }
-        return ChatBoxes()
+        return Chatboxes()
     }
     static func remove() {
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
@@ -119,8 +119,8 @@ extension ChatBoxes: Storing {
 
 
 // MARK: - Mini tasks
-extension ChatBoxes {
+extension Chatboxes {
     var count: Int {
-        return chatBoxes.count
+        return chatboxes.count
     }
 }

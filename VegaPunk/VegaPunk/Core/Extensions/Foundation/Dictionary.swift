@@ -32,6 +32,18 @@ extension User {
         }
     }
 }
+extension WebSocketPackage {
+    /// Convert from `Object` to `Dictionary`.
+    func toDictionary() throws -> Dictionary<String, String> {
+        do {
+            let encodedData = try JSONEncoder().encode(self)
+            let json = try JSONSerialization.jsonObject(with: encodedData, options: .mutableContainers) as! [String: String]
+            return json
+        } catch {
+            throw error
+        }
+    }
+}
 extension Data {
     /// Convert from `Data` to `JSON`.
     func convertToJSON() -> String? {

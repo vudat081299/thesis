@@ -62,24 +62,36 @@ struct QueryBuilder {
     static func queryInfomation(_ route: Route, _ parammeters: [String: String] = [:]) -> QueryInformation? {
         let userId = (AuthenticatedUser.retrieve()?.data?.id?.uuidString) ?? ""
         switch route {
+            // User
         case .signUp: return QueryInformation(httpMethod: .post, url: userRoute!, encodableType: User.self, decodableType: User.self)
         case .signIn: return QueryInformation(httpMethod: .post, url: userRoute! + "login", decodableType: Token.self)
         case .getAllUsers: return QueryInformation(url: userRoute!, decodableType: [User].self)
-//        case .getUserMapping: return QueryInformation(url: userRoute! + (AuthenticatedUser.retrieve()?.data?.id?.uuidString)! + "/mapping", decodableType: Mapping.Resolve.self)
         case .updateUser: return QueryInformation(httpMethod: .put, url: userRoute!, encodableType: User.self, decodableType: User.self)
-//        case .getAllMappings: return QueryInformation(url: mappingRoute!, decodableType: [Mapping.Resolve].self) //
-        case .getMyChatBoxes: return QueryInformation(url: userRoute! + userId + "/chatBoxes", decodableType: [ChatBox].self) //
-        case .createChatBox: return QueryInformation(httpMethod: .post, url: userRoute! + "chatBox/create") //
-        case .getMemberInChatBox: //
+            
+            // Pivot
+        case .getAllMappingPivots: return QueryInformation(url: pivotRoute!, decodableType: [ChatboxMember.Resolve].self)
+            
+            // Chatbox
+        case .createChatBox: return QueryInformation(httpMethod: .post, url: userRoute! + "chatBox/create")
+        case .getMyChatBoxes: return QueryInformation(url: userRoute! + userId + "/chatBoxes", decodableType: [Chatbox].self)
+        case .getMemberInChatBox:
             guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
             return QueryInformation(url: chatBoxRoute! + chatBoxId + "/mappings", decodableType: [User].self)
         case .getMessagesOfChatBox:
             guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
-            return QueryInformation(url: chatBoxRoute! + chatBoxId + "/messages", decodableType: [ChatBoxMessage.Resolve].self)
-//        case .createChatBox2: return QueryInformation(httpMethod: .post, url: chatBoxRoute! + "chatBox/create")
+            return QueryInformation(url: chatBoxRoute! + chatBoxId + "/messages", decodableType: [ChatboxMessage.Resolve].self)
         case .removeChatBox:
             guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
             return QueryInformation(httpMethod: .delete, url: chatBoxRoute! + chatBoxId)
+        case .addMemberIntoChatBox:
+            guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
+            return QueryInformation(httpMethod: .post, url: chatBoxRoute! + chatBoxId + "/members")
+        case .deleteMemberFromChatBox:
+            guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
+            guard let mappingId = parammeters["mappingId"] else { return nil }
+            return QueryInformation(httpMethod: .delete, url: chatBoxRoute! + chatBoxId + "/members/" + mappingId)
+            
+            // Message
         case .createMessage: return QueryInformation(httpMethod: .post, url: messageRoute!)
         case .getLastestUpdatedTimeStampChatBox:
             guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
@@ -88,18 +100,12 @@ struct QueryBuilder {
             guard let chatBoxId = parammeters["chatBoxId"],
                   let time = parammeters["time"]
             else { return nil }
-            return QueryInformation(url: messageRoute! + "messages/" + chatBoxId + "/" + time, decodableType: [ChatBoxMessage.Resolve].self)
-        case .getAllMappingPivots: return QueryInformation(url: pivotRoute!, decodableType: [MappingChatBoxPivot.Resolve].self) //
+            return QueryInformation(url: messageRoute! + "messages/" + chatBoxId + "/" + time, decodableType: [ChatboxMessage.Resolve].self)
+            
+            // File
         case .uploadFile: return QueryInformation(httpMethod: .post, url: fileRoute!, decodableType: String.self)
         case .downloadFile: return QueryInformation(httpMethod: .post, url: fileRoute!, decodableType: String.self)
             
-        case .addMemberIntoChatBox:
-            guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
-            return QueryInformation(httpMethod: .post, url: chatBoxRoute! + chatBoxId + "/members")
-        case .deleteMemberFromChatBox: //
-            guard let chatBoxId = parammeters["chatBoxId"] else { return nil }
-            guard let mappingId = parammeters["mappingId"] else { return nil }
-            return QueryInformation(httpMethod: .delete, url: chatBoxRoute! + chatBoxId + "/members/" + mappingId)
         }
     }
 }

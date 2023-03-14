@@ -159,15 +159,15 @@ import Foundation
  //            return
  //        }
  //        if (navigationController?.topViewController != self ||
- //            package.message.chatBoxId != extractedChatBox.chatBox.id) {
+ //            package.message.chatboxId != extractedChatBox.chatBox.id) {
  //            return
  //        }
  //        messages.receive([package.convertToMessage()])
  //        updateDataSource()
          
          if navigationController?.topViewController == self {
-             let chatBoxId = extractedChatBox.chatBox.id
-             var storedMessaged = Messages.retrieve(with: chatBoxId).messages
+             let chatboxId = extractedChatBox.chatBox.id
+             var storedMessaged = Messages.retrieve(with: chatboxId).messages
              self.messages = storedMessaged.transformStructure()
              markLastestSeenMessage()
              setUpDataSource()
@@ -193,7 +193,7 @@ import Foundation
      // MARK: - IBAction
      @IBAction func sendMessage(_ sender: UIButton) {
          FeedBackTapEngine.tapped(style: .medium)
-         let webSocketPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
+         let webSocketPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatboxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
          NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": webSocketPackage])
      }
      @IBAction func pickImage(_ sender: UIButton) {
@@ -633,15 +633,15 @@ import Foundation
  //            return
  //        }
  //        if (navigationController?.topViewController != self ||
- //            package.message.chatBoxId != extractedChatBox.chatBox.id) {
+ //            package.message.chatboxId != extractedChatBox.chatBox.id) {
  //            return
  //        }
  //        messages.receive([package.convertToMessage()])
  //        updateDataSource()
          
          if navigationController?.topViewController == self {
-             let chatBoxId = extractedChatBox.chatBox.id
-             var storedMessaged = Messages.retrieve(with: chatBoxId).messages
+             let chatboxId = extractedChatBox.chatBox.id
+             var storedMessaged = Messages.retrieve(with: chatboxId).messages
              self.messages = storedMessaged.transformStructure()
              markLastestSeenMessage()
              setUpDataSource()
@@ -667,7 +667,7 @@ import Foundation
      // MARK: - IBAction
      @IBAction func sendMessage(_ sender: UIButton) {
          FeedBackTapEngine.tapped(style: .medium)
-         let webSocketPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
+         let webSocketPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatboxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
          NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": webSocketPackage])
      }
      @IBAction func pickImage(_ sender: UIButton) {
@@ -944,80 +944,80 @@ import Foundation
 
 
 // Sample data of MessagingViewController.swift
-func sampleData(mappingId: UUID) -> [ChatBoxMessage] {
+func sampleData(mappingId: UUID) -> [ChatboxMessage] {
     let contentSample = """
     This view hierarchy is useful for learning how HomeKit structures device data, which is slightly different than the way the Apple Home app refers to related concepts. It’s also useful for device developers who want to understand how HomeKit sees custom hardware.
 
     In a real app that you publish on the App Store, you would provide a user experience more like the one found in Configuring a Home Automation Device. For example, you would focus on the actions a user can take and hide the underlying technical details. For more tips about presenting HomeKit data to users, see the “Adjust the Interface for a Published App” section at the end of this article.
     """
     var sampleData = [
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Hello essage from debugger: failed to send the k packet"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Hello i'm datvu"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: contentSample),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Load message cell"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: contentSample),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: contentSample),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: contentSample),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!"),
-        ChatBoxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatBoxId: UUID(), mediaType: .text, content: "Did work successfull!")
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Hello essage from debugger: failed to send the k packet"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Hello i'm datvu"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: contentSample),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Load message cell"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: contentSample),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: contentSample),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: contentSample),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "adjustedContentInset: {64, 0, 0, 0}; layout:"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!"),
+        ChatboxMessage(id: UUID(), createdAt: Date().dayTime, sender: mappingId, chatboxId: UUID(), mediaType: .text, content: "Did work successfull!")
     ]
     return sampleData
 }

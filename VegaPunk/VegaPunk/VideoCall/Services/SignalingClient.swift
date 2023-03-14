@@ -31,6 +31,10 @@ final class SignalingClient {
         self.webSocket.delegate = self
         self.webSocket.connect()
     }
+    func disconnect() {
+        self.webSocket.delegate = nil
+        self.webSocket.disconnect()
+    }
     
     func send(sdp rtcSdp: RTCSessionDescription) {
         let message = Message.sdp(SessionDescription(from: rtcSdp))

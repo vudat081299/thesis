@@ -24,10 +24,10 @@ class MessagingViewController: UIViewController {
     let managingChatBoxViewController = ManagingChatBoxViewController()
     
     //
-    var dataSource: UICollectionViewDiffableDataSource<Int, ChatBoxMessage>! = nil
+    var dataSource: UICollectionViewDiffableDataSource<Int, ChatboxMessage>! = nil
     var user: User!
     var extractedChatBox: ChatBoxViewModel!
-    var messageViewModel = [[ChatBoxMessage]]()
+    var messageViewModel = [[ChatboxMessage]]()
     var members = [User]()
     var previousSendingPackage: WebSocketPackage!
     
@@ -54,6 +54,8 @@ class MessagingViewController: UIViewController {
     @IBOutlet weak var widthTextField: NSLayoutConstraint!
     @IBOutlet weak var heightInputContainer: NSLayoutConstraint!
     
+    var callVideoButton: UIBarButtonItem!
+    
     // Gesture
     private lazy var panGesture: UIPanGestureRecognizer = {
         let gesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureOnCollectionView(_:)))
@@ -73,6 +75,9 @@ class MessagingViewController: UIViewController {
         let webRTCClient = WebRTCClient(iceServers: self.config.webRTCIceServers)
         let signalClient = self.buildSignalingClient()
         let mainViewController = MainViewController(signalClient: signalClient, webRTCClient: webRTCClient)
+        mainViewController.user = self.user
+        mainViewController.extractedChatBox = self.extractedChatBox
+        mainViewController.modalPresentationStyle = .fullScreen
         let navViewController = UINavigationController(rootViewController: mainViewController)
         if #available(iOS 11.0, *) {
             navViewController.navigationBar.prefersLargeTitles = true
@@ -110,6 +115,8 @@ class MessagingViewController: UIViewController {
         notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(websocketReceivedMessagePackage(_:)), name: .WebsocketReceivedMessagePackage, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(websocketReceivedCallPackage(_:)), name: .WebsocketReceivedCallPackage, object: nil)
+        
         
         // Delegate
         imagePicker.delegate = self
@@ -142,6 +149,8 @@ class MessagingViewController: UIViewController {
     }
     deinit {
         notificationCenter.removeObserver(self, name: .WebsocketReceivedMessagePackage, object: nil)
+        notificationCenter.removeObserver(self, name: .WebsocketReceivedCallPackage, object: nil)
+        
     }
     
     
@@ -206,7 +215,7 @@ class MessagingViewController: UIViewController {
 //            return
 //        }
 //        if (navigationController?.topViewController != self ||
-//            package.message.chatBoxId != extractedChatBox.chatBox.id) {
+//            package.message.chatboxId != extractedChatBox.chatbox.id) {
 //            return
 //        }
 //        messages.receive([package.convertToMessage()])
@@ -218,6 +227,16 @@ class MessagingViewController: UIViewController {
             self.messageViewModel = storedMessaged.transformStructure()
             markLastestSeenMessage()
             applySnapshot()
+        }
+    }
+    
+    @objc func websocketReceivedCallPackage(_ notification: Notification) {
+        guard let sender = notification.userInfo?["sender"] as? UUID else {
+            return
+        }
+        if members.count == 1 && members.first?.id == sender {
+            callVideoButton.tintColor = .systemGreen
+            FeedBackTapEngine.tapped(style: .medium)
         }
     }
     
@@ -235,14 +254,14 @@ class MessagingViewController: UIViewController {
             }
         }
     }
-    func getUser(with mappingId: UUID) -> User? {
-        if mappingId == user.mappingId { return user }
+    func getUser(with userId: UUID) -> User? {
+        if userId == user.id { return user }
         return members.first {
-            $0.mappingId == mappingId
+            $0.id == userId
         }
     }
-    func checkIsSender(_ mappingId: UUID) -> Bool {
-        if mappingId == user.mappingId { return true }
+    func checkIsSender(_ userId: UUID) -> Bool {
+        if userId == user.id { return true }
         return false
     }
     
@@ -253,22 +272,23 @@ class MessagingViewController: UIViewController {
         if pickedImage.image != nil {
             sendMessageButton.isEnabled = false
             RequestEngine.upload((pickedImage.image?.resized(to: 720).pngData())!) { [self] fileId in
-                previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .file, content: fileId))
-                NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
+                previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.id, chatboxId: extractedChatBox.chatBox.id, mediaType: .file, content: fileId))
+                NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": previousSendingPackage!])
                 hidePickedImageContainer()
                 sendMessageButton.isEnabled = true
             }
         } else {
             if (chatTextField.text == nil || chatTextField.text?.count == 0) { return }
-            previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.mappingId, chatBoxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
+            previousSendingPackage = WebSocketPackage(type: .message, message: WebSocketPackageMessage(sender: user.id, chatboxId: extractedChatBox.chatBox.id, mediaType: .text, content: chatTextField.text))
             chatTextField.text = ""
-            NotificationCenter.default.post(name: .WebsocketSendMessagePackage, object: nil, userInfo: ["package": previousSendingPackage!])
+            NotificationCenter.default.post(name: .WebsocketSendPackage, object: nil, userInfo: ["package": previousSendingPackage!])
         }
     }
     @IBAction func pickImage(_ sender: UIButton) {
         FeedBackTapEngine.tapped(style: .medium)
         imagePicker.allowsEditing = true
         imagePicker.sourceType = .photoLibrary
+        imagePicker.mediaTypes = ["public.image", "public.movie"]
         self.present(imagePicker, animated: true, completion: nil)
     }
     @IBAction func removeSendingImageAction(_ sender: UIButton) {
@@ -295,20 +315,25 @@ extension MessagingViewController {
     func setUpNavigationBar() {
         navigationItem.largeTitleDisplayMode = .never
 //        navigationItem.largeTitleDisplayMode = .never
-//        self.title = extractedChatBox.chatBox.name
+//        self.title = extractedChatBox.chatbox.name
 //        navigationController?.navigationBar.prefersLargeTitles = false
 //        self.navigationController?.modalPresentationStyle = .fullScreen
         
         /// Call video BarButtonItem.
-        let callVideoButton: UIBarButtonItem = {
+        callVideoButton = {
             let bt = UIBarButtonItem(image: UIImage(systemName: "video.circle.fill"), style: .plain, target: self, action: #selector(callVideoAction))
             return bt
         }()
+        callVideoButton.tintColor = .systemBlue
         let addMemberButton: UIBarButtonItem = {
             let bt = UIBarButtonItem(image: UIImage(systemName: "plus.bubble.fill"), style: .plain, target: self, action: #selector(manageChatBoxAction))
             return bt
         }()
-        navigationItem.rightBarButtonItems = [addMemberButton, callVideoButton]
+        if members.count == 1 {
+            navigationItem.rightBarButtonItems = [addMemberButton, callVideoButton]
+        } else {
+            navigationItem.rightBarButtonItems = [addMemberButton]
+        }
         
     }
     func setTitle() {
@@ -459,8 +484,8 @@ extension MessagingViewController {
     // MARK: - Config datasource
     /// - Tag: PinnedHeaderRegistration
     func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Int, ChatBoxMessage>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, message: ChatBoxMessage) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Int, ChatboxMessage>(collectionView: collectionView) {
+            (collectionView: UICollectionView, indexPath: IndexPath, message: ChatboxMessage) -> UICollectionViewCell? in
             let row = indexPath.row
             if row == 0 {
                 guard let cell = collectionView.dequeueReusableCell(
@@ -507,7 +532,7 @@ extension MessagingViewController {
         if (messageViewModel.count > 0) {
             sections = Array(0..<messageViewModel.count)
         }
-        var snapshot = NSDiffableDataSourceSnapshot<Int, ChatBoxMessage>()
+        var snapshot = NSDiffableDataSourceSnapshot<Int, ChatboxMessage>()
         sections.forEach {
 //            avatarFileIds.append(getUser(with: messageViewModel[$0][0].sender!)!.avatar)
             snapshot.appendSections([$0])

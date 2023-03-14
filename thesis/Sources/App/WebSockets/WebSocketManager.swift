@@ -31,6 +31,7 @@ final class WebSocketManager {
             if let userId = user.id,
                let ws = dictionary[userId.uuidString] {
                 ws.send(message.convertToWebSocketPackage())
+                print(userId)
             }
         }
     }

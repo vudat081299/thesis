@@ -56,7 +56,7 @@ class MainTabBarController: UITabBarController {
             viewControllers?.append($0.viewController)
         }
         connectWebSocket()
-        notificationCenter.addObserver(self, selector: #selector(send(_:)), name: .WebsocketSendMessagePackage, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(send(_:)), name: .WebsocketSendPackage, object: nil)
         
         DataLoader.sharedUrlCache.diskCapacity = 0
         let pipeline = ImagePipeline {
@@ -71,7 +71,7 @@ class MainTabBarController: UITabBarController {
         super.viewWillAppear(animated)
     }
     deinit {
-        notificationCenter.removeObserver(self, name: .WebsocketSendMessagePackage, object: nil)
+        notificationCenter.removeObserver(self, name: .WebsocketSendPackage, object: nil)
     }
     
     /*
@@ -89,8 +89,8 @@ class MainTabBarController: UITabBarController {
     func connectWebSocket() {
         releaseWebSocket()
         print("\(#function)")
-        let userMappingId = (AuthenticatedUser.retrieve()?.data?.mappingId?.uuidString) ?? ""
-        let domain = RouteCoordinator.websocket.url()! + userMappingId
+        let userId = (AuthenticatedUser.retrieve()?.data?.id?.uuidString) ?? ""
+        let domain = RouteCoordinator.websocket.url()! + userId
         var request = URLRequest(url: URL(string: domain)!)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
@@ -134,12 +134,15 @@ extension MainTabBarController: WebSocketDelegate {
                 Messages([webSocketPackage.convertToMessage()]).store()
                 NotificationCenter.default.post(name: .WebsocketReceivedMessagePackage, object: nil)
                 break
-            case .chatBox:
+            case .chatbox:
                 NotificationCenter.default.post(name: .WebsocketReceivedChatBoxPackage, object: nil)
                 break
             case .user:
                 NotificationCenter.default.post(name: .WebsocketReceivedUserPackage, object: nil)
                 break
+            case .call:
+                let userInfo: [String: UUID?] = ["sender": webSocketPackage.message.sender]
+                NotificationCenter.default.post(name: .WebsocketReceivedCallPackage, object: nil, userInfo: userInfo as [AnyHashable : Any])
             }
         case .binary(let data):
             print("Received data: \(data.count)")
@@ -185,7 +188,7 @@ extension MainTabBarController: WebSocketDelegate {
 //                     "type": 0,
 //                     "message": {
 //                       "sender":"B0A9FBBE-6350-43FE-A3E6-C11CBC974B2D",
-//                       "chatBoxId":"7F7A0D37-956B-49F8-8735-45B8141B10B6",
+//                       "chatboxId":"7F7A0D37-956B-49F8-8735-45B8141B10B6",
 //                       "mediaType":"text",
 //                       "content":"This function get’s called when we press the button. The‘.goingAway’ is the close code where as the reason is that you provide to user.Where are we going to call all these three functions ???The closeSession is already added as the target for the button we created earlier. Where as the send & receive will be called under the didOpenWithProtocol protocol.Download the full source code HERE. I hope I was able to explain well. If I did then please do follow me and share my article with your friends. This really motivates me to kee"
 //                     }

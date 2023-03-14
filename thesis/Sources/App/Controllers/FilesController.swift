@@ -8,6 +8,15 @@
 import Vapor
 import MongoKitten
 
+struct ResolveId: Content {
+    let id: String
+}
+
+struct ResolveFile: Content {
+    var _id: ObjectId?
+    var data: Data?
+}
+
 struct FilesController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let mediasRoutes = routes.grouped("api", "files")
@@ -25,7 +34,6 @@ struct FilesController: RouteCollection {
             return Response(body: Response.Body(data: data))
         }
     }
-    
     func postFileHandler(_ req: Request) throws -> EventLoopFuture<ResolveId> {
         let newFile = try req.content.decode(ResolveFile.self)
         let fileObjectId: EventLoopFuture<ObjectId?>
@@ -46,9 +54,6 @@ struct FilesController: RouteCollection {
             return ResolveId(id: id.hexString)
         }
     }
-    struct ResolveId: Content {
-        let id: String
-    }
     
     
     
@@ -61,7 +66,6 @@ struct FilesController: RouteCollection {
             return id
         }
     }
-    
     static func readFile(byId id: ObjectId, inDatabase database: MongoDatabase) -> EventLoopFuture<Data> {
         let gridFS = GridFSBucket(in: database)
         return gridFS.findFile(byId: id).flatMap { file in
@@ -125,10 +129,4 @@ struct FilesController: RouteCollection {
 ////            throw Abort(.internalServerError, reason: "Failed to save new kitten: \(error)")
 ////        }
 //    }
-    
-}
-
-struct ResolveFile: Content {
-    var _id: ObjectId?
-    var data: Data?
 }

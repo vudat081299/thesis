@@ -43,7 +43,7 @@ struct ChatBoxesController: RouteCollection {
         let resolvedModel = try req.content.decode(ResolveAddingMembersIntoChatBox.self)
         return Chatbox.find(UUID(uuidString: chatBoxId), on: req.db).unwrap(or: Abort(.notFound)).flatMap { chatBox in
             resolvedModel.mappingIds.map { mappingId in
-                let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: nil, sender: nil, chatBoxId: chatBox.id, mediaType: nil, content: nil))
+                let package = WebSocketPackage(type: .chatbox, message: WebSocketPackageMessage(id: nil, createdAt: nil, sender: nil, chatboxId: chatBox.id, mediaType: nil, content: nil))
                 webSocketManager.send(to: resolvedModel.mappingIds, package: package)
                 return User.find(mappingId, on: req.db)
                     .unwrap(or: Abort(.notFound))
@@ -100,7 +100,7 @@ struct ChatBoxesController: RouteCollection {
 
 //        let deletedUser = try await User.query(on: req.db).filter(\.$id == mappingQuery.$user.id).all()
 //        let deletedUser = try await User.query(on: req.db).filter(\.$id == mappingQuery.$user.id).all()
-//        let message = Message(sender: user.mappingId!, mediaType: MediaType.notify.rawValue, content: "\(user.name) đã xoá @\(deletedUser.username) khỏi nhóm!", chatBoxId: chatBoxQuery.id)
+//        let message = Message(sender: user.mappingId!, mediaType: MediaType.notify.rawValue, content: "\(user.name) đã xoá @\(deletedUser.username) khỏi nhóm!", chatboxId: chatBoxQuery.id)
 //        try await message.save(on: req.db)
 //
 //        for mappingId in resolvedModel.mappingIds {
@@ -109,10 +109,10 @@ struct ChatBoxesController: RouteCollection {
 //            }
 //            try await mapping.$chatBoxes.attach(chatBox, on: req.db)
 //        }
-//        let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: message.createdAt, sender: user.mappingId, chatBoxId: chatBox.id, mediaType: .text, content: message.content))
+//        let package = WebSocketPackage(type: .chatbox, message: WebSocketPackageMessage(id: nil, createdAt: message.createdAt, sender: user.mappingId, chatboxId: chatBox.id, mediaType: .text, content: message.content))
 
 
-        let package = WebSocketPackage(type: .chatBox, message: WebSocketPackageMessage(id: nil, createdAt: nil, sender: nil, chatBoxId: chatboxQuery.id, mediaType: nil, content: nil))
+        let package = WebSocketPackage(type: .chatbox, message: WebSocketPackageMessage(id: nil, createdAt: nil, sender: nil, chatboxId: chatboxQuery.id, mediaType: nil, content: nil))
         webSocketManager.send(to: [userQuery.id], package: package)
         return .noContent
     }
